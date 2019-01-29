@@ -5,8 +5,28 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:StinterLogger"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="Stinter" Height="450" Width="800">
     <Grid>
-        
+        <TabControl>
+            <TabItem Header="User">
+                <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
+                    <Label>Username/iRacing ID:</Label>
+                    <TextBox Width="75" Height="25" MaxWidth="75" MaxHeight="25" Margin="5 5 5 5"></TextBox>
+                    <Label>Password:</Label>
+                    <PasswordBox Width="75" Height="25" MaxWidth="75" MaxHeight="25" Margin="5 5 5 5"></PasswordBox>
+                </StackPanel>
+            </TabItem>
+            <TabItem Header="Stints" />
+            <TabItem Header="Laps" />
+            <TabItem Header="Fuel">
+                <StackPanel>
+                    <RadioButton GroupName="Os" Content="Enable" IsChecked="True"/>
+                    <RadioButton GroupName="Os" Content½="Disable" />
+                    <Label>Fuel calculator</Label>
+                    <RadioButton GroupName="Os" Content="Auto (recommended)" IsChecked="True"/>
+                    <RadioButton GroupName="Os" Content="Manual" />
+                </StackPanel>
+            </TabItem>
+        </TabControl>
     </Grid>
 </Window>
