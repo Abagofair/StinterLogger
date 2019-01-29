@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Ninject;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,13 @@ namespace StinterLogger
         public MainWindow()
         {
             InitializeComponent();
+        }
+
+        [Inject]
+        public MainWindow(ITest test)
+        {
+            InitializeComponent();
+            InTank.Text = test.OutputString();
         }
     }
 }

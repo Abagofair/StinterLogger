@@ -50,7 +50,7 @@
                     <RadioButton GroupName="fuelUnits" Grid.Row="4" Grid.Column="0" Content="Metric" IsChecked="True" Margin="5 5 5 5"/>
                     <RadioButton GroupName="fuelUnits" Grid.Row="4" Grid.Column="1" Content="Imperial" IsEnabled="False" Margin="5 5 5 5"/>
                     <Label Grid.Row="5" Grid.Column="0" Margin="5 5 5 5">In tank</Label>
-                    <TextBox Grid.Row="5" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5"></TextBox>
+                    <TextBox Grid.Row="5" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5" Name="InTank"></TextBox>
                     <Label Grid.Row="6" Grid.Column="0" Margin="5 5 5 5">Per lap</Label>
                     <TextBox Grid.Row="6" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5"></TextBox>
                     <Label Grid.Row="7" Grid.Column="0" Margin="5 5 5 5">Per hour</Label>
