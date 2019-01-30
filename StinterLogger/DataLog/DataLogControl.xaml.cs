@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace StinterLogger
+namespace StinterLogger.DataLog
 {
     /// <summary>
     /// Interaction logic for DataLogTab.xaml
     /// </summary>
-    public partial class DataLogTab : UserControl
+    public partial class DataLogControl : UserControl
     {
-        public DataLogTab()
+        public DataLogControl()
         {
             InitializeComponent();
         }

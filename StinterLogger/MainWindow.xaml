@@ -3,29 +3,39 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:StinterLogger"
+        xmlns:fuel="clr-namespace:StinterLogger.FuelCalculator"
+        xmlns:start="clr-namespace:StinterLogger.Start"
         mc:Ignorable="d"
-        Title="Stinter" Height="450" Width="345"
+        Title="Stinter" Height="400" Width="450"
         ResizeMode="CanMinimize"
         FontFamily="Verdana"
         >
-    <Grid>
-        <TabControl>
-            <TabItem Header="User">
-                <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top">
-                    <Label>Username/iRacing ID:</Label>
-                    <TextBox Width="75" Height="25" MaxWidth="75" MaxHeight="25" Margin="5 5 5 5"></TextBox>
-                    <Label>Password:</Label>
-                    <PasswordBox Width="75" Height="25" MaxWidth="75" MaxHeight="25" Margin="5 5 5 5"></PasswordBox>
-                </StackPanel>
-            </TabItem>
-            <TabItem Header="Logging options"/>
-            <TabItem Header="Fuel calculator">
-                <local:FuelCalculatorTab VerticalAlignment="Top" HorizontalAlignment="Left"/>
-            </TabItem>
-            <TabItem Header="Data log">
-                <local:DataLogTab/>
-            </TabItem>
-        </TabControl>
-    </Grid>
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type fuel:FuelCalculatorViewModel}">
+            <fuel:FuelCalculatorControl />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type start:StartViewModel}">
+            <start:StartControl />
+        </DataTemplate>
+    </Window.Resources>
+    <DockPanel>
+        <Border DockPanel.Dock="Left" Background="LightGray">
+            <ItemsControl ItemsSource="{Binding PageViewModels}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Content="{Binding Name}"
+                                Command="{Binding DataContext.ChangePageCommand, RelativeSource={RelativeSource AncestorType={x:Type Window}}}"
+                                CommandParameter="{Binding }"
+                                Margin="10,10,10,10"
+                                Width="100"
+                                Height="50"
+                                />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+        <Border DockPanel.Dock="Right" Background="AntiqueWhite">
+            <ContentControl Content="{Binding CurrentPageViewModel}"/>
+        </Border>
+    </DockPanel>
 </Window>

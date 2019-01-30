@@ -13,14 +13,14 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace StinterLogger
+namespace StinterLogger.Start
 {
     /// <summary>
-    /// Interaction logic for FuelCalculatorTab.xaml
+    /// Interaction logic for Start.xaml
     /// </summary>
-    public partial class FuelCalculatorTab : UserControl
+    public partial class StartControl : UserControl
     {
-        public FuelCalculatorTab()
+        public StartControl()
         {
             InitializeComponent();
         }

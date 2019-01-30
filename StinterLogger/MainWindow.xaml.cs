@@ -24,9 +24,7 @@ namespace StinterLogger
         public MainWindow(iRacingSdkWrapper.SdkWrapper iracing)
         {
             InitializeComponent();
-            
+
         }
-
-
     }
 }

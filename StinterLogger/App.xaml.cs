@@ -1,5 +1,6 @@
 ﻿using iRacingSdkWrapper;
 using Ninject;
+using StinterLogger.FuelCalculator;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -9,30 +10,7 @@ using System.Threading.Tasks;
 using System.Windows;
 
 namespace StinterLogger
-{
-    public interface ITest
-    {
-        string OutputString();
-    }
-
-    public class Test : ITest
-    {
-        public string OutputString()
-        {
-            return "asdasdasd";
-        }
-    }
-
-    public class Mobule : Ninject.Modules.NinjectModule
-    {
-        public override void Load()
-        {
-            Bind<ITest>().To<Test>().InSingletonScope();
-            Bind<SdkWrapper>().ToSelf().InSingletonScope();
-            Bind<Window>().To<MainWindow>().InTransientScope();
-        }
-    }
-
+{ 
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
@@ -44,18 +22,14 @@ namespace StinterLogger
         {
             base.OnStartup(e);
 
-            //_kernel = new StandardKernel();
-            //_kernel.Load(new Mobule());
-
-            //var test = new Ninject.Parameters.ConstructorArgument("iracing", _kernel.Get<SdkWrapper>());
-            //var mw = _kernel.Get<MainWindow>(test);
             _sdkWrapper = new SdkWrapper();
             _sdkWrapper.TelemetryUpdateFrequency = 4;
-            
 
+            var vm = new ApplicationViewModel();
             var mw = new MainWindow(_sdkWrapper);
+
+            mw.DataContext = vm;
             mw.Show();
-            //Current.MainWindow.Show();
         }
     }
 }
