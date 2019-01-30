@@ -1,5 +1,4 @@
-﻿using Ninject;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,16 +16,13 @@ using System.Windows.Shapes;
 namespace StinterLogger
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    /// Interaction logic for FuelCalculatorTab.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class FuelCalculatorTab : UserControl
     {
-        public MainWindow(iRacingSdkWrapper.SdkWrapper iracing)
+        public FuelCalculatorTab()
         {
             InitializeComponent();
-            
         }
-
-
     }
 }
