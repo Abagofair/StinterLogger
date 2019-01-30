@@ -23,24 +23,35 @@
             <ColumnDefinition Width="Auto" />
             <ColumnDefinition Width="Auto" />
         </Grid.ColumnDefinitions>
+        
         <RadioButton GroupName="enableDisable" Grid.Row="0" Grid.Column="0" Content="Enable" IsChecked="True" Margin="5 5 5 5"/>
         <RadioButton GroupName="enableDisable" Grid.Row="0" Grid.Column="1" Content="Disable" Margin="5 5 5 5"/>
+        
         <Label Grid.Row="1" Grid.Column="0" Margin="5 5 5 5">Session length</Label>
         <TextBox Grid.Row="1" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5"></TextBox>
+        
         <Label Grid.Row="2" Grid.Column="0" Margin="5 5 5 5">Laps completed</Label>
         <TextBox Grid.Row="2" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5"></TextBox>
+        
         <Label Grid.Row="3" Grid.Column="0" FontWeight="Bold" Margin="5 5 5 5">Fuel data</Label>
+        
         <RadioButton GroupName="fuelUnits" Grid.Row="4" Grid.Column="0" Content="Liters" IsChecked="True" Margin="5 5 5 5"/>
         <RadioButton GroupName="fuelUnits" Grid.Row="4" Grid.Column="1" Content="Gallons" IsEnabled="False" Margin="5 5 5 5"/>
+        
         <Label Grid.Row="5" Grid.Column="0" Margin="5 5 5 5">In tank</Label>
-        <TextBox Grid.Row="5" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5" Name="InTank"></TextBox>
+        <TextBox Text="{Binding InTank}" Grid.Row="5" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5" Name="InTank"></TextBox>
+        
         <Label Grid.Row="6" Grid.Column="0" Margin="5 5 5 5">Per lap</Label>
-        <TextBox Grid.Row="6" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5"></TextBox>
+        <TextBox Text="{Binding PerLap}" Grid.Row="6" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5"></TextBox>
+        
         <Label Grid.Row="7" Grid.Column="0" Margin="5 5 5 5">Per hour</Label>
-        <TextBox Grid.Row="7" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5"></TextBox>
+        <TextBox Text="{Binding PerHour}" Grid.Row="7" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5"></TextBox>
+        
         <Label Grid.Row="8" Grid.Column="0" FontWeight="Bold" Margin="5 5 5 5">Pitstop</Label>
+        
         <Label Grid.Row="9" Grid.Column="0" Margin="5 5 5 5">Amount to add</Label>
         <TextBox Grid.Row="9" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5"></TextBox>
+        
         <RadioButton GroupName="autoManual" Grid.Row="10" Grid.Column="0" Content="Auto fuel" IsChecked="True" Margin="5 5 5 5"/>
         <RadioButton GroupName="autoManual" Grid.Row="10" Grid.Column="1" Content="Manual fuel" Margin="5 5 5 5"/>
     </Grid>

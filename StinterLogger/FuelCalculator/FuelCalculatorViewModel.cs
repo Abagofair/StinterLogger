@@ -8,6 +8,8 @@ namespace StinterLogger.FuelCalculator
 {
     public class FuelCalculatorViewModel : IPageViewModel
     {
+        private FuelModel _fuelModel;
+
         public string Name { get; set; }
 
         public FuelCalculatorViewModel()
