@@ -44,10 +44,11 @@ namespace StinterLogger.FuelCalculator
 
                 float lastLapTime = ((App)Application.Current).SdkWrapper.GetTelemetryValue<float>("LapLastLapTime").Value;
                 this.FuelModel.TotalLapTime += lastLapTime;
-                var avgLapTime = this.FuelModel.TotalLapTime / this.FuelModel.LapsCompleted;
 
-                this.FuelModel.AmountToAdd = this._fuelCalculator.FuelNeededToFinish(this.FuelModel.RemainingSessionTime, 
-                    avgLapTime, 
+                this.FuelModel.AmountToAdd = this._fuelCalculator.FuelNeededToFinish(
+                    this.FuelModel.RemainingSessionTime, 
+                    this.FuelModel.TotalLapTime,
+                    this.FuelModel.LapsCompleted,
                     1, 
                     this.FuelModel.PerLap);
 

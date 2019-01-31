@@ -8,24 +8,24 @@ namespace StinterLogger.FuelCalculator
 {
     public class FuelCalculator
     {
-        private float RemainingLaps(float remainingRaceTime, float averageLapTime, float additionalLaps)
+        private float RemainingLaps(float remainingRaceTime, float timeRaced, float lapsCompleted, float additionalLaps)
         {
-            if (remainingRaceTime < 0.0f || averageLapTime < 0.0f || additionalLaps < 0)
+            if (remainingRaceTime < 0.0f || timeRaced < 0.0f || additionalLaps < 0.0f || lapsCompleted < 0.0f)
             {
                 throw new ArgumentException();
             }
-
+            float averageLapTime = timeRaced / lapsCompleted;
             return (remainingRaceTime / averageLapTime) + additionalLaps;
         }
 
-        public float FuelNeededToFinish(float remainingRaceTime, float averageLapTime, float additionalLaps, float fuelUsedPerLap)
+        public float FuelNeededToFinish(float remainingRaceTime, float timeRaced, float lapsCompleted, float additionalLaps, float fuelUsedPerLap)
         {
             if (fuelUsedPerLap < 0.0f)
             {
                 throw new ArgumentException();
             }
 
-            return RemainingLaps(remainingRaceTime, averageLapTime, additionalLaps) * fuelUsedPerLap;
+            return RemainingLaps(remainingRaceTime, timeRaced, lapsCompleted, additionalLaps) * fuelUsedPerLap;
         }
 
         public float FuelNeededToFinish(float remainingLaps, float fuelUsedPerLap)
