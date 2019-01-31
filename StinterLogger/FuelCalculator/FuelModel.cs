@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace StinterLogger.FuelCalculator
 {
-    public class FuelModel : ObservableObject
+    public class FuelModel : ObservableObject, IEntityModel
     {
         private float _inTank;
         public float InTank
@@ -38,7 +38,7 @@ namespace StinterLogger.FuelCalculator
             {
                 if (value != _perLap)
                 {
-                    value = _perLap;
+                    _perLap = value;
                     this.OnPropertyChanged("PerLap");
                 }
             }
@@ -59,6 +59,127 @@ namespace StinterLogger.FuelCalculator
                     this._perHour = value;
                     this.OnPropertyChanged("PerHour");
                 }
+            }
+        }
+
+        private float _amountToAdd;
+        public float AmountToAdd
+        {
+            get
+            {
+                return this._amountToAdd;
+            }
+
+            set
+            {
+                if (value != this._amountToAdd)
+                {
+                    this._amountToAdd = value;
+                    this.OnPropertyChanged("AmountToAdd");
+                }
+            }
+        }
+
+        private float _sessionLength;
+        public float SessionLength
+        {
+            get
+            {
+                return this._sessionLength;
+            }
+
+            set
+            {
+                if (value != this._sessionLength)
+                {
+                    this._sessionLength = value;
+                    this.OnPropertyChanged("SessionLength");
+                }
+            }
+        }
+
+        private int _lapsCompleted;
+        public int LapsCompleted
+        {
+            get
+            {
+                return this._lapsCompleted;
+            }
+
+            set
+            {
+                if (value != this._lapsCompleted)
+                {
+                    this._lapsCompleted = value;
+                    this.OnPropertyChanged("LapsCompleted");
+                }
+            }
+        }
+
+        private bool _enabled;
+        public bool Enabled
+        {
+            get
+            {
+                return this._enabled;
+            }
+
+            set
+            {
+                if (value != this._enabled)
+                {
+                    this._enabled = value;
+                    this.OnPropertyChanged("Enabled");
+                }
+            }
+        }
+
+        private bool _units;
+        public bool Units
+        {
+            get
+            {
+                return this._units;
+            }
+
+            set
+            {
+                if (value != this._units)
+                {
+                    this._units = value;
+                    this.OnPropertyChanged("Units");
+                }
+            }
+        }
+
+        private bool _autoFuel;
+        public bool AutoFuel
+        {
+            get
+            {
+                return this._autoFuel;
+            }
+
+            set
+            {
+                if (value != this._autoFuel)
+                {
+                    this._autoFuel = value;
+                    this.OnPropertyChanged("AutoFuel");
+                }
+            }
+        }
+
+        private Guid _guid;
+        public Guid Guid
+        {
+            get
+            {
+                if (this._guid == null)
+                {
+                    this._guid = Guid.NewGuid();
+                }
+                return this._guid;
             }
         }
     }

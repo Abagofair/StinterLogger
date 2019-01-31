@@ -6,7 +6,7 @@
         xmlns:fuel="clr-namespace:StinterLogger.FuelCalculator"
         xmlns:start="clr-namespace:StinterLogger.Start"
         mc:Ignorable="d"
-        Title="Stinter" Height="400" Width="450"
+        Title="Stinter" Height="600" Width="600"
         ResizeMode="CanMinimize"
         FontFamily="Verdana"
         >

@@ -19,8 +19,8 @@ namespace StinterLogger
         public ApplicationViewModel()
         {
             // Add available pages
-            PageViewModels.Add(new FuelCalculatorViewModel());
             PageViewModels.Add(new Start.StartViewModel());
+            PageViewModels.Add(new FuelCalculatorViewModel());
 
             // Set starting page
             CurrentPageViewModel = PageViewModels[1];
