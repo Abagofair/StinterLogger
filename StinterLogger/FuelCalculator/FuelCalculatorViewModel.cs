@@ -39,11 +39,21 @@ namespace StinterLogger.FuelCalculator
                 this.FuelModel.PerLap = this.FuelModel.TotalUsed / this.FuelModel.LapsCompleted;
 
                 fuelAtLapStart = this.FuelModel.InTank;
-                this.FuelModel.LapsCompleted = e.TelemetryInfo.LapCompleted.Value;
-                this.FuelModel.TotalLapTime += ((App)Application.Current).SdkWrapper.GetTelemetryValue<float>("LapLastLapTime").Value;
+                this.FuelModel.LapsCompleted = lapsCompleted;
+                float lastLapTime = ((App)Application.Current).SdkWrapper.GetTelemetryValue<float>("LapLastLapTime").Value;
+                this.FuelModel.TotalLapTime += lastLapTime;
                 var avgLapTime = this.FuelModel.TotalLapTime / this.FuelModel.LapsCompleted;
                 var lapsRemaining = (this.FuelModel.SessionLength / avgLapTime) + 1;
                 this.FuelModel.AmountToAdd = lapsRemaining * this.FuelModel.PerLap;
+                var fuelPrSec = fuelUsedThisLap / lastLapTime;
+                this.FuelModel.PerHour = fuelPrSec * 3600.0f;
+            }
+
+            if (((App)Application.Current).SdkWrapper.GetTelemetryValue<bool>("OnPitRoad").Value)
+            {
+                ((App)Application.Current).SdkWrapper.Chat.Activate();
+                ((App)Application.Current).SdkWrapper.Chat.Clear();
+                ((App)Application.Current).SdkWrapper.PitCommands.AddFuel((int)this.FuelModel.AmountToAdd);
             }
         }
 
