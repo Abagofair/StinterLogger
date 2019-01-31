@@ -116,19 +116,19 @@ namespace StinterLogger.FuelCalculator
             }
         }
 
-        private float _sessionLength;
-        public float SessionLength
+        private float _remainingSessionTime;
+        public float RemainingSessionTime
         {
             get
             {
-                return this._sessionLength;
+                return this._remainingSessionTime;
             }
 
             set
             {
-                if (value != this._sessionLength)
+                if (value != this._remainingSessionTime)
                 {
-                    this._sessionLength = value;
+                    this._remainingSessionTime = value;
                     this.OnPropertyChanged("SessionLength");
                 }
             }

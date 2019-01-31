@@ -61,6 +61,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="FuelCalculator\FuelCalculator.cs" />
     <Compile Include="ModelManager.cs" />
     <Compile Include="FuelCalculator\FuelModel.cs" />
     <Compile Include="IEntityModel.cs" />

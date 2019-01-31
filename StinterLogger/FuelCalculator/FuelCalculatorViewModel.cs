@@ -1,4 +1,5 @@
-﻿using System;
+﻿using iRacingSdkWrapper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,6 +12,7 @@ namespace StinterLogger.FuelCalculator
     public class FuelCalculatorViewModel : ObservableObject, IPageViewModel
     {
         private FuelModel _fuelModel;
+        private FuelCalculator _fuelCalculator;
         private bool _isEnabled;
         private ICommand _enableFuelCalculator;
 
@@ -24,7 +26,7 @@ namespace StinterLogger.FuelCalculator
         { 
             var lapsCompleted = e.TelemetryInfo.LapCompleted.Value;
             this.FuelModel.InTank = e.TelemetryInfo.FuelLevel.Value;
-            this.FuelModel.SessionLength = ((float)e.TelemetryInfo.SessionTimeRemain.Value) / 60.0f;
+            this.FuelModel.RemainingSessionTime = ((float)e.TelemetryInfo.SessionTimeRemain.Value) / 60.0f;
             
             if (fuelAtLapStart == 0.0f)
             {
@@ -39,11 +41,16 @@ namespace StinterLogger.FuelCalculator
 
                 fuelAtLapStart = this.FuelModel.InTank;
                 this.FuelModel.LapsCompleted = lapsCompleted;
+
                 float lastLapTime = ((App)Application.Current).SdkWrapper.GetTelemetryValue<float>("LapLastLapTime").Value;
                 this.FuelModel.TotalLapTime += lastLapTime;
                 var avgLapTime = this.FuelModel.TotalLapTime / this.FuelModel.LapsCompleted;
-                var lapsRemaining = (this.FuelModel.SessionLength / avgLapTime) + 1;
-                this.FuelModel.AmountToAdd = lapsRemaining * this.FuelModel.PerLap;
+
+                this.FuelModel.AmountToAdd = this._fuelCalculator.FuelNeededToFinish(this.FuelModel.RemainingSessionTime, 
+                    avgLapTime, 
+                    1, 
+                    this.FuelModel.PerLap);
+
                 var fuelPrSec = fuelUsedThisLap / lastLapTime;
                 this.FuelModel.PerHour = fuelPrSec * 3600.0f;
             }
