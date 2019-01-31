@@ -16,7 +16,6 @@ namespace StinterLogger
     /// </summary>
     public partial class App : Application
     {
-        private SdkWrapper _sdkWrapper;
         private ModelManager _modelManager;
 
         protected override void OnStartup(StartupEventArgs e)
@@ -25,11 +24,12 @@ namespace StinterLogger
 
             this._modelManager = new ModelManager();
 
-            _sdkWrapper = new SdkWrapper();
-            _sdkWrapper.TelemetryUpdateFrequency = 4;
+            this.SdkWrapper = new SdkWrapper();
+            this.SdkWrapper.TelemetryUpdateFrequency = 4;
+            this.SdkWrapper.Start();
 
             var vm = new ApplicationViewModel();
-            var mw = new MainWindow(_sdkWrapper);
+            var mw = new MainWindow();
 
             mw.DataContext = vm;
             mw.Show();
@@ -41,6 +41,12 @@ namespace StinterLogger
             {
                 return this._modelManager;
             }
+        }
+
+        public SdkWrapper SdkWrapper
+        {
+            get;
+            set;
         }
     }
 }

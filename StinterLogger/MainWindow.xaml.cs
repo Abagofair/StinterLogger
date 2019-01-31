@@ -21,10 +21,9 @@ namespace StinterLogger
     /// </summary>
     public partial class MainWindow : Window
     {
-        public MainWindow(iRacingSdkWrapper.SdkWrapper iracing)
+        public MainWindow()
         {
             InitializeComponent();
-
         }
     }
 }

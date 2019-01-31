@@ -17,6 +17,30 @@ namespace StinterLogger.FuelCalculator
         public FuelCalculatorViewModel()
         {
             this.Name = "Fuel Calculator";
+            ((App)Application.Current).SdkWrapper.TelemetryUpdated += this.OnTelemetryUpdate;
+        }
+
+        private float fuelAtLapStart = 0.0f;
+        private void OnTelemetryUpdate(object sender, iRacingSdkWrapper.SdkWrapper.TelemetryUpdatedEventArgs e)
+        { 
+            var lapsCompleted = e.TelemetryInfo.LapCompleted.Value;
+            this.FuelModel.InTank = e.TelemetryInfo.FuelLevel.Value;
+            this.FuelModel.SessionLength = ((float)e.TelemetryInfo.SessionTimeRemain.Value) / 60.0f;
+            
+            if (fuelAtLapStart == 0.0f)
+            {
+                fuelAtLapStart = this.FuelModel.InTank;
+            }
+
+            if (this.FuelModel.LapsCompleted < lapsCompleted)
+            {
+                var fuelUsedThisLap = fuelAtLapStart - this.FuelModel.InTank;
+                this.FuelModel.TotalUsed += fuelUsedThisLap;
+                this.FuelModel.PerLap = this.FuelModel.TotalUsed / this.FuelModel.LapsCompleted;
+
+                fuelAtLapStart = this.FuelModel.InTank;
+                this.FuelModel.LapsCompleted = e.TelemetryInfo.LapCompleted.Value;
+            }
         }
 
         public string Name { get; set; }

@@ -26,6 +26,24 @@ namespace StinterLogger.FuelCalculator
             }
         }
 
+        private float _totalUsed;
+        public float TotalUsed
+        {
+            get
+            {
+                return this._totalUsed;
+            }
+
+            set
+            {
+                if (value != _totalUsed)
+                {
+                    _totalUsed = value;
+                    OnPropertyChanged("TotalUsed");
+                }
+            }
+        }
+
         private float _perLap;
         public float PerLap
         {
