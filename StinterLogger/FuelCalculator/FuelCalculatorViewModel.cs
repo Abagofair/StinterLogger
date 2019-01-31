@@ -39,6 +39,10 @@ namespace StinterLogger.FuelCalculator
 
                 fuelAtLapStart = this.FuelModel.InTank;
                 this.FuelModel.LapsCompleted = e.TelemetryInfo.LapCompleted.Value;
+                this.FuelModel.TotalLapTime += ((App)Application.Current).SdkWrapper.GetTelemetryValue<float>("LapLastLapTime").Value;
+                var avgLapTime = this.FuelModel.TotalLapTime / this.FuelModel.LapsCompleted;
+                var lapsRemaining = (this.FuelModel.SessionLength / avgLapTime) + 1;
+                this.FuelModel.AmountToAdd = lapsRemaining * this.FuelModel.PerLap;
             }
         }
 
