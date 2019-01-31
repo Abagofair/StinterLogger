@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace StinterLogger.FuelCalculator
 {
-    public class FuelCalculatorViewModel : IPageViewModel
+    public class FuelCalculatorViewModel : ObservableObject, IPageViewModel
     {
         private FuelModel _fuelModel;
         private bool _isEnabled;
@@ -16,12 +17,6 @@ namespace StinterLogger.FuelCalculator
         public FuelCalculatorViewModel()
         {
             this.Name = "Fuel Calculator";
-            this.FuelModel = new FuelModel
-            {
-                InTank = 10,
-                PerLap = 20,
-                PerHour = 30
-            };
         }
 
         public string Name { get; set; }
@@ -36,6 +31,7 @@ namespace StinterLogger.FuelCalculator
             set
             {
                 this._fuelModel = value;
+                OnPropertyChanged("FuelModel");
             }
         }
 
@@ -55,14 +51,30 @@ namespace StinterLogger.FuelCalculator
 
         private void EnableControl(string enable)
         {
-            this.FuelModel.InTank += 10;
             if (enable == "Enable")
             {
                 this._isEnabled = true;
+                try
+                {
+                    this.FuelModel = ((App)Application.Current).ModelManager.CreateModel(ModelType.FuelModel) as FuelModel;
+                }
+                catch (Exception e)
+                {
+                    //log
+                }
             }
             else if (enable == "Disable")
             {
                 this._isEnabled = false;
+                try
+                {
+                    this.FuelModel = null;
+                    ((App)Application.Current).ModelManager.DestroyModel(ModelType.FuelModel);
+                }
+                catch (Exception e)
+                {
+                    //log
+                }
             }
         }
     }

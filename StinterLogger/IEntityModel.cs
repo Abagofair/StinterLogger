@@ -8,6 +8,6 @@ namespace StinterLogger
 {
     public interface IEntityModel
     {
-        Guid Guid { get; set; }
+        Guid Guid { get; }
     }
 }
