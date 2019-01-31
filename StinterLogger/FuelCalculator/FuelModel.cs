@@ -44,6 +44,24 @@ namespace StinterLogger.FuelCalculator
             }
         }
 
+        private float _totalLapTime;
+        public float TotalLapTime
+        {
+            get
+            {
+                return this._totalLapTime;
+            }
+
+            set
+            {
+                if (value != this._totalLapTime)
+                {
+                    this._totalLapTime = value;
+                    OnPropertyChanged("TotalLapTime");
+                }
+            }
+        }
+
         private float _perLap;
         public float PerLap
         {
