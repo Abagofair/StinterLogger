@@ -17,7 +17,6 @@ namespace StinterLogger.FuelCalculator
         public FuelCalculatorViewModel()
         {
             this.Name = "Fuel Calculator";
-            ((App)Application.Current).SdkWrapper.TelemetryUpdated += this.OnTelemetryUpdate;
         }
 
         private float fuelAtLapStart = 0.0f;
@@ -81,6 +80,7 @@ namespace StinterLogger.FuelCalculator
                 try
                 {
                     this.FuelModel = ((App)Application.Current).ModelManager.CreateModel(ModelType.FuelModel) as FuelModel;
+                    ((App)Application.Current).SdkWrapper.TelemetryUpdated += this.OnTelemetryUpdate;
                 }
                 catch (Exception e)
                 {

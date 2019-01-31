@@ -36,13 +36,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="iRacingSdkWrapper">
-      <HintPath>..\..\..\..\Desktop\iRacingSdkWrapper-master\iRacingSdkWrapper\bin\Debug\iRacingSdkWrapper.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\iRacing_wrapper\iRacingSdkWrapper-master\iRacingSdkWrapper\bin\Debug\iRacingSdkWrapper.dll</HintPath>
     </Reference>
     <Reference Include="iRSDKSharp">
-      <HintPath>..\..\..\..\Desktop\iRacingSdkWrapper-master\iRacingSdkWrapper\bin\Debug\iRSDKSharp.dll</HintPath>
-    </Reference>
-    <Reference Include="Ninject, Version=3.3.4.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ninject.3.3.4\lib\net45\Ninject.dll</HintPath>
+      <HintPath>..\..\..\..\Desktop\iRacing_wrapper\iRacingSdkWrapper-master\iRacingSdkWrapper\bin\Debug\iRSDKSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

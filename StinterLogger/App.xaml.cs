@@ -1,5 +1,4 @@
 ﻿using iRacingSdkWrapper;
-using Ninject;
 using StinterLogger.FuelCalculator;
 using System;
 using System.Collections.Generic;
