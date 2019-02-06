@@ -20,6 +20,7 @@ namespace StinterLogger.FuelCalculator
         }
 
         private float fuelAtLapStart = 0.0f;
+        private bool _onPitRoad = false;
         private void OnTelemetryUpdate(object sender, iRacingSdkWrapper.SdkWrapper.TelemetryUpdatedEventArgs e)
         { 
             var lapsCompleted = e.TelemetryInfo.LapCompleted.Value;
@@ -48,11 +49,19 @@ namespace StinterLogger.FuelCalculator
                 this.FuelModel.PerHour = fuelPrSec * 3600.0f;
             }
 
-            if (((App)Application.Current).SdkWrapper.GetTelemetryValue<bool>("OnPitRoad").Value)
+            if (((App)Application.Current).SdkWrapper.GetTelemetryValue<bool>("OnPitRoad").Value && !_onPitRoad)
             {
-                ((App)Application.Current).SdkWrapper.Chat.Activate();
-                ((App)Application.Current).SdkWrapper.Chat.Clear();
-                ((App)Application.Current).SdkWrapper.PitCommands.AddFuel((int)this.FuelModel.AmountToAdd);
+                this._onPitRoad = true;
+                if (this.FuelModel.AmountToAdd > 0)
+                {
+                    ((App)Application.Current).SdkWrapper.Chat.Activate();
+                    ((App)Application.Current).SdkWrapper.Chat.Clear();
+                    ((App)Application.Current).SdkWrapper.PitCommands.AddFuel((int)this.FuelModel.AmountToAdd);
+                }
+            }
+            else if (!((App)Application.Current).SdkWrapper.GetTelemetryValue<bool>("OnPitRoad").Value)
+            {
+                this._onPitRoad = false;
             }
         }
 
