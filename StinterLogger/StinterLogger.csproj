@@ -67,6 +67,12 @@
     <Compile Include="IEntityModel.cs" />
     <Compile Include="IPageViewModel.cs" />
     <Compile Include="ModelTypes.cs" />
+    <Compile Include="RaceLogging\FuelLogger.cs" />
+    <Compile Include="RaceLogging\IDataLogger.cs" />
+    <Compile Include="RaceLogging\IRaceLogger.cs" />
+    <Compile Include="RaceLogging\StintLogger.cs" />
+    <Compile Include="RaceLogging\TimeLogger.cs" />
+    <Compile Include="RaceLogging\TireLogger.cs" />
     <Compile Include="RelayCommand.cs" />
     <Compile Include="FuelCalculator\FuelCalculatorViewModel.cs" />
     <Compile Include="Start\StartControl.xaml.cs">
