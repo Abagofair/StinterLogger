@@ -1,0 +1,22 @@
+﻿using StinterLogger.FuelCalculator;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace StinterLogger.RaceLogging
+{
+    public class FuelLogger : IDataLogger
+    {
+        public FuelLogger()
+        {
+
+        }
+
+        public void LogData()
+        {
+            throw new NotImplementedException();
+        }
+    }
+}
