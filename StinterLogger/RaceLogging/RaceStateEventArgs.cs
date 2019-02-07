@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace StinterLogger.RaceLogging
 {
-    public class TireLogger
+    public class RaceStateEventArgs : EventArgs
     {
+        public RaceState RaceState { get; set; }
     }
 }

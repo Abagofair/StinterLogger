@@ -26,10 +26,6 @@ namespace StinterLogger.RaceLogging
 
         public float OilTemperature { get; set; }
 
-        public int ClassPosition { get; set; }
-
-        public int OverallPosition { get; set; }
-
         public float TrackTempCrew { get; set; }
 
         public double UpdateTime { get; set; }

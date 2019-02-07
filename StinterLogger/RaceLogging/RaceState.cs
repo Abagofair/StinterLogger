@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace StinterLogger.RaceLogging
 {
-    public class TimeLogger
+    public enum RaceState
     {
+        GREEN, GREEN_IN_1, CHECKERED, UNKNOWN
     }
 }

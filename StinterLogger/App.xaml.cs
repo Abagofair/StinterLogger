@@ -1,5 +1,6 @@
 ﻿using iRacingSdkWrapper;
 using StinterLogger.FuelCalculator;
+using StinterLogger.RaceLogging;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -23,9 +24,8 @@ namespace StinterLogger
 
             this._modelManager = new ModelManager();
 
-            this.SdkWrapper = new SdkWrapper();
-            this.SdkWrapper.TelemetryUpdateFrequency = 4;
-            this.SdkWrapper.Start();
+            this.raceLogger = new RaceLogger(4);
+            this.raceLogger.Start();
 
             var vm = new ApplicationViewModel();
             var mw = new MainWindow();
@@ -42,7 +42,7 @@ namespace StinterLogger
             }
         }
 
-        public SdkWrapper SdkWrapper
+        public IRaceLogger raceLogger
         {
             get;
             set;

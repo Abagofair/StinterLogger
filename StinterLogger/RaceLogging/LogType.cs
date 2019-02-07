@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace StinterLogger.RaceLogging
 {
-    public class StintLogger
+    public enum LogType
     {
+        ON_TRACK_READING
     }
 }
