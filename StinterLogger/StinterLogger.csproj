@@ -70,6 +70,10 @@
     <Compile Include="RaceLogging\FuelLogger.cs" />
     <Compile Include="RaceLogging\IDataLogger.cs" />
     <Compile Include="RaceLogging\IRaceLogger.cs" />
+    <Compile Include="RaceLogging\LapCompletedEventArgs.cs" />
+    <Compile Include="RaceLogging\OnTrackReading.cs" />
+    <Compile Include="RaceLogging\TelemetryLapData.cs" />
+    <Compile Include="RaceLogging\RaceLogger.cs" />
     <Compile Include="RaceLogging\StintLogger.cs" />
     <Compile Include="RaceLogging\TimeLogger.cs" />
     <Compile Include="RaceLogging\TireLogger.cs" />

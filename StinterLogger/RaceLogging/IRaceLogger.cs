@@ -9,8 +9,8 @@ namespace StinterLogger.RaceLogging
 {
     public interface IRaceLogger
     {
-        void OnTelemetryUpdatedHandler(object sender, SdkWrapper.TelemetryUpdatedEventArgs);
-
-        //event OnTelemetryUpdatedHandler OnTelemetryUpdate;
+        event EventHandler<LapCompletedEventArgs> LapCompleted;
+        void Start();
+        void Stop();
     }
 }

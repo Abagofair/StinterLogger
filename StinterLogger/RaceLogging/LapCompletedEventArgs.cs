@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace StinterLogger.RaceLogging
 {
-    public interface IDataLogger
+    public class LapCompletedEventArgs : EventArgs
     {
-        void Enable();
-        void Disable();
+        public TelemetryLapData TelemetryLapData { get; set; }
     }
 }
