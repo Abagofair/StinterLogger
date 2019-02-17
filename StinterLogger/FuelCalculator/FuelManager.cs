@@ -24,9 +24,9 @@ namespace StinterLogger.FuelCalculator
 {
     public class FuelManager
     {
+        private const float MAX_FUEL = 999.0f;
+
         private IRaceLogger _raceLogger;
-        private bool _enabled;
-        private RaceState _raceState;
 
         public FuelModel FuelModel { get; set; }
 
@@ -35,25 +35,34 @@ namespace StinterLogger.FuelCalculator
         public FuelManager(IRaceLogger raceLogger, int graceLaps)
         {
             this._raceLogger = raceLogger;
-            this._enabled = false;
-            this._raceState = RaceState.UNKNOWN;
             this.GraceLaps = graceLaps;
+            this.FuelModel = null;
         }
 
         public event EventHandler FuelModelChange;
 
+        #region event invocations
+        private void OnFuelModelChange()
+        {
+            this.FuelModelChange?.Invoke(this, new EventArgs());
+        }
+        #endregion
+
         public void Enable()
         {
             //listen for green flag
-            this._enabled = true;
+            this.FuelModel = new FuelModel();
+            this.FuelModel.Enabled = true;
+            this.StartFuelLogging();
             this._raceLogger.RaceStateChanged += this.OnRaceStateChange;
         }
 
         public void Disable()
         {
             //restart model
-            this._enabled = false;
+            this.FuelModel.Enabled = false;
             this._raceLogger.RaceStateChanged -= this.OnRaceStateChange;
+            this.FuelModel = null;
         }
 
         public void ResetFuelData()
@@ -64,6 +73,7 @@ namespace StinterLogger.FuelCalculator
         private void StartFuelLogging()
         {
             this.ResetFuelData();
+
             this._raceLogger.LapCompleted += OnLapCompleted;
         }
 
@@ -72,6 +82,7 @@ namespace StinterLogger.FuelCalculator
             this._raceLogger.LapCompleted -= OnLapCompleted;
         }
 
+        #region listeners
         private void OnRaceStateChange(object sender, RaceStateEventArgs raceStateEventArgs)
         {
             if (raceStateEventArgs.RaceState == RaceState.GREEN)
@@ -92,49 +103,54 @@ namespace StinterLogger.FuelCalculator
             var lastReading = telemetryFromLastLap.Readings[telemetryFromLastLap.Readings.Count - 1];
 
             this.FuelModel.TotalLapTime += telemetryFromLastLap.LapTime;
-            this.FuelModel.PerLap = firstReading.FuelLevel - lastReading.FuelLevel;
+            this.FuelModel.TotalUsed += firstReading.FuelLevel - lastReading.FuelLevel;
             this.FuelModel.LapsCompleted += 1;
 
-            var remainingLaps = this.RemainingLaps((float)telemetryFromLastLap.RemainingSessionTime, this.FuelModel.TotalLapTime, this.FuelModel.LapsCompleted, this.GraceLaps);
-            this.FuelModel.AmountToAdd = this.FuelNeededToFinish(remainingLaps, this.FuelModel.PerLap);
+            this.FuelModel.PerLap = this.FuelModel.TotalUsed / this.FuelModel.LapsCompleted;
 
-            //Invoke fuelmodelchange
+            this.FuelModel.RemainingSessionTime = (float)telemetryFromLastLap.RemainingSessionTime;
+
+            this.FuelModel.InTank = lastReading.FuelLevel;
+
+            var remainingLaps = this.RemainingLaps((float)telemetryFromLastLap.RemainingSessionTime, this.FuelModel.TotalLapTime, this.FuelModel.LapsCompleted, this.GraceLaps);
+
+            this.FuelModel.AmountToAdd = Math.Abs(this.FuelNeededToFinish(remainingLaps, this.FuelModel.PerLap));
+            this.FuelModel.AmountToAdd = this.FuelModel.AmountToAdd > MAX_FUEL ? MAX_FUEL : this.FuelModel.AmountToAdd;
+
             this.OnFuelModelChange();
         }
 
-        private void OnFuelModelChange()
+        private void OnPitRoad(object sender, EventArgs eventArgs)
         {
-            this.FuelModelChange.Invoke(this, new EventArgs());
+            int cast = (int)this.FuelModel.AmountToAdd;
+            float diff = this.FuelModel.AmountToAdd - (float)cast;
+            if (diff >= 0.5f)
+            {
+                this._raceLogger.SetFuelLevelOnPitStop((int)(this.FuelModel.AmountToAdd+1));
+            }
+            else
+            {
+                this._raceLogger.SetFuelLevelOnPitStop((int)this.FuelModel.AmountToAdd);
+            }
         }
+        #endregion
 
+        #region fuel calculation
         private float FuelNeededToFinish(float remainingRaceTime, float timeRaced, float lapsCompleted, float additionalLaps, float fuelUsedPerLap)
         {
-            if (fuelUsedPerLap < 0.0f)
-            {
-                throw new ArgumentException();
-            }
-
             return RemainingLaps(remainingRaceTime, timeRaced, lapsCompleted, additionalLaps) * fuelUsedPerLap;
         }
 
         private float FuelNeededToFinish(float remainingLaps, float fuelUsedPerLap)
         {
-            if (fuelUsedPerLap < 0.0f)
-            {
-                throw new ArgumentException();
-            }
-
             return remainingLaps * fuelUsedPerLap;
         }
 
         private float RemainingLaps(float remainingRaceTime, float timeRaced, float lapsCompleted, float additionalLaps)
         {
-            if (remainingRaceTime < 0.0f || timeRaced < 0.0f || additionalLaps < 0.0f || lapsCompleted < 0.0f)
-            {
-                throw new ArgumentException();
-            }
             float averageLapTime = timeRaced / lapsCompleted;
             return (remainingRaceTime / averageLapTime) + additionalLaps;
         }
+        #endregion
     }
 }

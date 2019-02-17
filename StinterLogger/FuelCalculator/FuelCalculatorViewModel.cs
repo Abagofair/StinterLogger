@@ -12,13 +12,12 @@ namespace StinterLogger.FuelCalculator
     public class FuelCalculatorViewModel : ObservableObject, IPageViewModel
     {
         private FuelManager _fuelCalculator;
-        private bool _isEnabled;
         private ICommand _enableFuelCalculator;
 
         public FuelCalculatorViewModel()
         {
             this.Name = "Fuel Calculator";
-            this._fuelCalculator = new FuelManager(((App)Application.Current).raceLogger, 1);
+            this._fuelCalculator = ((App)Application.Current).FuelManager;
         }
 
         public string Name { get; set; }
@@ -54,12 +53,14 @@ namespace StinterLogger.FuelCalculator
         {
             if (enable == "Enable")
             {
-                this._isEnabled = true;
+                this._fuelCalculator.Enable();
             }
             else if (enable == "Disable")
             {
-                this._isEnabled = false;
+                this._fuelCalculator.Disable();
             }
+
+            OnPropertyChanged("FuelModel");
         }
     }
 }

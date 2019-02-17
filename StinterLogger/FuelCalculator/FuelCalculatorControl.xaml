@@ -27,7 +27,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Label Grid.Row="1" Grid.Column="0" Margin="5 5 5 5">Session length</Label>
-                <TextBox Text="{Binding SessionLength}" Grid.Row="1" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5"></TextBox>
+                <TextBox Text="{Binding RemainingSessionTime}" Grid.Row="1" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5"></TextBox>
 
                 <Label Grid.Row="2" Grid.Column="0" Margin="5 5 5 5">Laps completed</Label>
                 <TextBox Text="{Binding LapsCompleted}" Grid.Row="2" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5"></TextBox>
@@ -50,9 +50,6 @@
 
                 <Label Grid.Row="9" Grid.Column="0" Margin="5 5 5 5">Amount to add</Label>
                 <TextBox Text="{Binding AmountToAdd}" Grid.Row="9" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5"></TextBox>
-
-                <RadioButton GroupName="autoManual" Grid.Row="10" Grid.Column="0" Content="Auto fuel" IsChecked="True" Margin="5 5 5 5"/>
-                <RadioButton GroupName="autoManual" Grid.Row="10" Grid.Column="1" Content="Manual fuel" Margin="5 5 5 5"/>
             </Grid>
         </DataTemplate>
     </UserControl.Resources>

@@ -17,14 +17,18 @@ namespace StinterLogger
     public partial class App : Application
     {
         private ModelManager _modelManager;
+        private FuelManager _fuelManager;
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
+            this.raceLogger = new RaceLogger(4);
+
             this._modelManager = new ModelManager();
 
-            this.raceLogger = new RaceLogger(4);
+            this._fuelManager = new FuelManager(this.raceLogger, 1);
+
             this.raceLogger.Start();
 
             var vm = new ApplicationViewModel();
@@ -39,6 +43,14 @@ namespace StinterLogger
             get
             {
                 return this._modelManager;
+            }
+        }
+
+        public FuelManager FuelManager
+        {
+            get
+            {
+                return this._fuelManager;
             }
         }
 

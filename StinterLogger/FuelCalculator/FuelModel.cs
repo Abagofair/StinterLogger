@@ -129,7 +129,7 @@ namespace StinterLogger.FuelCalculator
                 if (value != this._remainingSessionTime)
                 {
                     this._remainingSessionTime = value;
-                    this.OnPropertyChanged("SessionLength");
+                    this.OnPropertyChanged("RemainingSessionTime");
                 }
             }
         }

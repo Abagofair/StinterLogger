@@ -9,46 +9,88 @@ namespace StinterLogger.RaceLogging
 {
     public class RaceLogger : IRaceLogger
     {
+        #region fields
         private SdkWrapper _sdkWrapper;
 
         private List<TelemetryLapData> _telemetryLapData = null;
+
         private TelemetryLapData _currentLap = null;
 
-        private Dictionary<LogType, bool> _whatToLog;
-
         private bool _isLapCompleted;
+
         private SessionStates _sessionState;
+
+        private int _driverId;
+        #endregion
 
         public RaceLogger(int telemetryUpdateFrequency)
         {
             this._sdkWrapper = new SdkWrapper();
+
             this._sdkWrapper.TelemetryUpdateFrequency = telemetryUpdateFrequency;
+
             this._telemetryLapData = new List<TelemetryLapData>();
+
             this._isLapCompleted = true;
+
             this._sessionState = SessionStates.Invalid;
         }
 
+        #region events
         public event EventHandler<LapCompletedEventArgs> LapCompleted;
+
         public event EventHandler<RaceStateEventArgs> RaceStateChanged;
 
+        public event EventHandler PitRoad;
+        #endregion
+
+        #region event invocations
         private void OnRaceStateChange(RaceStateEventArgs e)
         {
-            RaceStateChanged?.Invoke(this, e);
+            this.RaceStateChanged?.Invoke(this, e);
         }
 
         private void OnLapCompleted(LapCompletedEventArgs e)
         {
-            LapCompleted?.Invoke(this, e);
+            this.LapCompleted?.Invoke(this, e);
         }
 
+        public void OnPitRoad(EventArgs e)
+        {
+            this.PitRoad?.Invoke(this, e);
+        }
+        #endregion
+
+        #region public methods
+        public void Start()
+        {
+            this._sdkWrapper.Start();
+            this._driverId = this._sdkWrapper.DriverId;
+            this.RegisterTelemetryListener();
+        }
+
+        public void Stop()
+        {
+            this._sdkWrapper.Stop();
+            this.UnRegisterTelemetryListener();
+        }
+
+        public void SetFuelLevelOnPitStop(int fuelLevel)
+        {
+            this._sdkWrapper.PitCommands.AddFuel(fuelLevel);
+        }
+        #endregion
+
+        #region iracing updates
         private void OnTelemetryUpdate(object sender, SdkWrapper.TelemetryUpdatedEventArgs telemetryUpdatedEventArgs)
         {
             var state = telemetryUpdatedEventArgs.TelemetryInfo.SessionState;
             if (state.Value != _sessionState)
             {
+                _sessionState = SessionStates.Racing;
                 //the race state has changed
                 var raceState = new RaceStateEventArgs();
-                raceState.RaceState = RaceState.UNKNOWN;
+                raceState.RaceState = RaceState.GREEN;
                 if (state.Value == SessionStates.Racing)
                 {
                     raceState.RaceState = RaceState.GREEN;
@@ -67,10 +109,13 @@ namespace StinterLogger.RaceLogging
             }
 
             bool onTrack = telemetryUpdatedEventArgs.TelemetryInfo.IsOnTrack.Value;
-            bool logOnTrackReadings;
-            this._whatToLog.TryGetValue(LogType.ON_TRACK_READING, out logOnTrackReadings);
+            bool onPitRoad = false;
+            if (this._driverId > 0)
+            {
+                onPitRoad = telemetryUpdatedEventArgs.TelemetryInfo.CarIdxOnPitRoad.Value[this._driverId];
+            }
             //If the car is on track
-            if (onTrack && logOnTrackReadings)
+            if (onTrack)
             {
                 var onTrackReading = new OnTrackReading
                 {
@@ -112,6 +157,12 @@ namespace StinterLogger.RaceLogging
                     //Request session info update to fetch sector times
                     this._sdkWrapper.RequestSessionInfoUpdate();
                 }
+
+
+            }
+            else if (onPitRoad)
+            {
+                this.OnPitRoad(new EventArgs());
             }
         }
 
@@ -128,6 +179,16 @@ namespace StinterLogger.RaceLogging
                     LapTime = this._sdkWrapper.GetTelemetryValue<float>("LapLastLapTime").Value,
                     IncidentCount = telemetryUpdatedEventArgs.TelemetryInfo.PlayerCarDriverIncidentCount.Value,
                     AverageSpeed = telemetryUpdatedEventArgs.TelemetryInfo.*/
+        }
+
+        private void OnConnected(object sender, EventArgs eventArgs)
+        {
+
+        }
+
+        private void OnDisconnected(object sender, EventArgs eventArgs)
+        {
+
         }
 
         private float GetLastLapTime()
@@ -151,44 +212,6 @@ namespace StinterLogger.RaceLogging
         {
             this._sdkWrapper.TelemetryUpdated -= this.OnTelemetryUpdate;
         }
-
-        public void Start()
-        {
-            this._sdkWrapper.Start();
-            this.RegisterTelemetryListener();
-        }
-
-        public void Stop()
-        {
-            this._sdkWrapper.Stop();
-            this.UnRegisterTelemetryListener();
-        }
-
-        public void Log(LogType typeToLog, bool value)
-        {
-            if (this._whatToLog.ContainsKey(typeToLog))
-            {
-                this._whatToLog[typeToLog] = value;
-            }
-            else
-            {
-                this._whatToLog.Add(typeToLog, value);
-            }
-        }
-
-        public void EnableLoggingFor(List<LogType> typeToLog)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DisableLoggingFor(LogType typeToLog)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DisableLoggingFor(List<LogType> typeToLog)
-        {
-            throw new NotImplementedException();
-        }
+        #endregion
     }
 }
