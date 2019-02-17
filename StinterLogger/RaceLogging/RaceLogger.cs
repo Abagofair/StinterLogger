@@ -34,7 +34,22 @@ namespace StinterLogger.RaceLogging
             this._isLapCompleted = true;
 
             this._sessionState = SessionStates.Invalid;
+
+            this._sdkWrapper.Connected += OnConnected;
+
+            this._sdkWrapper.Disconnected += OnDisconnected;
         }
+
+        #region properties
+        public int DriverId
+        {
+            get
+            {
+                return this._driverId;
+            }
+
+        }
+        #endregion
 
         #region events
         public event EventHandler<LapCompletedEventArgs> LapCompleted;
@@ -42,6 +57,10 @@ namespace StinterLogger.RaceLogging
         public event EventHandler<RaceStateEventArgs> RaceStateChanged;
 
         public event EventHandler PitRoad;
+
+        public event EventHandler<DriverConnectionEventArgs> Connected;
+
+        public event EventHandler Disconnected;
         #endregion
 
         #region event invocations
@@ -59,13 +78,22 @@ namespace StinterLogger.RaceLogging
         {
             this.PitRoad?.Invoke(this, e);
         }
+
+        public void OnConnection(DriverConnectionEventArgs e)
+        {
+            this.Connected?.Invoke(this, e);
+        }
+
+        public void OnDisconnection(EventArgs e)
+        {
+            this.Disconnected?.Invoke(this, e);
+        }
         #endregion
 
         #region public methods
         public void Start()
         {
             this._sdkWrapper.Start();
-            this._driverId = this._sdkWrapper.DriverId;
             this.RegisterTelemetryListener();
         }
 
@@ -84,6 +112,7 @@ namespace StinterLogger.RaceLogging
         #region iracing updates
         private void OnTelemetryUpdate(object sender, SdkWrapper.TelemetryUpdatedEventArgs telemetryUpdatedEventArgs)
         {
+            this._driverId = this._sdkWrapper.DriverId;
             var state = telemetryUpdatedEventArgs.TelemetryInfo.SessionState;
             if (state.Value != _sessionState)
             {
@@ -109,11 +138,6 @@ namespace StinterLogger.RaceLogging
             }
 
             bool onTrack = telemetryUpdatedEventArgs.TelemetryInfo.IsOnTrack.Value;
-            bool onPitRoad = false;
-            if (this._driverId > 0)
-            {
-                onPitRoad = telemetryUpdatedEventArgs.TelemetryInfo.CarIdxOnPitRoad.Value[this._driverId];
-            }
             //If the car is on track
             if (onTrack)
             {
@@ -160,7 +184,7 @@ namespace StinterLogger.RaceLogging
 
 
             }
-            else if (onPitRoad)
+            else if (!onTrack)
             {
                 this.OnPitRoad(new EventArgs());
             }
@@ -183,12 +207,15 @@ namespace StinterLogger.RaceLogging
 
         private void OnConnected(object sender, EventArgs eventArgs)
         {
-
+            this.OnConnection(new DriverConnectionEventArgs
+            {
+                DriverId = this.DriverId
+            });
         }
 
         private void OnDisconnected(object sender, EventArgs eventArgs)
         {
-
+            this.OnDisconnection(new EventArgs());
         }
 
         private float GetLastLapTime()

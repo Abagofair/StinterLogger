@@ -25,6 +25,10 @@ namespace StinterLogger
 
             this.raceLogger = new RaceLogger(4);
 
+            this.raceLogger.Connected += this.OnRaceLoggerConnection;
+
+            this.raceLogger.Disconnected += this.OnRaceLoggerDisconnection;
+
             this._modelManager = new ModelManager();
 
             this._fuelManager = new FuelManager(this.raceLogger, 1);
@@ -36,6 +40,8 @@ namespace StinterLogger
 
             mw.DataContext = vm;
             mw.Show();
+
+            this.MainWindow.Title = "Disconnected - Driver ID: ?";
         }
 
         public ModelManager ModelManager
@@ -58,6 +64,16 @@ namespace StinterLogger
         {
             get;
             set;
+        }
+
+        public void OnRaceLoggerConnection(object sender, DriverConnectionEventArgs driverConnectionEventArgs)
+        {
+            this.MainWindow.Title = "Connected to iRacing - Driver ID: " + this.raceLogger.DriverId;
+        }
+
+        public void OnRaceLoggerDisconnection(object sender, EventArgs eventArgs)
+        {
+            this.MainWindow.Title = "Disconnected - Driver ID: ?";
         }
     }
 }

@@ -28,6 +28,8 @@ namespace StinterLogger.FuelCalculator
 
         private IRaceLogger _raceLogger;
 
+        private bool _hasPitted;
+
         public FuelModel FuelModel { get; set; }
 
         public int GraceLaps { get; set; }
@@ -37,6 +39,8 @@ namespace StinterLogger.FuelCalculator
             this._raceLogger = raceLogger;
             this.GraceLaps = graceLaps;
             this.FuelModel = null;
+            this._raceLogger.PitRoad += this.OnPitRoad;
+            this._hasPitted = false;
         }
 
         public event EventHandler FuelModelChange;
@@ -117,20 +121,26 @@ namespace StinterLogger.FuelCalculator
             this.FuelModel.AmountToAdd = Math.Abs(this.FuelNeededToFinish(remainingLaps, this.FuelModel.PerLap));
             this.FuelModel.AmountToAdd = this.FuelModel.AmountToAdd > MAX_FUEL ? MAX_FUEL : this.FuelModel.AmountToAdd;
 
+            this._hasPitted = false;
+
             this.OnFuelModelChange();
         }
 
         private void OnPitRoad(object sender, EventArgs eventArgs)
         {
-            int cast = (int)this.FuelModel.AmountToAdd;
-            float diff = this.FuelModel.AmountToAdd - (float)cast;
-            if (diff >= 0.5f)
+            if (this.FuelModel != null && !this._hasPitted)
             {
-                this._raceLogger.SetFuelLevelOnPitStop((int)(this.FuelModel.AmountToAdd+1));
-            }
-            else
-            {
-                this._raceLogger.SetFuelLevelOnPitStop((int)this.FuelModel.AmountToAdd);
+                int cast = (int)this.FuelModel.AmountToAdd;
+                float diff = this.FuelModel.AmountToAdd - (float)cast;
+                if (diff >= 0.5f)
+                {
+                    this._raceLogger.SetFuelLevelOnPitStop((int)(this.FuelModel.AmountToAdd + 1));
+                }
+                else
+                {
+                    this._raceLogger.SetFuelLevelOnPitStop((int)this.FuelModel.AmountToAdd);
+                }
+                this._hasPitted = true;
             }
         }
         #endregion

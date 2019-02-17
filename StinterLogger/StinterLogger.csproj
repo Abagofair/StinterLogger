@@ -67,6 +67,7 @@
     <Compile Include="IEntityModel.cs" />
     <Compile Include="IPageViewModel.cs" />
     <Compile Include="ModelTypes.cs" />
+    <Compile Include="RaceLogging\DriverConnectionEventArgs.cs" />
     <Compile Include="RaceLogging\IDataLogger.cs" />
     <Compile Include="RaceLogging\IRaceLogger.cs" />
     <Compile Include="RaceLogging\LapCompletedEventArgs.cs" />
