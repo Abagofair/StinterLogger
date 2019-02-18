@@ -138,6 +138,7 @@ namespace StinterLogger.RaceLogging
             }
 
             bool onTrack = telemetryUpdatedEventArgs.TelemetryInfo.IsOnTrack.Value;
+            bool onPitRoad = telemetryUpdatedEventArgs.TelemetryInfo.CarIdxOnPitRoad.Value[this.DriverId];
             //If the car is on track
             if (onTrack)
             {
@@ -181,10 +182,9 @@ namespace StinterLogger.RaceLogging
                     //Request session info update to fetch sector times
                     this._sdkWrapper.RequestSessionInfoUpdate();
                 }
-
-
             }
-            else if (!onTrack)
+
+            if (onPitRoad)
             {
                 this.OnPitRoad(new EventArgs());
             }
