@@ -8,6 +8,8 @@ namespace StinterLogger.RaceLogging.Iracing.IracingEventArgs
 {
     public class DriverConnectionEventArgs : EventArgs
     {
-        public int DriverId { get; set; }
+        public int UserId { get; set; }
+        public int DriverSessionId { get; set; }
+        public string DriverName { get; set; }
     }
 }

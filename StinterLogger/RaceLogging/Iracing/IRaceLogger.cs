@@ -26,7 +26,9 @@ namespace StinterLogger.RaceLogging.Iracing
         #endregion
 
         #region properties
-        int DriverId { get; }
+        int DriverSessionId { get; }
+
+        int UserId { get; set; }
         #endregion
     }
 }

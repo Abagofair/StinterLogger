@@ -23,7 +23,7 @@ namespace StinterLogger.RaceLogging.Iracing
 
         private SessionStates _sessionState;
 
-        private int _driverId;
+        private int _userId;
         #endregion
 
         public IracingLogger(int telemetryUpdateFrequency)
@@ -44,18 +44,28 @@ namespace StinterLogger.RaceLogging.Iracing
             this._sdkWrapper.Connected += OnConnected;
 
             this._sdkWrapper.Disconnected += OnDisconnected;
-
-            this._driverId = -1;
         }
 
         #region properties
-        public int DriverId
+        public int UserId
         {
             get
             {
-                return this._driverId;
+                return this._userId;
             }
 
+            set
+            {
+                this._userId = value;
+            }
+        }
+
+        public int DriverSessionId
+        {
+            get
+            {
+                return this._sdkWrapper.DriverId;
+            }
         }
         #endregion
 
@@ -120,7 +130,6 @@ namespace StinterLogger.RaceLogging.Iracing
         #region iracing updates
         private void OnTelemetryUpdate(object sender, SdkWrapper.TelemetryUpdatedEventArgs telemetryUpdatedEventArgs)
         {
-            this._driverId = this._sdkWrapper.DriverId;
             var state = telemetryUpdatedEventArgs.TelemetryInfo.SessionState;
             if (state.Value != _sessionState)
             {
@@ -149,7 +158,7 @@ namespace StinterLogger.RaceLogging.Iracing
             }
 
             bool onTrack = telemetryUpdatedEventArgs.TelemetryInfo.IsOnTrack.Value;
-            bool onPitRoad = telemetryUpdatedEventArgs.TelemetryInfo.CarIdxOnPitRoad.Value[this.DriverId];
+            bool onPitRoad = telemetryUpdatedEventArgs.TelemetryInfo.CarIdxOnPitRoad.Value[this._sdkWrapper.DriverId];
             //If the car is on track
             if (onTrack)
             {
@@ -203,24 +212,25 @@ namespace StinterLogger.RaceLogging.Iracing
 
         private void OnSessionUpdate(object sender, SdkWrapper.SessionInfoUpdatedEventArgs sessionInfoUpdatedEventArgs)
         {
-            //var query = sessionInfoUpdatedEventArgs.SessionInfo["SessionInfo"]["Sessions", 0]["CarIdx", 1]["UserName"];
-            //if (query.TryGetValue)
-            /*var lapCompletedEventArg = new LapCompletedEventArgs
-                {
-                    FuelInTank = telemetryUpdatedEventArgs.TelemetryInfo.FuelLevel.Value,
-                    LapNumber = telemetryUpdatedEventArgs.TelemetryInfo.Lap.Value,
-                    LapsCompleted = this._lapCount,
-                    RemainingSessionTime = telemetryUpdatedEventArgs.TelemetryInfo.SessionTimeRemain.Value,
-                    LapTime = this._sdkWrapper.GetTelemetryValue<float>("LapLastLapTime").Value,
-                    IncidentCount = telemetryUpdatedEventArgs.TelemetryInfo.PlayerCarDriverIncidentCount.Value,
-                    AverageSpeed = telemetryUpdatedEventArgs.TelemetryInfo.*/
+            var query = sessionInfoUpdatedEventArgs.SessionInfo["DriverInfo"]["DriverUserID"];
+            string userId;
+            if (!query.TryGetValue(out userId))
+            {
+                //log
+            }
+            this.UserId = Int32.Parse(userId != null ? userId : "-1");
+            this.Connected?.Invoke(this, new DriverConnectionEventArgs
+            {
+                UserId = this.UserId,
+                DriverSessionId = this.DriverSessionId
+            });
         }
 
         private void OnConnected(object sender, EventArgs eventArgs)
         {
             this.OnConnection(new DriverConnectionEventArgs
             {
-                DriverId = this.DriverId
+                UserId = this.UserId
             });
         }
 
@@ -246,11 +256,13 @@ namespace StinterLogger.RaceLogging.Iracing
         private void RegisterTelemetryListener()
         {
             this._sdkWrapper.TelemetryUpdated += this.OnTelemetryUpdate;
+            this._sdkWrapper.SessionInfoUpdated += this.OnSessionUpdate;
         }
 
         private void UnRegisterTelemetryListener()
         {
             this._sdkWrapper.TelemetryUpdated -= this.OnTelemetryUpdate;
+            this._sdkWrapper.SessionInfoUpdated -= this.OnSessionUpdate;
         }
         #endregion
     }

@@ -20,7 +20,7 @@ namespace StinterLogger.UI.MainApp
     public partial class App : Application
     {
         private FuelManager _fuelManager;
-        private IracingLogger _raceLogger;
+        private IRaceLogger _raceLogger;
 
         protected override void OnStartup(StartupEventArgs e)
         {
@@ -63,7 +63,7 @@ namespace StinterLogger.UI.MainApp
 
         public void OnRaceLoggerConnection(object sender, DriverConnectionEventArgs driverConnectionEventArgs)
         {
-            this.MainWindow.Title = "Connected to iRacing - Driver ID: " + this._raceLogger.DriverId;
+            this.MainWindow.Title = "Connected to iRacing - Driver ID: " + this._raceLogger.UserId;
         }
 
         public void OnRaceLoggerDisconnection(object sender, EventArgs eventArgs)
