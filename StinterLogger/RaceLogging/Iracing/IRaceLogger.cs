@@ -1,4 +1,5 @@
 ﻿using StinterLogger.RaceLogging.Iracing.IracingEventArgs;
+using StinterLogger.RaceLogging.Iracing.Models;
 using System;
 
 namespace StinterLogger.RaceLogging.Iracing
@@ -26,9 +27,7 @@ namespace StinterLogger.RaceLogging.Iracing
         #endregion
 
         #region properties
-        int DriverSessionId { get; }
-
-        int UserId { get; set; }
+        DriverInfo ActiveDriverInfo { get; }
         #endregion
     }
 }

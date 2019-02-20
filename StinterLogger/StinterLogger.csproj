@@ -62,16 +62,17 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="RaceLogging\Iracing\Fuel\FuelManager.cs" />
+    <Compile Include="RaceLogging\Iracing\Models\DriverInfo.cs" />
     <Compile Include="UI\FuelPage\FuelModel.cs" />
     <Compile Include="UI\MainApp\IPageViewModel.cs" />
     <Compile Include="RaceLogging\Iracing\IracingEventArgs\DriverConnectionEventArgs.cs" />
     <Compile Include="RaceLogging\Iracing\IDataLogger.cs" />
     <Compile Include="RaceLogging\Iracing\IRaceLogger.cs" />
     <Compile Include="RaceLogging\Iracing\IracingEventArgs\LapCompletedEventArgs.cs" />
-    <Compile Include="RaceLogging\Iracing\OnTrackReading.cs" />
+    <Compile Include="RaceLogging\Iracing\Models\OnTrackReading.cs" />
     <Compile Include="RaceLogging\Iracing\RaceState.cs" />
     <Compile Include="RaceLogging\Iracing\IracingEventArgs\RaceStateEventArgs.cs" />
-    <Compile Include="RaceLogging\Iracing\TelemetryLapData.cs" />
+    <Compile Include="RaceLogging\Iracing\Models\TelemetryLapData.cs" />
     <Compile Include="RaceLogging\Iracing\IracingLogger.cs" />
     <Compile Include="UI\Helpers\RelayCommand.cs" />
     <Compile Include="UI\FuelPage\FuelCalculatorViewModel.cs" />

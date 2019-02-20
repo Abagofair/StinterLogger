@@ -11,6 +11,7 @@ using System.Windows;
 using StinterLogger.RaceLogging.Iracing.Fuel;
 using StinterLogger.RaceLogging.Iracing.IracingEventArgs;
 using StinterLogger.RaceLogging.Iracing;
+using System.Text;
 
 namespace StinterLogger.UI.MainApp
 { 
@@ -63,7 +64,14 @@ namespace StinterLogger.UI.MainApp
 
         public void OnRaceLoggerConnection(object sender, DriverConnectionEventArgs driverConnectionEventArgs)
         {
-            this.MainWindow.Title = "Connected to iRacing - Driver ID: " + this._raceLogger.UserId;
+            var spacing = " - ";
+            var displayString = new StringBuilder();
+            displayString.Append("Connected");
+            displayString.Append(spacing);
+            displayString.Append("GlobalUserId: " + driverConnectionEventArgs.ActiveDriverInfo.GlobalUserId);
+            displayString.Append(spacing);
+            displayString.Append("UserName: " + driverConnectionEventArgs.ActiveDriverInfo.DriverName);
+            this.MainWindow.Title = displayString.ToString();
         }
 
         public void OnRaceLoggerDisconnection(object sender, EventArgs eventArgs)

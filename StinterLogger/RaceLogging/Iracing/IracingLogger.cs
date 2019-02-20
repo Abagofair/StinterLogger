@@ -1,5 +1,6 @@
 ﻿using iRacingSdkWrapper;
 using StinterLogger.RaceLogging.Iracing.IracingEventArgs;
+using StinterLogger.RaceLogging.Iracing.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,9 @@ namespace StinterLogger.RaceLogging.Iracing
 
         private SessionStates _sessionState;
 
-        private int _userId;
+        private DriverInfo _activeDriverInfo;
+
+        private bool _inActiveSession;
         #endregion
 
         public IracingLogger(int telemetryUpdateFrequency)
@@ -41,30 +44,19 @@ namespace StinterLogger.RaceLogging.Iracing
 
             this._sessionState = SessionStates.Invalid;
 
-            this._sdkWrapper.Connected += OnConnected;
-
             this._sdkWrapper.Disconnected += OnDisconnected;
+
+            this._activeDriverInfo = new DriverInfo();
+
+            this._inActiveSession = false;
         }
 
         #region properties
-        public int UserId
+        public DriverInfo ActiveDriverInfo
         {
             get
             {
-                return this._userId;
-            }
-
-            set
-            {
-                this._userId = value;
-            }
-        }
-
-        public int DriverSessionId
-        {
-            get
-            {
-                return this._sdkWrapper.DriverId;
+                return this._activeDriverInfo;
             }
         }
         #endregion
@@ -212,31 +204,39 @@ namespace StinterLogger.RaceLogging.Iracing
 
         private void OnSessionUpdate(object sender, SdkWrapper.SessionInfoUpdatedEventArgs sessionInfoUpdatedEventArgs)
         {
-            var query = sessionInfoUpdatedEventArgs.SessionInfo["DriverInfo"]["DriverUserID"];
-            string userId;
-            if (!query.TryGetValue(out userId))
+            if (!this._inActiveSession)
             {
-                //log
+                //even though you're connected earlier, i define the connection to be active when the first sessionInfo has been recieved
+                var globalIdQuery = sessionInfoUpdatedEventArgs.SessionInfo["DriverInfo"]["DriverUserID"];
+                string globalId = globalIdQuery.GetValue();
+                this.ActiveDriverInfo.GlobalUserId = Int32.Parse(globalId != null ? globalId : "-1");
+
+                var localIdQuery = sessionInfoUpdatedEventArgs.SessionInfo["DriverInfo"]["DriverCarIdx"];
+                string localId = localIdQuery.GetValue();
+                this.ActiveDriverInfo.LocalId = Int32.Parse(localId != null ? localId : "-1");
+
+                var usernameQuery = sessionInfoUpdatedEventArgs.SessionInfo["DriverInfo"]["Drivers"]["CarIdx", this.ActiveDriverInfo.LocalId]["UserName"];
+                string userName = usernameQuery.GetValue();
+                this.ActiveDriverInfo.DriverName = userName;
+
+                this.Connected?.Invoke(this, new DriverConnectionEventArgs
+                {
+                    ActiveDriverInfo = this.ActiveDriverInfo
+                });
+
+                this._inActiveSession = true;
             }
-            this.UserId = Int32.Parse(userId != null ? userId : "-1");
-            this.Connected?.Invoke(this, new DriverConnectionEventArgs
-            {
-                UserId = this.UserId,
-                DriverSessionId = this.DriverSessionId
-            });
         }
 
         private void OnConnected(object sender, EventArgs eventArgs)
         {
-            this.OnConnection(new DriverConnectionEventArgs
-            {
-                UserId = this.UserId
-            });
+            this.OnConnection((DriverConnectionEventArgs)eventArgs);
         }
 
         private void OnDisconnected(object sender, EventArgs eventArgs)
         {
-            this.OnDisconnection(new EventArgs());
+            this.OnDisconnection(eventArgs);
+            this._inActiveSession = false;
         }
 
         private float GetLastLapTime()
