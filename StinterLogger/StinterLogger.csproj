@@ -69,7 +69,7 @@
     <Compile Include="RaceLogging\Iracing\IDataLogger.cs" />
     <Compile Include="RaceLogging\Iracing\IRaceLogger.cs" />
     <Compile Include="RaceLogging\Iracing\IracingEventArgs\LapCompletedEventArgs.cs" />
-    <Compile Include="RaceLogging\Iracing\Models\OnTrackReading.cs" />
+    <Compile Include="RaceLogging\Iracing\Models\TelemetryReading.cs" />
     <Compile Include="RaceLogging\Iracing\RaceState.cs" />
     <Compile Include="RaceLogging\Iracing\IracingEventArgs\RaceStateEventArgs.cs" />
     <Compile Include="RaceLogging\Iracing\Models\TelemetryLapData.cs" />

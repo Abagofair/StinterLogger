@@ -155,7 +155,7 @@ namespace StinterLogger.RaceLogging.Iracing
             //If the car is on track
             if (onTrack)
             {
-                var onTrackReading = new OnTrackReading
+                var onTrackReading = new TelemetryReading
                 {
                     FuelLevel = telemetryUpdatedEventArgs.TelemetryInfo.FuelLevel.Value,
                     Incident = telemetryUpdatedEventArgs.TelemetryInfo.PlayerCarDriverIncidentCount.Value,

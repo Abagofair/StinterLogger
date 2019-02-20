@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace StinterLogger.RaceLogging.Iracing.Models
 {
-    public class OnTrackReading
+    public class TelemetryReading
     {
         public float FuelLevel { get; set; }
 

@@ -10,7 +10,7 @@ namespace StinterLogger.RaceLogging.Iracing.Models
     {
         public TelemetryLapData()
         {
-            this.Readings = new List<OnTrackReading>();
+            this.Readings = new List<TelemetryReading>();
         }
 
         public bool IsCompleted { get; set; }
@@ -23,6 +23,6 @@ namespace StinterLogger.RaceLogging.Iracing.Models
 
         public double RemainingSessionTime { get; set; }
 
-        public List<OnTrackReading> Readings { get; set; }
+        public List<TelemetryReading> Readings { get; set; }
     }
 }
