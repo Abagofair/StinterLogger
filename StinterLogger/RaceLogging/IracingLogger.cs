@@ -12,9 +12,9 @@ namespace StinterLogger.RaceLogging
         #region fields
         private SdkWrapper _sdkWrapper;
 
-        private List<TelemetryLapData> _telemetryLapData = null;
+        private List<TelemetryLapData> _telemetryLapData;
 
-        private TelemetryLapData _currentLap = null;
+        private TelemetryLapData _currentLap;
 
         private bool _isLapCompleted;
 
@@ -31,6 +31,8 @@ namespace StinterLogger.RaceLogging
 
             this._telemetryLapData = new List<TelemetryLapData>();
 
+            this._currentLap = null;
+
             this._isLapCompleted = true;
 
             this._sessionState = SessionStates.Invalid;
@@ -38,6 +40,8 @@ namespace StinterLogger.RaceLogging
             this._sdkWrapper.Connected += OnConnected;
 
             this._sdkWrapper.Disconnected += OnDisconnected;
+
+            this._driverId = -1;
         }
 
         #region properties

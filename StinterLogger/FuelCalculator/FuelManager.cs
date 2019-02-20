@@ -5,34 +5,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-/*if (((App)Application.Current).SdkWrapper.GetTelemetryValue<bool>("OnPitRoad").Value && !_onPitRoad)
-            {
-                this._onPitRoad = true;
-                if (this.FuelModel.AmountToAdd > 0)
-                {
-                    ((App)Application.Current).SdkWrapper.Chat.Activate();
-                    ((App)Application.Current).SdkWrapper.Chat.Clear();
-                    ((App)Application.Current).SdkWrapper.PitCommands.AddFuel((int)this.FuelModel.AmountToAdd);
-                }
-            }
-            else if (!((App)Application.Current).SdkWrapper.GetTelemetryValue<bool>("OnPitRoad").Value)
-            {
-                this._onPitRoad = false;
-            }*/
-
 namespace StinterLogger.FuelCalculator
 {
-    public class FuelManager
+    public class FuelManager : IDataLogger
     {
+        #region private constants
         private const float MAX_FUEL = 999.0f;
+        #endregion
 
+        #region fields
         private IRaceLogger _raceLogger;
 
         private bool _hasPitted;
-
-        public FuelModel FuelModel { get; set; }
-
-        public int GraceLaps { get; set; }
+        #endregion
 
         public FuelManager(IRaceLogger raceLogger, int graceLaps)
         {
@@ -43,7 +28,9 @@ namespace StinterLogger.FuelCalculator
             this._hasPitted = false;
         }
 
+        #region events
         public event EventHandler FuelModelChange;
+        #endregion
 
         #region event invocations
         private void OnFuelModelChange()
@@ -52,6 +39,13 @@ namespace StinterLogger.FuelCalculator
         }
         #endregion
 
+        #region properties
+        public FuelModel FuelModel { get; set; }
+
+        public int GraceLaps { get; set; }
+        #endregion
+
+        #region public methods
         public void Enable()
         {
             //listen for green flag
@@ -73,7 +67,9 @@ namespace StinterLogger.FuelCalculator
         {
             this.FuelModel = new FuelModel();
         }
+        #endregion
 
+        #region private methods
         private void StartFuelLogging()
         {
             this.ResetFuelData();
@@ -85,6 +81,7 @@ namespace StinterLogger.FuelCalculator
         {
             this._raceLogger.LapCompleted -= OnLapCompleted;
         }
+        #endregion
 
         #region listeners
         private void OnRaceStateChange(object sender, RaceStateEventArgs raceStateEventArgs)
