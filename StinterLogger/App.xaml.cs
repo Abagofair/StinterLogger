@@ -23,7 +23,7 @@ namespace StinterLogger
         {
             base.OnStartup(e);
 
-            this.raceLogger = new RaceLogger(4);
+            this.raceLogger = new IracingLogger(4);
 
             this.raceLogger.Connected += this.OnRaceLoggerConnection;
 

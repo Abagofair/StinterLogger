@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace StinterLogger.RaceLogging
 {
-    public class RaceLogger : IRaceLogger
+    public class IracingLogger : IRaceLogger
     {
         #region fields
         private SdkWrapper _sdkWrapper;
@@ -23,7 +23,7 @@ namespace StinterLogger.RaceLogging
         private int _driverId;
         #endregion
 
-        public RaceLogger(int telemetryUpdateFrequency)
+        public IracingLogger(int telemetryUpdateFrequency)
         {
             this._sdkWrapper = new SdkWrapper();
 

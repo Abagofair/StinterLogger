@@ -76,7 +76,7 @@
     <Compile Include="RaceLogging\RaceState.cs" />
     <Compile Include="RaceLogging\RaceStateEventArgs.cs" />
     <Compile Include="RaceLogging\TelemetryLapData.cs" />
-    <Compile Include="RaceLogging\RaceLogger.cs" />
+    <Compile Include="RaceLogging\IracingLogger.cs" />
     <Compile Include="RelayCommand.cs" />
     <Compile Include="FuelCalculator\FuelCalculatorViewModel.cs" />
     <Compile Include="Start\StartControl.xaml.cs">
