@@ -153,6 +153,24 @@ namespace StinterLogger.UI.FuelPage
             }
         }
 
+        private int _lapsRemaining;
+        public int LapsRemaining
+        {
+            get
+            {
+                return this._lapsRemaining;
+            }
+
+            set
+            {
+                if (value != this._lapsRemaining)
+                {
+                    this._lapsRemaining = value;
+                    this.OnPropertyChanged("LapsRemaining");
+                }
+            }
+        }
+
         private bool _enabled;
         public bool Enabled
         {
