@@ -63,6 +63,7 @@
     </ApplicationDefinition>
     <Compile Include="RaceLogging\Iracing\Fuel\FuelManager.cs" />
     <Compile Include="RaceLogging\Iracing\Models\DriverInfo.cs" />
+    <Compile Include="RaceLogging\Iracing\Models\FuelData.cs" />
     <Compile Include="UI\FuelPage\FuelModel.cs" />
     <Compile Include="UI\MainApp\IPageViewModel.cs" />
     <Compile Include="RaceLogging\Iracing\IracingEventArgs\DriverConnectionEventArgs.cs" />
