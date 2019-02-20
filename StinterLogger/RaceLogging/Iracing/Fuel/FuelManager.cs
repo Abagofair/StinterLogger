@@ -1,4 +1,6 @@
 ﻿using StinterLogger.RaceLogging;
+using StinterLogger.RaceLogging.Iracing.IracingEventArgs;
+using StinterLogger.UI.FuelPage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
