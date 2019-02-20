@@ -12,6 +12,7 @@ namespace StinterLogger.RaceLogging.Iracing
     public class IracingLogger : IRaceLogger
     {
         #region fields
+        //The class i'm wrapping
         private readonly SdkWrapper _sdkWrapper;
 
 #pragma warning disable IDE0044 // Add readonly modifier
@@ -226,11 +227,6 @@ namespace StinterLogger.RaceLogging.Iracing
 
                 this._inActiveSession = true;
             }
-        }
-
-        private void OnConnected(object sender, EventArgs eventArgs)
-        {
-            this.OnConnection((DriverConnectionEventArgs)eventArgs);
         }
 
         private void OnDisconnected(object sender, EventArgs eventArgs)
