@@ -81,24 +81,6 @@ namespace StinterLogger.UI.FuelPage
             }
         }
 
-        private float _perHour;
-        public float PerHour
-        {
-            get
-            {
-                return this._perHour;
-            }
-
-            set
-            {
-                if (value != this._perHour)
-                {
-                    this._perHour = value;
-                    this.OnPropertyChanged("PerHour");
-                }
-            }
-        }
-
         private float _amountToAdd;
         public float AmountToAdd
         {
