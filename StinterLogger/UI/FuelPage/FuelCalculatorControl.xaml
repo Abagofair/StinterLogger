@@ -1,0 +1,81 @@
+﻿<UserControl x:Class="StinterLogger.UI.FuelPage.FuelCalculatorControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:vm="clr-namespace:StinterLogger.UI.FuelPage"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <DataTemplate DataType="{x:Type vm:FuelModel}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <Label Grid.Row="1" Grid.Column="0" Margin="5 5 5 5">Session length</Label>
+                <TextBox Text="{Binding RemainingSessionTime}" Grid.Row="1" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5"></TextBox>
+
+                <Label Grid.Row="2" Grid.Column="0" Margin="5 5 5 5">Laps completed</Label>
+                <TextBox Text="{Binding LapsCompleted}" Grid.Row="2" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5"></TextBox>
+
+                <Label Grid.Row="3" Grid.Column="0" FontWeight="Bold" Margin="5 5 5 5">Fuel data</Label>
+
+                <RadioButton GroupName="fuelUnits" Grid.Row="4" Grid.Column="0" Content="Liters" IsChecked="True" Margin="5 5 5 5"/>
+                <RadioButton GroupName="fuelUnits" Grid.Row="4" Grid.Column="1" Content="Gallons" IsEnabled="False" Margin="5 5 5 5"/>
+
+                <Label Grid.Row="5" Grid.Column="0" Margin="5 5 5 5">In tank</Label>
+                <TextBox Text="{Binding InTank}" Grid.Row="5" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5" Name="InTank"></TextBox>
+
+                <Label Grid.Row="6" Grid.Column="0" Margin="5 5 5 5">Per lap</Label>
+                <TextBox Text="{Binding PerLap}" Grid.Row="6" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5"></TextBox>
+
+                <Label Grid.Row="7" Grid.Column="0" Margin="5 5 5 5">Per hour</Label>
+                <TextBox Text="{Binding PerHour}" Grid.Row="7" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5"></TextBox>
+
+                <Label Grid.Row="8" Grid.Column="0" FontWeight="Bold" Margin="5 5 5 5">Pitstop</Label>
+
+                <Label Grid.Row="9" Grid.Column="0" Margin="5 5 5 5">Amount to add</Label>
+                <TextBox Text="{Binding AmountToAdd}" Grid.Row="9" Grid.Column="1" IsEnabled="False" Margin="5 5 5 5"></TextBox>
+            </Grid>
+        </DataTemplate>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="75"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition SharedSizeGroup="True" Width="*"/>
+            <ColumnDefinition SharedSizeGroup="True" Width="*"/> 
+        </Grid.ColumnDefinitions>
+
+        <Border>
+            <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <RadioButton FontSize="18" Name="EnableFuel" IsChecked="False" GroupName="enableDisable" 
+                             Content="Enable" DockPanel.Dock="Left"
+                             Command="{Binding Path=EnableFuelCalculator}"
+                             CommandParameter="{Binding ElementName=EnableFuel, Path=Content}" Margin="10 10 10 10"/>
+                <RadioButton FontSize="18" Name="DisableFuel" IsChecked="True" GroupName="enableDisable" 
+                             Content="Disable" DockPanel.Dock="Right"
+                             Command="{Binding Path=EnableFuelCalculator}"
+                             CommandParameter="{Binding ElementName=DisableFuel, Path=Content}" Margin="10 10 10 10"/>
+            </DockPanel>
+        </Border>
+        
+        <ContentControl VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" FontSize="14" FontFamily="Verdana" Content="{Binding Path=FuelModel}"></ContentControl>
+    </Grid>
+</UserControl>
