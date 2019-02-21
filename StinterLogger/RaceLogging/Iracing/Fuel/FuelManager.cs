@@ -58,7 +58,7 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         public void Enable()
         {
             //listen for green flag
-            this.FuelData = new FuelData();
+            ResetFuelData();
             this.StartFuelLogging();
             this._raceLogger.RaceStateChanged += this.OnRaceStateChange;
         }
@@ -73,6 +73,7 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         public void ResetFuelData()
         {
             this.FuelData = new FuelData();
+            this.FuelData.Units = this._raceLogger.ActiveDriverInfo.Units;
         }
         #endregion
 

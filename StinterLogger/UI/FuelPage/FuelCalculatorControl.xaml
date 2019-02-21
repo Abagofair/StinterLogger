@@ -54,8 +54,8 @@
                 <Label Grid.Row="4" Grid.Column="0" FontWeight="Bold" Margin="5 5 5 0">Fuel data</Label>
 
                 <Label Grid.Row="5" Grid.Column="0" FontWeight="Bold" FontSize="10" Margin="5 0 5 5">Fuel units</Label>
-                <RadioButton GroupName="fuelUnits" Grid.Row="6" Grid.Column="0" Content="Liters" IsChecked="True" IsEnabled="False" Margin="10 5 5 5" FontSize="9"/>
-                <RadioButton GroupName="fuelUnits" Grid.Row="6" Grid.Column="1" Content="Gallons" IsEnabled="False" Margin="0 5 5 5" FontSize="9"/>
+                <RadioButton GroupName="fuelUnits" Grid.Row="6" Grid.Column="0" Content="Liters" IsChecked="{Binding Liters}" IsEnabled="False" Margin="10 5 5 5" FontSize="9"/>
+                <RadioButton GroupName="fuelUnits" Grid.Row="6" Grid.Column="1" Content="Gallons" IsChecked="{Binding Gallons}" IsEnabled="False" Margin="0 5 5 5" FontSize="9"/>
                 
                 <Label Grid.Row="7" Grid.Column="0" Margin="5 5 5 5" FontSize="11">In tank</Label>
                 <TextBox Text="{Binding InTank}" Grid.Row="7" Grid.Column="1" IsEnabled="False" Margin="0 5 5 5" Name="InTank"></TextBox>

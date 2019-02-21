@@ -16,14 +16,24 @@ namespace StinterLogger.UI.FuelPage
         public FuelModel(FuelData fuelData)
         {
             this.InTank = fuelData.FuelInTank;
+
             this.LapsCompleted = fuelData.LapsCompleted;
+
             this.LapsRemaining = fuelData.LapsRemaining;
+
             this.PerLap = fuelData.FuelUsagePerLap;
+
             this.TotalLapTime = fuelData.TotalRaceTime;
+
             this.TotalUsed = fuelData.TotalFuelUsed;
+
             this.AmountToAdd = fuelData.FuelToFinish;
+
             this.RemainingSessionTime = fuelData.RemainingRacetime;
-            this.Units = false;
+
+            this.Liters = fuelData.Units;
+
+            this.Gallons = !fuelData.Units;
         }
 
         private float _inTank;
@@ -188,20 +198,38 @@ namespace StinterLogger.UI.FuelPage
             }
         }
 
-        private bool _units;
-        public bool Units
+        private bool _liters;
+        public bool Liters
         {
             get
             {
-                return this._units;
+                return this._liters;
             }
 
             set
             {
-                if (value != this._units)
+                if (value != this._liters)
                 {
-                    this._units = value;
-                    this.OnPropertyChanged("Units");
+                    this._liters = value;
+                    this.OnPropertyChanged("Liters");
+                }
+            }
+        }
+
+        private bool _gallons;
+        public bool Gallons
+        {
+            get
+            {
+                return this._gallons;
+            }
+
+            set
+            {
+                if (value != this._gallons)
+                {
+                    this._gallons = value;
+                    this.OnPropertyChanged("Gallons");
                 }
             }
         }

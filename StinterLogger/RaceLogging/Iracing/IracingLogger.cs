@@ -220,6 +220,8 @@ namespace StinterLogger.RaceLogging.Iracing
                 string userName = usernameQuery.GetValue();
                 this.ActiveDriverInfo.DriverName = userName;
 
+                this.ActiveDriverInfo.Units = this._sdkWrapper.GetTelemetryValue<int>("DisplayUnits").Value > 0 ? true : false;
+
                 this.Connected?.Invoke(this, new DriverConnectionEventArgs
                 {
                     ActiveDriverInfo = this.ActiveDriverInfo

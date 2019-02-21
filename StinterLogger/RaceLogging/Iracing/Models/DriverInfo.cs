@@ -11,5 +11,6 @@ namespace StinterLogger.RaceLogging.Iracing.Models
         public int GlobalUserId { get; set; }
         public int LocalId { get; set; }
         public string DriverName { get; set; }
+        public bool Units { get; set; }
     }
 }

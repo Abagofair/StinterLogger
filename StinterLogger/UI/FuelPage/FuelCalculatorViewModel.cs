@@ -1,5 +1,6 @@
 ﻿using StinterLogger.RaceLogging.Iracing;
 using StinterLogger.RaceLogging.Iracing.IracingEventArgs;
+using StinterLogger.RaceLogging.Iracing.Models;
 using StinterLogger.UI.Helpers;
 using StinterLogger.UI.MainApp;
 using System.Windows;
@@ -57,7 +58,7 @@ namespace StinterLogger.UI.FuelPage
             if (enable == "Enable")
             {
                 this._fuelCalculator.Enable();
-                this._fuelModel = new FuelModel();
+                this._fuelModel = new FuelModel((FuelData)this._fuelCalculator.DataModel);
                 this._fuelModel.Enabled = true;
 
             }
