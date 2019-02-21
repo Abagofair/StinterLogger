@@ -1,6 +1,6 @@
 ﻿using iRacingSdkWrapper;
 using StinterLogger.RaceLogging.Iracing.IracingEventArgs;
-using StinterLogger.RaceLogging.Iracing.Models;
+using StinterLogger.RaceLogging.Iracing.Fuel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -220,7 +220,7 @@ namespace StinterLogger.RaceLogging.Iracing
                 string userName = usernameQuery.GetValue();
                 this.ActiveDriverInfo.DriverName = userName;
 
-                this.ActiveDriverInfo.Units = this._sdkWrapper.GetTelemetryValue<int>("DisplayUnits").Value > 0 ? true : false;
+                this.ActiveDriverInfo.Unit = this._sdkWrapper.GetTelemetryValue<int>("DisplayUnits").Value > 0 ? FuelUnit.Liters : FuelUnit.Gallons;
 
                 this.Connected?.Invoke(this, new DriverConnectionEventArgs
                 {

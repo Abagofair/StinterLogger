@@ -62,9 +62,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="RaceLogging\Iracing\Fuel\FuelManager.cs" />
+    <Compile Include="RaceLogging\Iracing\Fuel\FuelUnit.cs" />
     <Compile Include="RaceLogging\Iracing\IracingEventArgs\FuelDataEventArgs.cs" />
     <Compile Include="RaceLogging\Iracing\Models\DriverInfo.cs" />
-    <Compile Include="RaceLogging\Iracing\Models\FuelData.cs" />
+    <Compile Include="RaceLogging\Iracing\Fuel\FuelData.cs" />
     <Compile Include="RaceLogging\Iracing\Models\IDataModel.cs" />
     <Compile Include="UI\FuelPage\FuelModel.cs" />
     <Compile Include="UI\MainApp\IPageViewModel.cs" />

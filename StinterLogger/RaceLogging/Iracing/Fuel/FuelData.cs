@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StinterLogger.RaceLogging.Iracing.Models
+namespace StinterLogger.RaceLogging.Iracing.Fuel
 {
     public class FuelData : IDataModel
     {
@@ -15,7 +15,12 @@ namespace StinterLogger.RaceLogging.Iracing.Models
 
         private float ConvertData(float value)
         {
-            return Units ? value : value * LITERS_TO_GALLONS;
+            var convertedValue = value;
+            if (this.Unit == FuelUnit.Gallons)
+            {
+                convertedValue *= LITERS_TO_GALLONS;
+            }
+            return convertedValue;
         }
 
         private float _fuelInTank;
@@ -69,8 +74,8 @@ namespace StinterLogger.RaceLogging.Iracing.Models
         public int LapsCompleted { get; set; }
 
         public int LapsRemaining { get; set; }
-
-        public bool Units { get; set; }
+        
+        public FuelUnit Unit { get; set; }
 
         public Guid Guid => throw new NotImplementedException();
     }

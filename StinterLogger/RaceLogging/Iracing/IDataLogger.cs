@@ -1,4 +1,4 @@
-﻿using StinterLogger.RaceLogging.Iracing.Models;
+﻿using StinterLogger.RaceLogging.Iracing.Fuel;
 using System;
 using System.Collections.Generic;
 using System.Linq;

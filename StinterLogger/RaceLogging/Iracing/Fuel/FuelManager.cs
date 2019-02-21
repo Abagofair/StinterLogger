@@ -1,6 +1,6 @@
 ﻿using StinterLogger.RaceLogging;
 using StinterLogger.RaceLogging.Iracing.IracingEventArgs;
-using StinterLogger.RaceLogging.Iracing.Models;
+using StinterLogger.RaceLogging.Iracing.Fuel;
 using StinterLogger.UI.FuelPage;
 using System;
 using System.Collections.Generic;
@@ -73,7 +73,7 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         public void ResetFuelData()
         {
             this.FuelData = new FuelData();
-            this.FuelData.Units = this._raceLogger.ActiveDriverInfo.Units;
+            this.FuelData.Unit = this._raceLogger.ActiveDriverInfo.Unit;
         }
         #endregion
 

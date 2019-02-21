@@ -1,5 +1,5 @@
 ﻿using StinterLogger.RaceLogging.Iracing.IracingEventArgs;
-using StinterLogger.RaceLogging.Iracing.Models;
+using StinterLogger.RaceLogging.Iracing.Fuel;
 using System;
 
 namespace StinterLogger.RaceLogging.Iracing

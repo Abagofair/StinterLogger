@@ -1,6 +1,6 @@
 ﻿using StinterLogger.RaceLogging.Iracing;
 using StinterLogger.RaceLogging.Iracing.IracingEventArgs;
-using StinterLogger.RaceLogging.Iracing.Models;
+using StinterLogger.RaceLogging.Iracing.Fuel;
 using StinterLogger.UI.Helpers;
 using StinterLogger.UI.MainApp;
 using System.Windows;

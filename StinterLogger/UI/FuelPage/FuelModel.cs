@@ -1,4 +1,4 @@
-﻿using StinterLogger.RaceLogging.Iracing.Models;
+﻿using StinterLogger.RaceLogging.Iracing.Fuel;
 using StinterLogger.UI.Helpers;
 using System;
 using System.Collections.Generic;
@@ -31,9 +31,9 @@ namespace StinterLogger.UI.FuelPage
 
             this.RemainingSessionTime = fuelData.RemainingRacetime;
 
-            this.Liters = fuelData.Units;
+            this.Liters = fuelData.Unit == FuelUnit.Liters ? true : false;
 
-            this.Gallons = !fuelData.Units;
+            this.Gallons = !this.Liters;
         }
 
         private float _inTank;

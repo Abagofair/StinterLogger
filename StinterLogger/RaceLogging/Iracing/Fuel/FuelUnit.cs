@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace StinterLogger.RaceLogging.Iracing.Fuel
 {
-    public interface IDataModel
+    public enum FuelUnit
     {
-        Guid Guid { get; }
+        Liters, Gallons
     }
 }

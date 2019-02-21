@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace StinterLogger.RaceLogging.Iracing.Models
+namespace StinterLogger.RaceLogging.Iracing.Fuel
 {
     public class TelemetryLapData
     {
