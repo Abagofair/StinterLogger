@@ -19,7 +19,7 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         #region fields
         private IRaceLogger _raceLogger;
 
-        private bool _hasPitted;
+        private bool _outLap;
         #endregion
 
         public FuelManager(IRaceLogger raceLogger, int graceLaps)
@@ -28,7 +28,7 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
             this.GraceLaps = graceLaps;
             this.FuelData = null;
             this._raceLogger.PitRoad += this.OnPitRoad;
-            this._hasPitted = false;
+            this._outLap = false;
         }
 
         #region events
@@ -60,13 +60,14 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
             //listen for green flag
             ResetFuelData();
             this.StartFuelLogging();
-            this._raceLogger.RaceStateChanged += this.OnRaceStateChange;
+            //this._raceLogger.RaceStateChanged += this.OnRaceStateChange;
         }
 
         public void Disable()
         {
             //restart model
-            this._raceLogger.RaceStateChanged -= this.OnRaceStateChange;
+            this.StopFuelLogging();
+            //this._raceLogger.RaceStateChanged -= this.OnRaceStateChange;
             this.FuelData = null;
         }
 
@@ -81,7 +82,6 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         private void StartFuelLogging()
         {
             this.ResetFuelData();
-
             this._raceLogger.LapCompleted += OnLapCompleted;
         }
 
@@ -128,7 +128,7 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
             this.FuelData.FuelToFinish = Math.Abs(this.FuelNeededToFinish(remainingLaps, this.FuelData.TotalFuelUsed));
             this.FuelData.FuelToFinish = this.FuelData.FuelToFinish > MAX_FUEL ? MAX_FUEL : this.FuelData.FuelToFinish;
 
-            this._hasPitted = false;
+            this._outLap = false;
 
             this.OnFuelModelChange(new FuelDataEventArgs
             {
@@ -138,7 +138,7 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
 
         private void OnPitRoad(object sender, EventArgs eventArgs)
         {
-            if (this.FuelData != null && !this._hasPitted)
+            if (this.FuelData != null && !this._outLap)
             {
                 int cast = (int)this.FuelData.FuelToFinish;
                 float diff = this.FuelData.FuelToFinish - (float)cast;
@@ -150,7 +150,7 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
                 {
                     this._raceLogger.SetFuelLevelOnPitStop((int)this.FuelData.FuelToFinish);
                 }
-                this._hasPitted = true;
+                this._outLap = true;
             }
         }
         #endregion
