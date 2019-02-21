@@ -1,4 +1,5 @@
-﻿using StinterLogger.UI.Helpers;
+﻿using StinterLogger.RaceLogging.Iracing.Models;
+using StinterLogger.UI.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,22 @@ namespace StinterLogger.UI.FuelPage
 {
     public class FuelModel : ObservableObject
     {
+        public FuelModel()
+        { }
+
+        public FuelModel(FuelData fuelData)
+        {
+            this.InTank = fuelData.FuelInTank;
+            this.LapsCompleted = fuelData.LapsCompleted;
+            this.LapsRemaining = fuelData.LapsRemaining;
+            this.PerLap = fuelData.FuelUsagePerLap;
+            this.TotalLapTime = fuelData.TotalRaceTime;
+            this.TotalUsed = fuelData.TotalFuelUsed;
+            this.AmountToAdd = fuelData.FuelToFinish;
+            this.RemainingSessionTime = fuelData.RemainingRacetime;
+            this.Units = false;
+        }
+
         private float _inTank;
         public float InTank
         {

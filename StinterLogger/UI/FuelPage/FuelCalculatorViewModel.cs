@@ -1,4 +1,5 @@
-﻿using StinterLogger.RaceLogging.Iracing.Fuel;
+﻿using StinterLogger.RaceLogging.Iracing;
+using StinterLogger.RaceLogging.Iracing.IracingEventArgs;
 using StinterLogger.UI.Helpers;
 using StinterLogger.UI.MainApp;
 using System.Windows;
@@ -8,13 +9,17 @@ namespace StinterLogger.UI.FuelPage
 {
     public class FuelCalculatorViewModel : ObservableObject, IPageViewModel
     {
-        private FuelManager _fuelCalculator;
+        private IDataLogger<FuelDataEventArgs> _fuelCalculator;
+
         private ICommand _enableFuelCalculator;
+
+        private FuelModel _fuelModel;
 
         public FuelCalculatorViewModel()
         {
             this.Name = "Fuel Calculator";
             this._fuelCalculator = ((App)Application.Current).FuelManager;
+            this._fuelCalculator.OnDataModelChange += this.OnFuelModelChange;
         }
 
         public string Name { get; set; }
@@ -23,7 +28,7 @@ namespace StinterLogger.UI.FuelPage
         {
             get
             {
-                return this._fuelCalculator.FuelModel;
+                return this._fuelModel;
             }
         }
 
@@ -41,8 +46,9 @@ namespace StinterLogger.UI.FuelPage
             }
         }
 
-        private void OnFuelModelChange()
+        private void OnFuelModelChange(object sender, FuelDataEventArgs fuelDataEventArgs)
         {
+            this._fuelModel = new FuelModel(fuelDataEventArgs.FuelData);
             OnPropertyChanged("FuelModel");
         }
 
@@ -51,10 +57,14 @@ namespace StinterLogger.UI.FuelPage
             if (enable == "Enable")
             {
                 this._fuelCalculator.Enable();
+                this._fuelModel = new FuelModel();
+                this._fuelModel.Enabled = true;
+
             }
             else if (enable == "Disable")
             {
                 this._fuelCalculator.Disable();
+                this._fuelModel = null;
             }
 
             OnPropertyChanged("FuelModel");

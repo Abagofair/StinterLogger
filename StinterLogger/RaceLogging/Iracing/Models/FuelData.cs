@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace StinterLogger.RaceLogging.Iracing.Models
 {
-    public class FuelData
+    public class FuelData : IDataModel
     {
         public float FuelInTank { get; set; }
 
@@ -25,5 +25,7 @@ namespace StinterLogger.RaceLogging.Iracing.Models
         public int LapsRemaining { get; set; }
 
         public bool Units { get; set; }
+
+        public Guid Guid => throw new NotImplementedException();
     }
 }
