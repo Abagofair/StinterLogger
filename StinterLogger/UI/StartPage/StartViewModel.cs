@@ -5,11 +5,11 @@ namespace StinterLogger.UI.StartPage
 {
     public class StartViewModel : ObservableObject, IPageViewModel
     {
-        public string Name { get; set; }
-
         public StartViewModel()
         {
             this.Name = "Start";
         }
+
+        public string Name { get; set; }
     }
 }

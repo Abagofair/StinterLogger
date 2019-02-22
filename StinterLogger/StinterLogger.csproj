@@ -110,6 +110,10 @@
     <Compile Include="RaceLogging\Iracing\Models\DriverInfo.cs" />
     <Compile Include="RaceLogging\Iracing\Fuel\FuelManagerData.cs" />
     <Compile Include="RaceLogging\Iracing\Models\IDataModel.cs" />
+    <Compile Include="UI\DebugPage\DebugControl.xaml.cs">
+      <DependentUpon>DebugControl.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UI\DebugPage\DebugViewModel.cs" />
     <Compile Include="UI\FuelPage\FuelModel.cs" />
     <Compile Include="UI\MainApp\IPageViewModel.cs" />
     <Compile Include="RaceLogging\Iracing\IracingEventArgs\DriverConnectionEventArgs.cs" />
@@ -127,6 +131,10 @@
       <DependentUpon>StartControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\StartPage\StartViewModel.cs" />
+    <Page Include="UI\DebugPage\DebugControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UI\FuelPage\FuelCalculatorControl.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

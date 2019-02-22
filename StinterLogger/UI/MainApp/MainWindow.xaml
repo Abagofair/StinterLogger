@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:fuel="clr-namespace:StinterLogger.UI.FuelPage"
         xmlns:start="clr-namespace:StinterLogger.UI.StartPage"
+        xmlns:debug="clr-namespace:StinterLogger.UI.DebugPage"
         mc:Ignorable="d"
         Title="Stinter" Height="600" Width="600"
         ResizeMode="CanMinimize"
@@ -16,6 +17,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type start:StartViewModel}">
             <start:StartControl />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type debug:DebugViewModel}">
+            <debug:DebugControl />
         </DataTemplate>
     </Window.Resources>
     <DockPanel>

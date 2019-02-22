@@ -1,4 +1,5 @@
-﻿using StinterLogger.UI.FuelPage;
+﻿using StinterLogger.UI.DebugPage;
+using StinterLogger.UI.FuelPage;
 using StinterLogger.UI.Helpers;
 using StinterLogger.UI.StartPage;
 using System.Collections.Generic;
@@ -23,9 +24,10 @@ namespace StinterLogger.UI.MainApp
             // Add available pages
             PageViewModels.Add(new StartViewModel());
             PageViewModels.Add(new FuelCalculatorViewModel());
+            PageViewModels.Add(new DebugViewModel());
 
             // Set starting page
-            CurrentPageViewModel = PageViewModels[1];
+            CurrentPageViewModel = PageViewModels[0];
         }
 
         #region Properties / Commands
