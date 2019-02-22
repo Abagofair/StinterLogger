@@ -43,9 +43,15 @@ namespace StinterLogger.UI.MainApp
                 DataContext = vm
             };
 
+            mw.Closing += this.WindowClosing;
             mw.Show();
 
             this.MainWindow.Title = "Disconnected - Driver ID: ?";
+        }
+
+        private void WindowClosing(object sender, EventArgs eventArgs)
+        {
+            this._raceLogger.Stop();
         }
 
         public FuelManager FuelManager
