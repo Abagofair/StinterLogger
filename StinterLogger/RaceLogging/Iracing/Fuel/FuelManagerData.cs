@@ -6,12 +6,21 @@ using System.Threading.Tasks;
 
 namespace StinterLogger.RaceLogging.Iracing.Fuel
 {
-    public class FuelData : IDataModel
+    public class FuelManagerData : IDataModel
     {
         private const float LITERS_TO_GALLONS = 0.264172052f;
 
         //If units is false, data is needed in gallons.
         //The underlying representation is still metric.
+
+        public FuelManagerData()
+        {
+            this.GraceOption = new GraceOption
+            {
+                Mode = GraceMode.Lap,
+                Value = 1.0f
+            };
+        }
 
         private float ConvertData(float value)
         {
@@ -76,6 +85,8 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         public int LapsRemaining { get; set; }
         
         public FuelUnit Unit { get; set; }
+
+        public GraceOption GraceOption { get; set; }
 
         public Guid Guid => throw new NotImplementedException();
     }

@@ -13,7 +13,12 @@ namespace StinterLogger.UI.FuelPage
         public FuelModel()
         { }
 
-        public FuelModel(FuelData fuelData)
+        public FuelModel(FuelManagerData fuelData)
+        {
+            this.SetValues(fuelData);
+        }
+
+        public void SetValues(FuelManagerData fuelData)
         {
             this.InTank = fuelData.FuelInTank;
 
@@ -31,9 +36,32 @@ namespace StinterLogger.UI.FuelPage
 
             this.RemainingSessionTime = fuelData.RemainingRacetime;
 
-            this.Liters = fuelData.Unit == FuelUnit.Liters ? true : false;
+            this.Liters = false;
+            this.Gallons = false;
+            if (fuelData.Unit == FuelUnit.Liters)
+            {
+                this.Liters = true;
+                this.Gallons = false;
+            }
+            else if (fuelData.Unit == FuelUnit.Gallons)
+            {
+                this.Liters = false;
+                this.Gallons = true;
+            }
 
-            this.Gallons = !this.Liters;
+            this.GraceLaps = false;
+            this.GracePercent = false;
+            this.GraceValue = fuelData.GraceOption.Value;
+            if (fuelData.GraceOption.Mode == GraceMode.Lap)
+            {
+                this.GraceLaps = true;
+                this.GracePercent = false;
+            }
+            else if (fuelData.GraceOption.Mode == GraceMode.Percent)
+            {
+                this.GraceLaps = false;
+                this.GracePercent = true;
+            }
         }
 
         private float _inTank;
@@ -230,6 +258,60 @@ namespace StinterLogger.UI.FuelPage
                 {
                     this._gallons = value;
                     this.OnPropertyChanged("Gallons");
+                }
+            }
+        }
+
+        private bool _gracePercent;
+        public bool GracePercent
+        {
+            get
+            {
+                return this._gracePercent;
+            }
+
+            set
+            {
+                if (value != this._gracePercent)
+                {
+                    this._gracePercent = value;
+                    this.OnPropertyChanged("GracePercent");
+                }
+            }
+        }
+
+        private bool _graceLaps;
+        public bool GraceLaps
+        {
+            get
+            {
+                return this._graceLaps;
+            }
+
+            set
+            {
+                if (value != this._graceLaps)
+                {
+                    this._graceLaps = value;
+                    this.OnPropertyChanged("GraceLaps");
+                }
+            }
+        }
+
+        private float _graceValue;
+        public float GraceValue
+        {
+            get
+            {
+                return this._graceValue;
+            }
+
+            set
+            {
+                if (value != this._graceValue)
+                {
+                    this._graceValue = value;
+                    this.OnPropertyChanged("GraceValue");
                 }
             }
         }

@@ -49,7 +49,12 @@ namespace StinterLogger.UI.FuelPage
 
         private void OnFuelModelChange(object sender, FuelDataEventArgs fuelDataEventArgs)
         {
-            this._fuelModel = new FuelModel(fuelDataEventArgs.FuelData);
+            if (fuelDataEventArgs.FuelData.GraceOption.Value != this._fuelModel.GraceValue)
+            {
+                ((FuelManager)_fuelCalculator).SetGraceValue(this._fuelModel.GraceValue);
+            }
+
+            this._fuelModel.SetValues(fuelDataEventArgs.FuelData);
             OnPropertyChanged("FuelModel");
         }
 
@@ -58,7 +63,7 @@ namespace StinterLogger.UI.FuelPage
             if (enable == "Enable")
             {
                 this._fuelCalculator.Enable();
-                this._fuelModel = new FuelModel((FuelData)this._fuelCalculator.DataModel);
+                this._fuelModel = new FuelModel((FuelManagerData)this._fuelCalculator.DataModel);
                 this._fuelModel.Enabled = true;
 
             }

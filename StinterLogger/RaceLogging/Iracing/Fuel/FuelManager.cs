@@ -25,7 +25,6 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         public FuelManager(IRaceLogger raceLogger, int graceLaps)
         {
             this._raceLogger = raceLogger;
-            this.GraceLaps = graceLaps;
             this.FuelData = null;
             this._raceLogger.PitRoad += this.OnPitRoad;
             this._outLap = false;
@@ -43,9 +42,7 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         #endregion
 
         #region properties
-        private FuelData FuelData { get; set; }
-
-        public int GraceLaps { get; set; }
+        private FuelManagerData FuelData { get; set; }
 
         public IDataModel DataModel
         {
@@ -73,8 +70,13 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
 
         public void ResetFuelData()
         {
-            this.FuelData = new FuelData();
+            this.FuelData = new FuelManagerData();
             this.FuelData.Unit = this._raceLogger.ActiveDriverInfo.Unit;
+        }
+
+        public void SetGraceValue(float value)
+        {
+            this.FuelData.GraceOption.Value = value;
         }
         #endregion
 
@@ -121,7 +123,7 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
 
             this.FuelData.FuelInTank = lastReading.FuelLevel;
 
-            var remainingLaps = this.RemainingLaps((float)telemetryFromLastLap.RemainingSessionTime, this.FuelData.TotalRaceTime, this.FuelData.LapsCompleted, this.GraceLaps);
+            var remainingLaps = this.RemainingLaps((float)telemetryFromLastLap.RemainingSessionTime, this.FuelData.TotalRaceTime, this.FuelData.LapsCompleted);
 
             this.FuelData.LapsRemaining = (int)remainingLaps;
 
@@ -156,20 +158,36 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         #endregion
 
         #region fuel calculation
-        private float FuelNeededToFinish(float remainingRaceTime, float timeRaced, float lapsCompleted, float additionalLaps, float fuelUsedPerLap)
+        private float GraceFuel(float exactFuelNeeded, float graceValue, GraceMode graceMode, float FuelPerLap)
         {
-            return RemainingLaps(remainingRaceTime, timeRaced, lapsCompleted, additionalLaps) * fuelUsedPerLap;
+            float fuelNeeded = exactFuelNeeded;
+            if (graceMode == GraceMode.Lap)
+            {
+                fuelNeeded += graceValue * FuelPerLap;
+            }
+            else if (graceMode == GraceMode.Percent)
+            {
+                fuelNeeded += fuelNeeded * (graceValue / 100.0f);
+            }
+
+            return fuelNeeded;
+        }
+
+        private float FuelNeededToFinish(float remainingRaceTime, float timeRaced, float lapsCompleted, float fuelUsedPerLap)
+        {
+            return RemainingLaps(remainingRaceTime, timeRaced, lapsCompleted) * fuelUsedPerLap;
         }
 
         private float FuelNeededToFinish(float remainingLaps, float fuelUsedPerLap)
         {
-            return remainingLaps * fuelUsedPerLap;
+            float exactValue = remainingLaps * fuelUsedPerLap;
+            return GraceFuel(exactValue, this.FuelData.GraceOption.Value, this.FuelData.GraceOption.Mode, this.FuelData.FuelUsagePerLap);
         }
 
-        private float RemainingLaps(float remainingRaceTime, float timeRaced, float lapsCompleted, float additionalLaps)
+        private float RemainingLaps(float remainingRaceTime, float timeRaced, float lapsCompleted)
         {
             float averageLapTime = timeRaced / lapsCompleted;
-            return (remainingRaceTime / averageLapTime) + additionalLaps;
+            return (remainingRaceTime / averageLapTime);
         }
         #endregion
     }

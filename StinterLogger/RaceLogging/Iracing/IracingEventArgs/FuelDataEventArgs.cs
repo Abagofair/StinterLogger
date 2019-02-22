@@ -5,6 +5,6 @@ namespace StinterLogger.RaceLogging.Iracing.IracingEventArgs
 {
     public class FuelDataEventArgs : EventArgs
     {
-        public FuelData FuelData { get; set; }
+        public FuelManagerData FuelData { get; set; }
     }
 }
