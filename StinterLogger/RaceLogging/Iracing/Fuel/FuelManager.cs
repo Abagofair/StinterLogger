@@ -157,9 +157,6 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         }
         #endregion
 
-        #region capture event args
-        #endregion
-
         #region fuel calculation
         private float GraceFuel(float exactFuelNeeded, float graceValue, GraceMode graceMode, float FuelPerLap)
         {
@@ -184,10 +181,10 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         private float FuelNeededToFinish(float remainingLaps, float fuelUsedPerLap, float fuelInTank)
         {
             float exactValue = remainingLaps * fuelUsedPerLap;
-            float extraFuelNeeded = GraceFuel(exactValue, this.FuelData.GraceOption.Value, this.FuelData.GraceOption.Mode, this.FuelData.FuelUsagePerLap);
-            float howMuchFuel = (exactValue + extraFuelNeeded) - fuelInTank;
+            float extraFuel = GraceFuel(exactValue, this.FuelData.GraceOption.Value, this.FuelData.GraceOption.Mode, this.FuelData.FuelUsagePerLap);
+            float fuelNeeded = (exactValue + extraFuel) - fuelInTank;
 
-            return howMuchFuel > 0.0f ? howMuchFuel : 0.0f;
+            return fuelNeeded > 0.0f ? fuelNeeded : 0.0f;
         }
 
         private float RemainingLaps(float remainingRaceTime, float timeRaced, float lapsCompleted)
