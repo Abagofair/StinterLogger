@@ -7,6 +7,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StinterLogger.RaceLogging.Iracing.Debug;
+using System.Windows;
+using StinterLogger.UI.MainApp;
 
 namespace StinterLogger.RaceLogging.Iracing.Fuel
 {
@@ -19,15 +22,22 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         #region fields
         private IRaceLogger _raceLogger;
 
+        private DebugLogger _debugLogger;
+
         private bool _outLap;
         #endregion
 
         public FuelManager(IRaceLogger raceLogger, int graceLaps)
         {
             this._raceLogger = raceLogger;
+
             this.FuelData = null;
+
             this._raceLogger.PitRoad += this.OnPitRoad;
+
             this._outLap = false;
+
+            this._debugLogger = ((App)Application.Current).DebugLogger;
         }
 
         #region events
@@ -57,6 +67,7 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
             //listen for green flag
             ResetFuelData();
             this.StartFuelLogging();
+            this._debugLogger.CreateDebugLog("Started fuel logging", DebugLogType.Data);
             //this._raceLogger.RaceStateChanged += this.OnRaceStateChange;
         }
 
@@ -64,6 +75,7 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         {
             //restart model
             this.StopFuelLogging();
+            this._debugLogger.CreateDebugLog("Stopped fuel logging", DebugLogType.Data);
             //this._raceLogger.RaceStateChanged -= this.OnRaceStateChange;
             this.FuelData = null;
         }
@@ -127,7 +139,7 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
 
             this.FuelData.LapsRemaining = (int)remainingLaps;
 
-            this.FuelData.FuelToFinish = this.FuelNeededToFinish(remainingLaps, this.FuelData.TotalFuelUsed, this.FuelData.FuelInTank);
+            this.FuelData.FuelToFinish = this.FuelNeededToFinish(remainingLaps, this.FuelData.FuelUsagePerLap, this.FuelData.FuelInTank);
             this.FuelData.FuelToFinish = this.FuelData.FuelToFinish > MAX_FUEL ? MAX_FUEL : this.FuelData.FuelToFinish;
 
             this._outLap = false;
@@ -142,6 +154,8 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         {
             if (this.FuelData != null && !this._outLap)
             {
+                this._debugLogger.CreateDebugLog("On pit road", DebugLogType.Data);
+
                 int cast = (int)this.FuelData.FuelToFinish;
                 float diff = this.FuelData.FuelToFinish - (float)cast;
                 if (diff >= 0.5f)
@@ -181,8 +195,16 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         private float FuelNeededToFinish(float remainingLaps, float fuelUsedPerLap, float fuelInTank)
         {
             float exactValue = remainingLaps * fuelUsedPerLap;
+
+            this._debugLogger.CreateDebugLog("Exact fuel needed: " + exactValue, DebugLogType.Data);
+
             float extraFuel = GraceFuel(exactValue, this.FuelData.GraceOption.Value, this.FuelData.GraceOption.Mode, this.FuelData.FuelUsagePerLap);
+
+            this._debugLogger.CreateDebugLog("Extra fuel needed: " + extraFuel, DebugLogType.Data);
+
             float fuelNeeded = (exactValue + extraFuel) - fuelInTank;
+
+            this._debugLogger.CreateDebugLog("Actual fuel needed: " + fuelNeeded, DebugLogType.Data);
 
             return fuelNeeded > 0.0f ? fuelNeeded : 0.0f;
         }
@@ -190,7 +212,14 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         private float RemainingLaps(float remainingRaceTime, float timeRaced, float lapsCompleted)
         {
             float averageLapTime = timeRaced / lapsCompleted;
-            return (remainingRaceTime / averageLapTime);
+
+            this._debugLogger.CreateDebugLog("Average lap time: " + averageLapTime, DebugLogType.Data);
+
+            float remainingLaps = remainingRaceTime / averageLapTime;
+
+            this._debugLogger.CreateDebugLog("Remaining laps: " + remainingLaps, DebugLogType.Data);
+
+            return remainingLaps;
         }
         #endregion
     }

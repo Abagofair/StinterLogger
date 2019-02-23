@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StinterLogger.RaceLogging.Iracing.Debug;
+using System.Windows;
+using StinterLogger.UI.MainApp;
 
 namespace StinterLogger.RaceLogging.Iracing
 {
@@ -28,6 +31,8 @@ namespace StinterLogger.RaceLogging.Iracing
         private DriverInfo _activeDriverInfo;
 
         private bool _inActiveSession;
+
+        private DebugLogger _debugLogger;
         #endregion
 
         public IracingLogger(int telemetryUpdateFrequency)
@@ -50,6 +55,8 @@ namespace StinterLogger.RaceLogging.Iracing
             this._activeDriverInfo = new DriverInfo();
 
             this._inActiveSession = false;
+
+            this._debugLogger = ((App)Application.Current).DebugLogger;
         }
 
         #region properties
@@ -77,11 +84,13 @@ namespace StinterLogger.RaceLogging.Iracing
         #region event invocations
         private void OnRaceStateChange(RaceStateEventArgs e)
         {
+            this._debugLogger.CreateDebugLog("Race state changed", DebugLogType.Event);
             this.RaceStateChanged?.Invoke(this, e);
         }
 
         private void OnLapCompleted(LapCompletedEventArgs e)
         {
+            this._debugLogger.CreateDebugLog("Lap completed - " + e.TelemetryLapData.LapTime, DebugLogType.Event);
             this.LapCompleted?.Invoke(this, e);
         }
 

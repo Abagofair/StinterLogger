@@ -12,6 +12,7 @@ using StinterLogger.RaceLogging.Iracing.Fuel;
 using StinterLogger.RaceLogging.Iracing.IracingEventArgs;
 using StinterLogger.RaceLogging.Iracing;
 using System.Text;
+using StinterLogger.RaceLogging.Iracing.Debug;
 
 namespace StinterLogger.UI.MainApp
 { 
@@ -22,10 +23,14 @@ namespace StinterLogger.UI.MainApp
     {
         private FuelManager _fuelManager;
         private IRaceLogger _raceLogger;
+        private IDataLogger<DebugEventArgs> _debugLogger;
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
+
+            this._debugLogger = new DebugLogger();
+            this._debugLogger.Enable();
 
             this._raceLogger = new IracingLogger(4);
 
@@ -64,8 +69,18 @@ namespace StinterLogger.UI.MainApp
 
         public IRaceLogger RaceLogger
         {
-            get;
-            set;
+            get
+            {
+                return this._raceLogger;
+            }
+        }
+
+        public DebugLogger DebugLogger
+        {
+            get
+            {
+                return ((DebugLogger)this._debugLogger);
+            }
         }
 
         public void OnRaceLoggerConnection(object sender, DriverConnectionEventArgs driverConnectionEventArgs)
@@ -78,11 +93,16 @@ namespace StinterLogger.UI.MainApp
             displayString.Append(spacing);
             displayString.Append("UserName: " + driverConnectionEventArgs.ActiveDriverInfo.DriverName);
             this.MainWindow.Title = displayString.ToString();
+
+            this.DebugLogger.CreateDebugLog(displayString.ToString(), DebugLogType.Event);
         }
 
         public void OnRaceLoggerDisconnection(object sender, EventArgs eventArgs)
         {
-            this.MainWindow.Title = "Disconnected - Driver ID: ?";
+            var displayString = "Disconnected - Driver ID: ?";
+            this.MainWindow.Title = displayString;
+
+            this.DebugLogger.CreateDebugLog(displayString, DebugLogType.Event);
         }
     }
 }

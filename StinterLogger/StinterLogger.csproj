@@ -102,10 +102,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="RaceLogging\Iracing\Debug\DebugLogger.cs" />
+    <Compile Include="RaceLogging\Iracing\Debug\DebugLogType.cs" />
     <Compile Include="RaceLogging\Iracing\Fuel\FuelManager.cs" />
     <Compile Include="RaceLogging\Iracing\Fuel\FuelUnit.cs" />
     <Compile Include="RaceLogging\Iracing\Fuel\GraceMode.cs" />
     <Compile Include="RaceLogging\Iracing\Fuel\GraceOption.cs" />
+    <Compile Include="RaceLogging\Iracing\IracingEventArgs\DebugEventArgs.cs" />
     <Compile Include="RaceLogging\Iracing\IracingEventArgs\FuelDataEventArgs.cs" />
     <Compile Include="RaceLogging\Iracing\Models\DriverInfo.cs" />
     <Compile Include="RaceLogging\Iracing\Fuel\FuelManagerData.cs" />
@@ -113,6 +116,7 @@
     <Compile Include="UI\DebugPage\DebugControl.xaml.cs">
       <DependentUpon>DebugControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UI\DebugPage\DebugModel.cs" />
     <Compile Include="UI\DebugPage\DebugViewModel.cs" />
     <Compile Include="UI\FuelPage\FuelModel.cs" />
     <Compile Include="UI\MainApp\IPageViewModel.cs" />
