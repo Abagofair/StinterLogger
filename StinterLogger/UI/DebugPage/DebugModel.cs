@@ -10,10 +10,10 @@ namespace StinterLogger.UI.DebugPage
 {
     public class DebugModel : ObservableObject
     {
-        public DebugModel(DateTime time, string content, DebugLogType debugLogType)
+        public DebugModel(DateTime time, string description, DebugLogType debugLogType)
         {
             this._dateTime = time;
-            this.Content = content;
+            this.Description = description;
             this._debugLogType = debugLogType;
         }
 
@@ -26,7 +26,7 @@ namespace StinterLogger.UI.DebugPage
             }
         }
 
-        public string Content { get; }
+        public string Description { get; }
 
         private DebugLogType _debugLogType;
         public string DebugLogType

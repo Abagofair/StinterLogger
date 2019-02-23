@@ -36,7 +36,7 @@ namespace StinterLogger.UI.DebugPage
         {
             this._debugModels.Add(
                 new DebugModel(debugEventArgs.DebugLog.DateTime,
-                debugEventArgs.DebugLog.Content,
+                debugEventArgs.DebugLog.Description,
                 debugEventArgs.DebugLog.DebugLogType));
 
             this.OnPropertyChanged("DebugModelList");

@@ -22,7 +22,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Grid.Column="0" Text="{Binding DateTime}" />
                         <TextBlock Grid.Column="1" Text="{Binding DebugLogType}" />
-                        <TextBlock Grid.Column="2" Text="{Binding Content}" />
+                        <TextBlock Grid.Column="2" Text="{Binding Description}" />
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
