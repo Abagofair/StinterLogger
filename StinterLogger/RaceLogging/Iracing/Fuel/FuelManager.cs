@@ -66,7 +66,7 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         {
             //listen for green flag
             ResetFuelData();
-            this.StartFuelLogging();
+            this.StartFuelManager();
             this._debugLogger.CreateDebugLog("Started the fuel manager", DebugLogType.Event);
             //this._raceLogger.RaceStateChanged += this.OnRaceStateChange;
         }
@@ -74,7 +74,7 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         public void Disable()
         {
             //restart model
-            this.StopFuelLogging();
+            this.StopFuelManager();
             this._debugLogger.CreateDebugLog("Stopped the fuel manager", DebugLogType.Event);
             //this._raceLogger.RaceStateChanged -= this.OnRaceStateChange;
             this.FuelData = null;
@@ -93,13 +93,13 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         #endregion
 
         #region private methods
-        private void StartFuelLogging()
+        private void StartFuelManager()
         {
             this.ResetFuelData();
             this._raceLogger.LapCompleted += OnLapCompleted;
         }
 
-        private void StopFuelLogging()
+        private void StopFuelManager()
         {
             this._raceLogger.LapCompleted -= OnLapCompleted;
         }
@@ -110,11 +110,11 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         {
             if (raceStateEventArgs.RaceState == RaceState.GREEN)
             {
-                this.StartFuelLogging();
+                this.StartFuelManager();
             }
             else
             {
-                this.StopFuelLogging();
+                this.StopFuelManager();
             }
         }
 
