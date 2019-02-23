@@ -22,7 +22,7 @@ namespace StinterLogger.UI.DebugPage
         {
             get
             {
-                return this._dateTime.ToShortTimeString();
+                return this._dateTime.ToShortTimeString() + " ";
             }
         }
 
@@ -33,7 +33,7 @@ namespace StinterLogger.UI.DebugPage
         {
             get
             {
-                return this._debugLogType.ToString();
+                return "("+this._debugLogType.ToString()+"): ";
             }
         }
     }
