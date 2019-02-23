@@ -12,29 +12,39 @@ namespace StinterLogger.UI.DebugPage
     {
         private DebugLogger _debugLogger;
 
+        private readonly List<DebugModel> _debugModels;
+
         public DebugViewModel()
         {
             this.Name = "Debug log";
-            this.DebugModelList = new List<DebugModel>();
+            this._debugModels = new List<DebugModel>();
             this._debugLogger = ((App)Application.Current).DebugLogger;
             this._debugLogger.OnDataModelChange += this.OnDebugOutput;
         }
 
         public string Name { get; set; }
 
-        public List<DebugModel> DebugModelList { get; set; }
-
-        private void AddDebugLog(DebugModel debugModel)
+        public List<DebugModel> DebugModelList
         {
-            this.DebugModelList.Add(debugModel);
+            get
+            {
+                return this._debugModels;
+            }
+        }
+
+        private void AddDebugModel(DebugEventArgs debugEventArgs)
+        {
+            this._debugModels.Add(
+                new DebugModel(debugEventArgs.DebugLog.DateTime,
+                debugEventArgs.DebugLog.Content,
+                debugEventArgs.DebugLog.DebugLogType));
+
             this.OnPropertyChanged("DebugModelList");
         }
 
         private void OnDebugOutput(object sender, DebugEventArgs debugEventArgs)
         {
-            this.AddDebugLog(
-                new DebugModel(debugEventArgs.DateTime, debugEventArgs.Content, debugEventArgs.DebugLogType)
-                );
+            this.AddDebugModel(debugEventArgs);
         }
     }
 }

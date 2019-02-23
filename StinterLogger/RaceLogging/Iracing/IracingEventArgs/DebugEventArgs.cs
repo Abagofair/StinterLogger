@@ -9,8 +9,6 @@ namespace StinterLogger.RaceLogging.Iracing.IracingEventArgs
 {
     public class DebugEventArgs : EventArgs
     {
-        public DateTime DateTime { get; set; }
-        public string Content { get; set; }
-        public DebugLogType DebugLogType { get; set; }
+        public DebugLog DebugLog { get; set; }
     }
 }

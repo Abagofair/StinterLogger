@@ -102,6 +102,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="RaceLogging\Iracing\Debug\DebugLog.cs" />
     <Compile Include="RaceLogging\Iracing\Debug\DebugLogger.cs" />
     <Compile Include="RaceLogging\Iracing\Debug\DebugLogType.cs" />
     <Compile Include="RaceLogging\Iracing\Fuel\FuelManager.cs" />
