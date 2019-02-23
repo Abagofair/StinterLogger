@@ -78,19 +78,17 @@
             <ColumnDefinition SharedSizeGroup="True" Width="*"/> 
         </Grid.ColumnDefinitions>
 
-        <Border>
-            <DockPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <RadioButton FontSize="18" Name="EnableFuel" IsChecked="False" GroupName="enableDisable" 
+        <DockPanel HorizontalAlignment="Left">
+            <Button FontSize="14" Name="EnableFuel" 
                              Content="Enable" DockPanel.Dock="Left"
                              Command="{Binding Path=EnableFuelCalculator}"
-                             CommandParameter="{Binding ElementName=EnableFuel, Path=Content}" Margin="10 10 10 10"/>
-                <RadioButton FontSize="18" Name="DisableFuel" IsChecked="True" GroupName="enableDisable" 
+                             CommandParameter="{Binding ElementName=EnableFuel, Path=Content}" Margin="5 5 5 5"/>
+            <Button FontSize="14" Name="DisableFuel" Width="Auto" Height="Auto"
                              Content="Disable" DockPanel.Dock="Right"
                              Command="{Binding Path=EnableFuelCalculator}"
-                             CommandParameter="{Binding ElementName=DisableFuel, Path=Content}" Margin="10 10 10 10"/>
-            </DockPanel>
-        </Border>
-        
+                             CommandParameter="{Binding ElementName=DisableFuel, Path=Content}" Margin="5 5 5 5"/>
+        </DockPanel>
+
         <ContentControl VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" FontSize="14" FontFamily="Verdana" Content="{Binding Path=FuelModel}"></ContentControl>
     </Grid>
 </UserControl>

@@ -13,6 +13,7 @@ using StinterLogger.RaceLogging.Iracing.IracingEventArgs;
 using StinterLogger.RaceLogging.Iracing;
 using System.Text;
 using StinterLogger.RaceLogging.Iracing.Debug;
+using StinterLogger.UI.DetailedDebug;
 
 namespace StinterLogger.UI.MainApp
 { 
@@ -81,6 +82,13 @@ namespace StinterLogger.UI.MainApp
             {
                 return ((DebugLogger)this._debugLogger);
             }
+        }
+
+        public void OpenDetailedDebugWindow(List<string> detailedContent)
+        {
+            var detailWindow = new DetailedDebugWindow(detailedContent);
+            detailWindow.ResizeMode = ResizeMode.NoResize;
+            detailWindow.ShowDialog();
         }
 
         public void OnRaceLoggerConnection(object sender, DriverConnectionEventArgs driverConnectionEventArgs)

@@ -208,24 +208,6 @@ namespace StinterLogger.UI.FuelPage
             }
         }
 
-        private bool _enabled;
-        public bool Enabled
-        {
-            get
-            {
-                return this._enabled;
-            }
-
-            set
-            {
-                if (value != this._enabled)
-                {
-                    this._enabled = value;
-                    this.OnPropertyChanged("Enabled");
-                }
-            }
-        }
-
         private bool _liters;
         public bool Liters
         {

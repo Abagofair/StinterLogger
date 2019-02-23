@@ -5,6 +5,7 @@ using StinterLogger.UI.MainApp;
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Input;
 
 namespace StinterLogger.UI.DebugPage
 {
@@ -37,7 +38,8 @@ namespace StinterLogger.UI.DebugPage
             this._debugModels.Add(
                 new DebugModel(debugEventArgs.DebugLog.DateTime,
                 debugEventArgs.DebugLog.Description,
-                debugEventArgs.DebugLog.DebugLogType));
+                debugEventArgs.DebugLog.DebugLogType,
+                debugEventArgs.DebugLog.Index));
 
             this.OnPropertyChanged("DebugModelList");
         }
