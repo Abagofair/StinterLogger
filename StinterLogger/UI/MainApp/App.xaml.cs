@@ -13,6 +13,7 @@ using StinterLogger.RaceLogging.Iracing.IracingEventArgs;
 using StinterLogger.RaceLogging.Iracing;
 using System.Text;
 using StinterLogger.RaceLogging.Iracing.Debug;
+using StinterLogger.UI.DetailedDebug;
 
 namespace StinterLogger.UI.MainApp
 { 
@@ -83,6 +84,13 @@ namespace StinterLogger.UI.MainApp
             }
         }
 
+        public void OpenDetailedDebugWindow(List<string> detailedContent)
+        {
+            var detailWindow = new DetailedDebugWindow(detailedContent);
+            detailWindow.ResizeMode = ResizeMode.NoResize;
+            detailWindow.ShowDialog();
+        }
+
         public void OnRaceLoggerConnection(object sender, DriverConnectionEventArgs driverConnectionEventArgs)
         {
             var spacing = " - ";
@@ -94,7 +102,7 @@ namespace StinterLogger.UI.MainApp
             displayString.Append("UserName: " + driverConnectionEventArgs.ActiveDriverInfo.DriverName);
             this.MainWindow.Title = displayString.ToString();
 
-            this.DebugLogger.CreateDebugLog(displayString.ToString(), DebugLogType.Event);
+            this.DebugLogger.CreateEventLog(displayString.ToString());
         }
 
         public void OnRaceLoggerDisconnection(object sender, EventArgs eventArgs)
@@ -102,7 +110,7 @@ namespace StinterLogger.UI.MainApp
             var displayString = "Disconnected - Driver ID: ?";
             this.MainWindow.Title = displayString;
 
-            this.DebugLogger.CreateDebugLog(displayString, DebugLogType.Event);
+            this.DebugLogger.CreateEventLog(displayString);
         }
     }
 }

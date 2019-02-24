@@ -64,8 +64,6 @@ namespace StinterLogger.UI.FuelPage
             {
                 this._fuelCalculator.Enable();
                 this._fuelModel = new FuelModel((FuelManagerData)this._fuelCalculator.DataModel);
-                this._fuelModel.Enabled = true;
-
             }
             else if (enable == "Disable")
             {

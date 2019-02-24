@@ -1,5 +1,6 @@
 ﻿using StinterLogger.RaceLogging.Iracing.Debug;
 using StinterLogger.RaceLogging.Iracing.IracingEventArgs;
+using StinterLogger.UI.DetailedDebug;
 using StinterLogger.UI.MainApp;
 using System;
 using System.Collections.Generic;
@@ -26,6 +27,14 @@ namespace StinterLogger.UI.DebugPage
         public DebugControl()
         {
             InitializeComponent();
+        }
+
+        private void ListBoxItem_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            var source = e.Source as ListBoxItem;
+            var index = (source.Content as DebugModel).Index;
+            var detailedLog = ((App)Application.Current).DebugLogger.GetDetailedLog(index);
+            ((App)Application.Current).OpenDetailedDebugWindow(detailedLog);
         }
     }
 }

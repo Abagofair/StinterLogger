@@ -81,9 +81,15 @@
     <Reference Include="iRSDKSharp">
       <HintPath>..\..\..\..\Desktop\iRacing_wrapper\iRacingSdkWrapper-master\iRacingSdkWrapper\bin\Debug\iRSDKSharp.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Expression.Interactions, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Blend.Interactivity.Wpf.1.0.1340.0\lib\net\Microsoft.Expression.Interactions.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Interactivity, Version=3.5.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Blend.Interactivity.Wpf.1.0.1340.0\lib\net\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -119,6 +125,9 @@
     </Compile>
     <Compile Include="UI\DebugPage\DebugModel.cs" />
     <Compile Include="UI\DebugPage\DebugViewModel.cs" />
+    <Compile Include="UI\DetailedDebug\DetailedDebugWindow.xaml.cs">
+      <DependentUpon>DetailedDebugWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UI\FuelPage\FuelModel.cs" />
     <Compile Include="UI\MainApp\IPageViewModel.cs" />
     <Compile Include="RaceLogging\Iracing\IracingEventArgs\DriverConnectionEventArgs.cs" />
@@ -137,6 +146,10 @@
     </Compile>
     <Compile Include="UI\StartPage\StartViewModel.cs" />
     <Page Include="UI\DebugPage\DebugControl.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UI\DetailedDebug\DetailedDebugWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

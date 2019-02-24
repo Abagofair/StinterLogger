@@ -84,13 +84,13 @@ namespace StinterLogger.RaceLogging.Iracing
         #region event invocations
         private void OnRaceStateChange(RaceStateEventArgs e)
         {
-            this._debugLogger.CreateDebugLog("Race state changed", DebugLogType.Event);
+            this._debugLogger.CreateEventLog("Race state changed");
             this.RaceStateChanged?.Invoke(this, e);
         }
 
         private void OnLapCompleted(LapCompletedEventArgs e)
         {
-            this._debugLogger.CreateDebugLog("Lap completed - " + e.TelemetryLapData.LapTime, DebugLogType.Event);
+            this._debugLogger.CreateEventLog("Lap completed - " + e.TelemetryLapData.LapTime);
             this.LapCompleted?.Invoke(this, e);
         }
 
