@@ -33,7 +33,7 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
 
             this.FuelData = null;
 
-            this._raceLogger.PitRoad += this.OnPitRoad;
+            this._raceLogger.OnPitRoad += this.OnPitRoad;
 
             this._outLap = false;
 
@@ -96,12 +96,12 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         private void StartFuelManager()
         {
             this.ResetFuelData();
-            this._raceLogger.LapCompleted += OnLapCompleted;
+            this._raceLogger.OnLapCompleted += OnLapCompleted;
         }
 
         private void StopFuelManager()
         {
-            this._raceLogger.LapCompleted -= OnLapCompleted;
+            this._raceLogger.OnLapCompleted -= OnLapCompleted;
         }
         #endregion
 
@@ -139,8 +139,7 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
 
             this.FuelData.LapsRemaining = (int)remainingLaps;
 
-            this.FuelData.FuelToFinish = this.FuelNeededToFinish(remainingLaps, this.FuelData.FuelUsagePerLap, this.FuelData.FuelInTank);
-            this.FuelData.FuelToFinish = this.FuelData.FuelToFinish > MAX_FUEL ? MAX_FUEL : this.FuelData.FuelToFinish;
+            this.FuelData.FuelToFinish = this.CalculateFuelNeededToFinish(this.FuelData);
 
             this._outLap = false;
 
@@ -154,8 +153,6 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
         {
             if (this.FuelData != null && !this._outLap)
             {
-                this._debugLogger.CreateEventLog("On pit road");
-
                 int cast = (int)this.FuelData.FuelToFinish;
                 float diff = this.FuelData.FuelToFinish - (float)cast;
                 if (diff >= 0.5f)
@@ -187,26 +184,35 @@ namespace StinterLogger.RaceLogging.Iracing.Fuel
             return extraFuel;
         }
 
-        private float FuelNeededToFinish(float remainingRaceTime, float timeRaced, float lapsCompleted, float fuelUsedPerLap)
+        private float LapsReachableOnCurrentTank(float fuelUsedPerLap, float fuelInTank)
         {
-            return RemainingLaps(remainingRaceTime, timeRaced, lapsCompleted) * fuelUsedPerLap;
+            return fuelUsedPerLap * fuelInTank;
         }
 
-        private float FuelNeededToFinish(float remainingLaps, float fuelUsedPerLap, float fuelInTank)
+        private float LapsRemainingAfterTankUsed(float lapsRemainingInTank, float remainingLaps)
         {
-            float exactValue = remainingLaps * fuelUsedPerLap;
+            var amountOfLapsToFuel = remainingLaps - lapsRemainingInTank;
+            return amountOfLapsToFuel >= 0.0f ? amountOfLapsToFuel : 0.0f;
+        }
 
-            this._debugLogger.CreateDataLog("Exact fuel needed: " + exactValue);
+        private float FuelToAdd(float amountOfLapsToFuel, float fuelUsedPerLap)
+        {
+            return amountOfLapsToFuel * fuelUsedPerLap;
+        }
 
-            float extraFuel = GraceFuel(exactValue, this.FuelData.GraceOption.Value, this.FuelData.GraceOption.Mode, this.FuelData.FuelUsagePerLap);
-
-            this._debugLogger.CreateDataLog("Extra fuel needed: " + extraFuel);
-
-            float fuelNeeded = (exactValue + extraFuel) - fuelInTank;
-
-            this._debugLogger.CreateDataLog("Actual fuel needed: " + fuelNeeded);
-
-            return fuelNeeded > 0.0f ? fuelNeeded : 0.0f;
+        private float CalculateFuelNeededToFinish(FuelManagerData fuelData)
+        {
+            var lapsReachable = this.LapsReachableOnCurrentTank(fuelData.FuelUsagePerLap, fuelData.FuelInTank);
+            this._debugLogger.CreateDataLog("Laps reachable on current tank amount: " + lapsReachable);
+            var lapsRemainingAfterTank = this.LapsRemainingAfterTankUsed(lapsReachable, fuelData.LapsRemaining);
+            this._debugLogger.CreateDataLog("Laps remaining after tank is used up: " + lapsRemainingAfterTank);
+            var fuelToAdd = this.FuelToAdd(lapsRemainingAfterTank, fuelData.FuelUsagePerLap);
+            this._debugLogger.CreateDataLog("Exact fuel amount to finish: " + fuelToAdd);
+            //add grace fuel
+            var graceFuel = this.GraceFuel(fuelToAdd, fuelData.GraceOption.Value, fuelData.GraceOption.Mode, fuelData.FuelUsagePerLap);
+            this._debugLogger.CreateDataLog("Specified amount of grace fuel to add: " + graceFuel);
+            this._debugLogger.CreateDataLog("Total amount of fuel to add: " + (fuelToAdd + graceFuel));
+            return fuelToAdd + graceFuel;
         }
 
         private float RemainingLaps(float remainingRaceTime, float timeRaced, float lapsCompleted)
