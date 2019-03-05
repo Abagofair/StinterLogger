@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace StinterLogger.RaceLogging.Iracing.Program
 {
-    public class ProgramConfigurator
+    public class ProgramLoader
     {
         private const int RANDOM_MAX_LENGTH = 140;
 
@@ -32,7 +32,7 @@ namespace StinterLogger.RaceLogging.Iracing.Program
 
         private DebugLogger _debugLogger;
 
-        public ProgramConfigurator(string folderName, DebugLogger debugLogger)
+        public ProgramLoader(string folderName, DebugLogger debugLogger)
         {
             this._folderName = folderName;
 
