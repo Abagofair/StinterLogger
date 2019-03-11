@@ -4,48 +4,31 @@ using StinterLogger.RaceLogging.Iracing.SimEventArgs;
 using StinterLogger.RaceLogging.Iracing.Models;
 using StinterLogger.RaceLogging.Iracing.Fuel;
 using System.Globalization;
+using System.Collections.Generic;
 
 namespace StinterLogger.RaceLogging
 {
     public class iRacingLogger : ISimLogger
     {
-        private const float MIN_LAP_COMPLETE_PCT = 0.985f;
-
-        private float MIN_LAP_COMPLETE_METERS { get => (this.TrackInfo.Length * 1000.0f) - 10.0f; }
+        private float Min_Lap_Complete_Meters { get => (this.TrackInfo.Length * 1000.0f) - 10.0f; }
 
         private readonly SdkWrapper _sdkWrapper;
 
         private bool _inActiveSession;
 
-#region lap tracking
-        private float _currentLapDistPct;
-
-        private float _currentLapDistM;
-
-        private float _currentLapTime;
-
-        private bool _isLapCompleted;
-
-        private int _lapsCompletedSincePit;
-
-        private int _currentSector;
+        #region lap tracking
+        private int _lap;
 
         private float[] _sectorTimes;
 
-        private float _sectorPctTarget;
+        private bool _isLapComplete;
 
-        private float _sectorTarget;
-
-        private float _sectorZoneBorder = 20.0f;
-
-        private float _sectorDelta;
-
-        private int _logAmount;
+        private TimeEstimation _timeEstimation;
 
         private Lap _theCompletedLap;
-#endregion
+        #endregion
 
-        private LapType LapType { get; set; }
+        private List<Lap> List { get; set; }
 
         public iRacingLogger(float defaultTelemetryUpdateHz)
         {
@@ -56,10 +39,16 @@ namespace StinterLogger.RaceLogging
 
             this._inActiveSession = false;
 
-            this._theCompletedLap = new Lap();
+            this._theCompletedLap = null;
+
+            this._timeEstimation = new TimeEstimation();
+
+            this._isLapComplete = true;
+
+            this.List = new List<Lap>();
         }
 
-        public DriverInfo ActiveDriverInfo { get; set; }
+        public Driver ActiveDriverInfo { get; set; }
 
         public Track TrackInfo { get; set; }
 
@@ -123,80 +112,81 @@ namespace StinterLogger.RaceLogging
             this._sdkWrapper.Stop();
         }
 
+        private float GetCurrentLapTime()
+        {
+            return this._sdkWrapper.GetTelemetryValue<float>("LapCurrentLapTime").Value;
+        }
+
+        private float GetLastLapTime()
+        {
+            return this._sdkWrapper.GetTelemetryValue<float>("LapLastLapTime").Value;
+        }
+
         #region iracing event listeners
         private void OnTelemetryUpdate(object sender, SdkWrapper.TelemetryUpdatedEventArgs telemetryUpdatedEventArgs)
         {
             this.InvokeTelemetryRecieved(telemetryUpdatedEventArgs);
 
-            this._currentLapDistPct = telemetryUpdatedEventArgs.TelemetryInfo.LapDistPct.Value;
-            this._currentLapDistM = telemetryUpdatedEventArgs.TelemetryInfo.LapDist.Value;
+            if (this.List.Count >= 2)
+            {
+                Console.WriteLine();
+            }
 
             if (this._inActiveSession)
-            {
-                if (this.LapType == LapType.REAL)
+            {               
+                if (this._isLapComplete)
                 {
-                    this._currentLapTime = this._sdkWrapper.GetTelemetryValue<float>("LapCurrentLapTime").Value;
-                    bool insideSectorTimeZone = this._currentLapDistM >= (this._sectorTarget - this._sectorZoneBorder) && this._currentLapDistM <= (this._sectorTarget + this._sectorZoneBorder);
-
-                    if (insideSectorTimeZone)
+                    //it appears iracing doesnt start logging lap times until first out lap after a reset
+                    this._theCompletedLap = new Lap
                     {
-                        this._sectorTimes[this._currentSector] += this._currentLapTime - this._sectorDelta;
-                        this._logAmount++;
-                    }
-
-                    if (this._logAmount > 0 && !insideSectorTimeZone)
-                    {
-                        //real lap completed
-                        if (this._sectorTarget == MIN_LAP_COMPLETE_METERS && this._currentLapDistM > this._sectorZoneBorder)
-                        {
-                            this._theCompletedLap.FuelInTank = telemetryUpdatedEventArgs.TelemetryInfo.FuelLevel.Value;
-                            this._currentLapTime = this._sdkWrapper.GetTelemetryValue<float>("LapLastLapTime").Value;
-                            float sectorSum = 0;
-                            for (int i = 0; i < this._currentSector; ++i)
-                            {
-                                sectorSum += this._sectorTimes[i];
-                            }
-                            this._sectorTimes[this._sectorTimes.Length - 1] = this._currentLapTime - sectorSum;
-
-                            this._theCompletedLap.SectorTimes.AddRange(this._sectorTimes);
-                            
-                            this._theCompletedLap.LapTime = this._currentLapTime;
-                            ++this._lapsCompletedSincePit;
-                            this._isLapCompleted = true;
-                            this._sectorDelta = 0;
-                            this._currentSector = 0;
-                            this._sectorPctTarget = this.TrackInfo.Sectors[1].PctOfTrack;
-                        }
-                        //just another sector
-                        else if (this._currentLapDistM > this._sectorZoneBorder)
-                        {
-                            this._sectorTimes[this._currentSector] /= this._logAmount;
-                            ++this._currentSector;
-                            float sectorSum = 0;
-                            for (int i = 0; i < this._currentSector; ++i)
-                            {
-                                sectorSum += this._sectorTimes[i];
-                            }
-                            this._sectorDelta = sectorSum;
-                            this._logAmount = 0;
-                            this._sectorTarget = (this._currentSector + 1) >= this._sectorTimes.Length ?
-                                MIN_LAP_COMPLETE_METERS : this.TrackInfo.Sectors[this._currentSector + 1].MetersUntilSector;
-                        }
-                    }                  
+                        LapNumber = telemetryUpdatedEventArgs.TelemetryInfo.Lap.Value
+                    };
+                    this._timeEstimation.ResetData();
+                    this._isLapComplete = false;
                 }
 
-                if (this._currentLapDistM >= MIN_LAP_COMPLETE_METERS)
+                float currentLapDistM = telemetryUpdatedEventArgs.TelemetryInfo.LapDist.Value;
+                this._theCompletedLap.InPit = this.IsDriverOnPitRoad(telemetryUpdatedEventArgs);
+
+                float currentLapTime = this.GetCurrentLapTime();
+
+                //Did we pass the finish line?
+                //real lap completed
+                if (this._theCompletedLap.LapNumber < telemetryUpdatedEventArgs.TelemetryInfo.Lap.Value)
                 {
-                    if (this._lapsCompletedSincePit == 0)
+                    this._theCompletedLap.FuelInTank = telemetryUpdatedEventArgs.TelemetryInfo.FuelLevel.Value;
+                    currentLapTime = this.GetLastLapTime();
+                    if (currentLapTime <= -1.0f)
                     {
-                        //start new laps
-                        this.LapType = LapType.REAL;
-                        this._theCompletedLap = new Lap();
-                        ++this._lapsCompletedSincePit;
-                        
-                        this._currentSector = 0;
-                        this._sectorTarget = this.TrackInfo.Sectors[1].MetersUntilSector;
+                        currentLapTime = this._timeEstimation.TravelTimeToPoint(Min_Lap_Complete_Meters + 10.0f);
                     }
+
+                    var sectorSum = 0.0f;
+                    for (int currentSector = 0; currentSector < this.TrackInfo.Sectors.Count; ++currentSector)
+                    {
+                        var sector = this.TrackInfo.Sectors[currentSector];
+                        var sectorTimeEstimate = this._timeEstimation.GetSectorTime(
+                            sector.MetersUntilSectorEnd);
+                        sectorTimeEstimate -= sectorSum;
+                        sectorSum += sectorTimeEstimate;
+                        this._theCompletedLap.SectorTimes.Add(sectorTimeEstimate);
+                    }
+
+                    this._theCompletedLap.LapTime = currentLapTime;
+                    this._theCompletedLap.LapNumber = this._lap;
+
+                    this.List.Add(this._theCompletedLap);
+
+                    this.OnLapCompleted(new LapCompletedEventArgs
+                    {
+                        Lap = this._theCompletedLap
+                    });
+
+                    this._isLapComplete = true;
+                }
+                else
+                {
+                    this._timeEstimation.AddDistanceTimeValue(currentLapDistM, currentLapTime);
                 }
             }
         }
@@ -204,14 +194,33 @@ namespace StinterLogger.RaceLogging
         private void OnSessionUpdate(object sender, SdkWrapper.SessionInfoUpdatedEventArgs sessionInfoUpdatedEventArgs)
         {
             this.InvokeDriverConnection(sessionInfoUpdatedEventArgs);
-
-            if (this._isLapCompleted)
-            {
-
-                this._isLapCompleted = false;
-            }
         }
         #endregion
+
+        private float GetSumOfSectorTimes(int n)
+        {
+            float sectorSum = 0;
+            for (int i = 0; i < n; ++i)
+            {
+                sectorSum += this._sectorTimes[i];
+            }
+            return sectorSum;
+        }
+
+        private void ResetSectorTimes()
+        {
+            for (int i = 0; i < this._sectorTimes.Length; ++i)
+            {
+                this._sectorTimes[i] = 0.0f;
+            }
+        }
+
+        private bool IsDriverOnPitRoad(SdkWrapper.TelemetryUpdatedEventArgs eventArgs)
+        {
+            bool carOnPitRoad = eventArgs.TelemetryInfo.CarIdxOnPitRoad.Value[this.ActiveDriverInfo.LocalId];
+            bool carOnTrack = eventArgs.TelemetryInfo.IsOnTrack.Value;
+            return carOnPitRoad && carOnTrack;
+        }
 
         private void InvokeTelemetryRecieved(SdkWrapper.TelemetryUpdatedEventArgs telemetryUpdatedEventArgs)
         {
@@ -237,7 +246,7 @@ namespace StinterLogger.RaceLogging
         {
             if (!this._inActiveSession)
             {
-                this.ActiveDriverInfo = new DriverInfo();
+                this.ActiveDriverInfo = new Driver();
                 this.TrackInfo = new Track();
 
                 //even though you're connected earlier, i define the connection to be active when the first sessionInfo has been recieved
@@ -271,7 +280,7 @@ namespace StinterLogger.RaceLogging
                 var trackName = trackNameQuery.GetValue();
                 this.TrackInfo.Name = trackName;
 
-                int sector = 0;
+                int sector = 1;
                 var sectorStartPctQuery = sessionInfoUpdatedEventArgs.SessionInfo["SplitTimeInfo"]["Sectors"]["SectorNum", sector]["SectorStartPct"];
                 var sectorStartPct = sectorStartPctQuery.GetValue();
                 while (sectorStartPct != null)
@@ -281,7 +290,7 @@ namespace StinterLogger.RaceLogging
                     {
                         Number = sector,
                         PctOfTrack = sectorPct,
-                        MetersUntilSector = sectorPct * (length * 1000.0f)
+                        MetersUntilSectorEnd = sectorPct * (length * 1000.0f)
                     });
 
                     ++sector;
@@ -289,6 +298,13 @@ namespace StinterLogger.RaceLogging
                     sectorStartPctQuery = sessionInfoUpdatedEventArgs.SessionInfo["SplitTimeInfo"]["Sectors"]["SectorNum", sector]["SectorStartPct"];
                     sectorStartPct = sectorStartPctQuery.GetValue();
                 }
+
+                this.TrackInfo.Sectors.Add(new Sector
+                {
+                    Number = sector,
+                    PctOfTrack = 100,
+                    MetersUntilSectorEnd = (length * 1000.0f)
+                });
 
                 this._sectorTimes = new float[sector];
 
