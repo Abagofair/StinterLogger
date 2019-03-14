@@ -6,21 +6,35 @@ using System.Threading.Tasks;
 
 namespace StinterLogger.RaceLogging.Iracing.Program.Config
 {
+    public enum Condition
+    {
+        InPitStall, Minutes, Laps, FreeRoam
+    }
+
+    public class EndCondition
+    {
+        public Condition Condition { get; set; }
+        public int Count { get; set; }
+    }
+
     public class ProgramConfig
     {
         public ProgramConfig()
         {
-            this.Data = new Data();
+            this.Telemetry = new List<string>();
+            this.EndCondition = new EndCondition();
         }
 
         public string Name { get; set; }
 
-        public float TelemetryUpdateFrequency { get; set; }
+        public double TelemetryUpdateFrequency { get; set; }
 
-        public int StintCount { get; set; }
+        public bool LogPitDelta { get; set; }
 
-        public int LapsPerStint { get; set; }
+        public bool LogTireWear { get; set; }
 
-        public Data Data { get; set; }
+        public EndCondition EndCondition { get; }
+
+        public List<string> Telemetry { get; set; }
     }
 }

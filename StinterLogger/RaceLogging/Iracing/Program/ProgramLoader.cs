@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Schema;
 using StinterLogger.RaceLogging.Iracing.Debug;
-using StinterLogger.RaceLogging.Iracing.IracingEventArgs;
+using StinterLogger.RaceLogging.Iracing.SimEventArgs;
 using StinterLogger.RaceLogging.Iracing.Models;
 using StinterLogger.RaceLogging.Iracing.Program.Config;
 using System;
@@ -16,14 +16,6 @@ namespace StinterLogger.RaceLogging.Iracing.Program
 {
     public class ProgramLoader
     {
-        private const int RANDOM_MAX_LENGTH = 140;
-
-        private const int LAPS_PER_STINT_DEFAULT = 1;
-
-        private const int STINTCOUNT_DEFAULT = 1;
-
-        private const float TELEMETRY_UPDATE_FREQUENCY_DEFAULT = 1.0f;
-
         private string _folderName;
 
         private string _programConfigsPath;
@@ -62,7 +54,7 @@ namespace StinterLogger.RaceLogging.Iracing.Program
                     var parsedName = splitString[splitString.Length - 2];
                     programNames.Add(parsedName);
                 }
-                this._debugLogger.CreateEventLog("Program names read");
+                //this._debugLogger.CreateEventLog("Program names read");
             }
             catch (IOException e)
             {
@@ -94,60 +86,21 @@ namespace StinterLogger.RaceLogging.Iracing.Program
             return json;
         }
 
-        private ProgramConfig CleanProgramConfig(ProgramConfig programConfig)
+        private List<string> VerifyData<T>(List<string> dataConfig) where T : new()
         {
-            var cleanProgramConfig = new ProgramConfig();
-
-            cleanProgramConfig.TelemetryUpdateFrequency = programConfig.TelemetryUpdateFrequency;
-            cleanProgramConfig.Name = programConfig.Name;
-            cleanProgramConfig.StintCount = programConfig.StintCount;
-
-            if (programConfig.TelemetryUpdateFrequency <= 0.0)
-            {
-                cleanProgramConfig.TelemetryUpdateFrequency = TELEMETRY_UPDATE_FREQUENCY_DEFAULT;
-                this._debugLogger.CreateEventLog("TelemetryUpdateFrequency was lower than the allowed frequency. It has been set to " + TELEMETRY_UPDATE_FREQUENCY_DEFAULT + ".");
-            }
-
-            if (programConfig.Name.Length > RANDOM_MAX_LENGTH)
-            {
-                cleanProgramConfig.Name = programConfig.Name.Substring(0, RANDOM_MAX_LENGTH);
-                this._debugLogger.CreateEventLog("Read the Name to be longer than " + RANDOM_MAX_LENGTH + ". Extra characters has been removed.");
-            }
-
-            if (programConfig.LapsPerStint <= 0)
-            {
-                cleanProgramConfig.LapsPerStint = LAPS_PER_STINT_DEFAULT;
-                this._debugLogger.CreateEventLog("Read LapsPerStint <= 0. Has been reset to " + LAPS_PER_STINT_DEFAULT + ".");
-            }
-
-            if (programConfig.StintCount < 0)
-            {
-                cleanProgramConfig.StintCount = STINTCOUNT_DEFAULT;
-                this._debugLogger.CreateEventLog("Read StintCount < 0. Has been reset to " + STINTCOUNT_DEFAULT + ".");
-            }
-
-            cleanProgramConfig.Data.Telemetry = VerifyData<Telemetry>(programConfig.Data.Telemetry);
-            cleanProgramConfig.Data.Track = VerifyData<Track>(programConfig.Data.Track);
-            cleanProgramConfig.Data.Time = VerifyData<Telemetry>(programConfig.Data.Time);
-
-            return cleanProgramConfig;
-        }
-
-        private Dictionary<string, bool> VerifyData<T>(Dictionary<string, bool> dataConfig) where T : new()
-        {
-            var clearedData = new Dictionary<string, bool>();
+            var clearedData = new List<string>();
 
             var dataType = (new T()).GetType();
             
-            foreach (var dataProp in dataConfig.Keys)
+            foreach (var dataProp in dataConfig)
             {
-                if (dataConfig[dataProp] && dataType.GetProperty(dataProp) != null)
+                if (dataType.GetProperty(dataProp, System.Reflection.BindingFlags.IgnoreCase | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance) != null)
                 {
-                    clearedData.Add(dataProp, dataConfig[dataProp]);
+                    clearedData.Add(dataProp);
                 }
                 else
                 {
-                    this._debugLogger.CreateEventLog("The data option couldn't be found or was set as false");
+                    //this._debugLogger.CreateEventLog("The data option couldn't be found or was set as false");
                 }
             }
 
@@ -155,10 +108,10 @@ namespace StinterLogger.RaceLogging.Iracing.Program
         }
 
 #pragma warning disable CS0618 // Type or member is obsolete
-        private void JsonValidation(object sender, ValidationEventArgs eventArgs)
+
+        private bool ValidatePropertyName(JsonToken token, object value, string propertyName)
         {
-            this._debugLogger.CreateExceptionLog("The JSON does not match the expected schema.", eventArgs.Exception);
-            throw new JsonSerializationException(eventArgs.Message);
+            return value != null && token == JsonToken.PropertyName && ((string)value).ToLower() == propertyName;
         }
 
         public ProgramConfig LoadLocalProgram(string programName)
@@ -176,18 +129,116 @@ namespace StinterLogger.RaceLogging.Iracing.Program
 
             JsonTextReader reader = new JsonTextReader(new StringReader(jsonConfig));
 
-            JsonValidatingReader validatingReader = new JsonValidatingReader(reader)
+            var programConfig = new ProgramConfig();
+            try
             {
-                Schema = ProgramJsonSchema.GetJsonSchema()
-            };
-            validatingReader.ValidationEventHandler += this.JsonValidation;
+                while (reader.Read())
+                {
+                    if (ValidatePropertyName(reader.TokenType, reader.Value, "name"))
+                    {
+                        reader.Read();
+                        programConfig.Name =
+                            reader.Value != null && reader.TokenType == JsonToken.String
+                            ? (string)reader.Value : "";
+                        continue;
+                    }
+                    else if (ValidatePropertyName(reader.TokenType, reader.Value, "telemetryupdatefrequency"))
+                    {
+                        reader.Read();
+                        programConfig.TelemetryUpdateFrequency =
+                            reader.Value != null && reader.TokenType == JsonToken.Float
+                            ? (double)reader.Value : 4.0f;
+                        continue;
+                    }
+                    else if (ValidatePropertyName(reader.TokenType, reader.Value, "endcondition"))
+                    {
+                        reader.Read();
+                        if (reader.TokenType == JsonToken.StartArray)
+                        {
+                            reader.Read();
+                            var condition =
+                                reader.Value != null && reader.TokenType == JsonToken.String
+                            ? ((string)reader.Value).ToLower() : "freeroam";
 
-            JsonSerializer serializer = new JsonSerializer();
-            var programConfig = serializer.Deserialize<ProgramConfig>(validatingReader);
+                            bool pitstall = condition == "inpitstall";
+                            bool laps = condition == "laps";
+                            bool minutes = condition == "minutes";
 
-            var cleanConfig = this.CleanProgramConfig(programConfig);
+                            if (pitstall || laps || minutes)
+                            {
+                                reader.Read();
+                                var count =
+                                    reader.Value != null && reader.TokenType == JsonToken.Integer
+                                ? ((long)reader.Value) : 1;
 
-            return cleanConfig;
+                                if (pitstall)
+                                {
+                                    programConfig.EndCondition.Condition = Condition.InPitStall;
+                                }
+                                else if (laps)
+                                {
+                                    programConfig.EndCondition.Condition = Condition.Laps;
+                                }
+                                else if (minutes)
+                                {
+                                    programConfig.EndCondition.Condition = Condition.Minutes;
+                                }
+                                programConfig.EndCondition.Count = (int)count;
+                            }
+                            else
+                            {
+                                programConfig.EndCondition.Condition = Condition.FreeRoam;
+                            }
+                        }
+                        else
+                        {
+                            programConfig.EndCondition.Condition = Condition.FreeRoam;
+                        }
+                        continue;
+                    }
+                    else if (ValidatePropertyName(reader.TokenType, reader.Value, "logpitdelta"))
+                    {
+                        reader.Read();
+                        programConfig.LogPitDelta =
+                            reader.Value != null && reader.TokenType == JsonToken.Boolean
+                            ? (bool)reader.Value : false;
+                        continue;
+                    }
+                    else if (ValidatePropertyName(reader.TokenType, reader.Value, "logtirewear"))
+                    {
+                        reader.Read();
+                        programConfig.LogTireWear =
+                            reader.Value != null && reader.TokenType == JsonToken.Boolean
+                            ? (bool)reader.Value : false;
+                        continue;
+                    }
+                    else if (ValidatePropertyName(reader.TokenType, reader.Value, "telemetry"))
+                    {
+                        reader.Read();
+                        if (reader.TokenType == JsonToken.StartArray)
+                        {
+                            while (reader.Read() && reader.TokenType != JsonToken.EndArray)
+                            {
+                                var telemetry =
+                                   reader.Value != null && reader.TokenType == JsonToken.String
+                                   ? ((string)reader.Value).ToLower() : "";
+
+                                programConfig.Telemetry.Add(telemetry);
+                            }
+
+                            programConfig.Telemetry = VerifyData<Telemetry>(programConfig.Telemetry);
+
+                            continue;
+                        }
+                    }
+                }
+            }
+            catch (JsonException e)
+            {
+                //debug log
+            }
+
+            return programConfig;
         }
     }
 #pragma warning disable CS0618 // Type or member is obsolete
