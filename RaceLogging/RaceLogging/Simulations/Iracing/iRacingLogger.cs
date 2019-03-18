@@ -38,6 +38,10 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
             this._timeEstimation = new TimeEstimation();
 
             this._isLapComplete = true;
+
+            this.ActiveDriverInfo = new Driver();
+
+            this.TrackInfo = new Track();
         }
 
         public Driver ActiveDriverInfo { get; set; }
@@ -291,6 +295,7 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
                 this._currentLap.RaceLaps = telemetryUpdatedEventArgs.TelemetryInfo.RaceLaps.Value;
                 this._currentLap.PlayerCarPosition = telemetryUpdatedEventArgs.TelemetryInfo.CarIdxPosition.Value[this.ActiveDriverInfo.LocalId];
                 this._currentLap.PlayerCarClassPosition = telemetryUpdatedEventArgs.TelemetryInfo.CarIdxClassPosition.Value[this.ActiveDriverInfo.LocalId];
+                this._currentLap.RemainingSessionTime = telemetryUpdatedEventArgs.TelemetryInfo.SessionTimeRemain.Value;
                 this._currentLap.InPit = this.IsDriverOnPitRoad(telemetryUpdatedEventArgs);
                 this._currentLap.FuelInTankAtFinish = telemetryUpdatedEventArgs.TelemetryInfo.FuelLevel.Value;
 
@@ -351,11 +356,6 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
 
                 this.ActiveDriverInfo.Unit = this._sdkWrapper.GetTelemetryValue<int>("DisplayUnits").Value > 0 ? FuelUnit.Liters : FuelUnit.Gallons;
 
-                this.OnDriverConnected(new DriverConnectionEventArgs
-                {
-                    ActiveDriverInfo = this.ActiveDriverInfo
-                });
-
                 var trackLengthString = sessionInfoUpdatedEventArgs.SessionInfo["WeekendInfo"]["TrackLength"].GetValue();
                 var str = trackLengthString != null ? trackLengthString.Split(' ')[0] : "-1.0";
                 float length = float.Parse(str, CultureInfo.InvariantCulture);
@@ -403,6 +403,11 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
                 });
 
                 this._inActiveSession = true;
+
+                this.OnDriverConnected(new DriverConnectionEventArgs
+                {
+                    ActiveDriverInfo = this.ActiveDriverInfo
+                });
             }
         }
 

@@ -1,19 +1,16 @@
-﻿using iRacingSdkWrapper;
-using StinterLogger.UI;
-using StinterLogger.RaceLogging;
+﻿using StinterLogger.RaceLogging;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
-using StinterLogger.RaceLogging.Iracing.Fuel;
-using StinterLogger.RaceLogging.Iracing.IracingEventArgs;
-using StinterLogger.RaceLogging.Iracing;
-using System.Text;
-using StinterLogger.RaceLogging.Iracing.Debug;
 using StinterLogger.UI.DetailedDebug;
+using StinterLogger.UI.Configuration;
+using StinterLogger.RaceLogging.General.Fuel;
+using StinterLogger.RaceLogging.General;
+using StinterLogger.RaceLogging.General.Program;
+using StinterLogger.RaceLogging.General.Debug;
+using StinterLogger.RaceLogging.Simulations.Iracing;
+using StinterLogger.RaceLogging.General.SimEventArgs;
+using System.Text;
 
 namespace StinterLogger.UI.MainApp
 { 
@@ -23,25 +20,33 @@ namespace StinterLogger.UI.MainApp
     public partial class App : Application
     {
         private FuelManager _fuelManager;
-        private IRaceLogger _raceLogger;
-        private IDataLogger<DebugEventArgs> _debugLogger;
+
+        //private IRaceLogger _raceLogger;
+
+        private DebugManager _debugLogger;
+
+        private ProgramLoader _programConfigurator;
+
+        private IAppSettings _appSettings;
+
+        private ISimLogger _simLogger;
 
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
 
-            this._debugLogger = new DebugLogger();
+            this._appSettings = new AppSettings();
+
+            this._debugLogger = new DebugManager();
             this._debugLogger.Enable();
 
-            this._raceLogger = new IracingLogger(4);
+            this._simLogger = new iRacingLogger(4);
+            this._simLogger.DriverConnected += this.OnRaceLoggerConnection;
+            this._simLogger.DriverDisconnected += this.OnRaceLoggerDisconnection;
 
-            this._raceLogger.Connected += this.OnRaceLoggerConnection;
+            this._fuelManager = new FuelManager(this._simLogger, this._debugLogger, 1);
 
-            this._raceLogger.Disconnected += this.OnRaceLoggerDisconnection;
-
-            this._fuelManager = new FuelManager(this._raceLogger, 1);
-
-            this._raceLogger.Start();
+            this._simLogger.StartListening();
 
             var vm = new ApplicationViewModel();
             var mw = new MainWindow
@@ -52,12 +57,18 @@ namespace StinterLogger.UI.MainApp
             mw.Closing += this.WindowClosing;
             mw.Show();
 
+            this._programConfigurator = new ProgramLoader(this._appSettings.GetValue("ProgramConfigs"), null);
+
+            var pm = new ProgramManager(this._simLogger, this._programConfigurator);
+            //pm.Load("default");
+            //pm.StartProgram();
+
             this.MainWindow.Title = "Disconnected - Driver ID: ?";
         }
 
         private void WindowClosing(object sender, EventArgs eventArgs)
         {
-            this._raceLogger.Stop();
+            this._simLogger.StopListening();
         }
 
         public FuelManager FuelManager
@@ -68,26 +79,36 @@ namespace StinterLogger.UI.MainApp
             }
         }
 
-        public IRaceLogger RaceLogger
+        public ISimLogger RaceLogger
         {
             get
             {
-                return this._raceLogger;
+                return this._simLogger;
             }
         }
 
-        public DebugLogger DebugLogger
+        public DebugManager DebugLogger
         {
             get
             {
-                return ((DebugLogger)this._debugLogger);
+                return ((DebugManager)this._debugLogger);
+            }
+        }
+
+        public ProgramLoader AppSettings
+        {
+            get
+            {
+                return this._programConfigurator;
             }
         }
 
         public void OpenDetailedDebugWindow(List<string> detailedContent)
         {
-            var detailWindow = new DetailedDebugWindow(detailedContent);
-            detailWindow.ResizeMode = ResizeMode.NoResize;
+            var detailWindow = new DetailedDebugWindow(detailedContent)
+            {
+                ResizeMode = ResizeMode.NoResize
+            };
             detailWindow.ShowDialog();
         }
 

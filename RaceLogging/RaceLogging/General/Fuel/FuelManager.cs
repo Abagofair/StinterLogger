@@ -88,12 +88,12 @@ namespace StinterLogger.RaceLogging.General.Fuel
         private void StartFuelManager()
         {
             this.ResetFuelData();
-            this._simLogger.LapCompleted += OnLapCompleted;
+            this._simLogger.LapCompleted += this.OnLapCompleted;
         }
 
         private void StopFuelManager()
         {
-            this._simLogger.LapCompleted -= OnLapCompleted;
+            this._simLogger.LapCompleted -= this.OnLapCompleted;
         }
         #endregion
 
@@ -126,9 +126,9 @@ namespace StinterLogger.RaceLogging.General.Fuel
             });
         }
 
-        private void OnPitRoad(object sender, EventArgs eventArgs)
+        private void OnPitRoad(object sender, PitRoadEventArgs eventArgs)
         {
-            if (this.FuelData != null && !this._outLap)
+            if (eventArgs.IsOnPitRoad && this.FuelData != null && !this._outLap)
             {
                 try
                 {

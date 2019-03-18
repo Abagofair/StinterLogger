@@ -1,6 +1,6 @@
-﻿using StinterLogger.RaceLogging.Iracing;
-using StinterLogger.RaceLogging.Iracing.IracingEventArgs;
-using StinterLogger.RaceLogging.Iracing.Fuel;
+﻿using StinterLogger.RaceLogging.General;
+using StinterLogger.RaceLogging.General.Fuel;
+using StinterLogger.RaceLogging.General.SimEventArgs;
 using StinterLogger.UI.Helpers;
 using StinterLogger.UI.MainApp;
 using System.Windows;
@@ -10,7 +10,7 @@ namespace StinterLogger.UI.FuelPage
 {
     public class FuelCalculatorViewModel : ObservableObject, IPageViewModel
     {
-        private IDataLogger<FuelDataEventArgs> _fuelCalculator;
+        private IManager<FuelDataEventArgs> _fuelCalculator;
 
         private ICommand _enableFuelCalculator;
 

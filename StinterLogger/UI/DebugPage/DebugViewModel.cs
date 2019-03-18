@@ -1,17 +1,15 @@
-﻿using StinterLogger.RaceLogging.Iracing.Debug;
-using StinterLogger.RaceLogging.Iracing.IracingEventArgs;
+﻿using StinterLogger.RaceLogging.General.Debug;
+using StinterLogger.RaceLogging.General.SimEventArgs;
 using StinterLogger.UI.Helpers;
 using StinterLogger.UI.MainApp;
-using System;
 using System.Collections.Generic;
 using System.Windows;
-using System.Windows.Input;
 
 namespace StinterLogger.UI.DebugPage
 {
     public class DebugViewModel : ObservableObject, IPageViewModel
     {
-        private DebugLogger _debugLogger;
+        private DebugManager _debugLogger;
 
         private readonly List<DebugModel> _debugModels;
 
