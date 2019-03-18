@@ -1,6 +1,8 @@
 # StinterLogger
 Application based on RaceLogging for racing games.
 
+-- [v0.1.0.0](https://github.com/Abagofair/StinterLogger/releases/tag/0.1.0.0)
+
 ## Current functionality
 Fuel calculator with automatic fueling upon pit entry, debug logging.
 
