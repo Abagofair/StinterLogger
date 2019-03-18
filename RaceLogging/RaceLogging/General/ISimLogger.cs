@@ -36,6 +36,6 @@ namespace StinterLogger.RaceLogging
 
         Track TrackInfo { get; }
 
-        bool IsLive { get; set; }
+        bool IsLive { get; }
     }
 }

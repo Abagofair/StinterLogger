@@ -4,6 +4,6 @@ namespace StinterLogger.RaceLogging.General.Program
 {
     public interface IProgramLoader
     {
-        ProgramConfig LoadLocalProgram(string programName);
+        ProgramConfig LoadProgram(string path, string fileName);
     }
 }

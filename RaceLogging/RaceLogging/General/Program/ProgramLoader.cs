@@ -10,56 +10,16 @@ namespace StinterLogger.RaceLogging.General.Program
 {
     public class ProgramLoader : IProgramLoader
     {
-        private readonly string _folderName;
-
-        private readonly string _programConfigsPath;
-
         private readonly List<string> _programNames;
 
         private readonly DebugManager _debugLogger;
 
-        public ProgramLoader(string folderName, DebugManager debugLogger)
+        public ProgramLoader()
+        {}
+
+        public ProgramLoader(DebugManager debugLogger)
         {
-            this._folderName = folderName;
-
-            this._programConfigsPath = Directory.GetCurrentDirectory() + this._folderName;
-
             this._debugLogger = debugLogger;
-
-            if (!Directory.Exists(this._programConfigsPath))
-            {
-                throw new DirectoryNotFoundException("ProgramConfigs doesn't exist");
-            }
-            else
-            {
-                this._programNames = GetProgramNames();               
-            }
-        }
-
-        private List<string> GetProgramNames()
-        {
-            var programNames = new List<string>();
-
-            try
-            {
-                foreach (var fileName in Directory.EnumerateFiles(this._programConfigsPath))
-                {
-                    var splitString = fileName.Split('\\', '.');
-                    var parsedName = splitString[splitString.Length - 2];
-                    programNames.Add(parsedName);
-                }
-                //this._debugLogger.CreateEventLog("Program names read");
-            }
-            catch (IOException e)
-            {
-                this._debugLogger.CreateExceptionLog("An IOException occurred when trying to read program names", e);
-            }
-            catch (UnauthorizedAccessException e)
-            {
-                this._debugLogger.CreateExceptionLog("The user didn't have access to this directory", e);
-            }
-
-            return programNames;
         }
 
         private string ReadJsonConfig(string path, string programName)
@@ -67,7 +27,7 @@ namespace StinterLogger.RaceLogging.General.Program
             string json;
             try
             {   
-                using (StreamReader sr = new StreamReader(path + "default.json"))
+                using (StreamReader sr = new StreamReader(Path.Combine(path, programName)))
                 {
                     json = sr.ReadToEnd();
                 }
@@ -101,21 +61,36 @@ namespace StinterLogger.RaceLogging.General.Program
             return clearedData;
         }
 
+        private bool VerifyFilePath(string path, string fileName)
+        {
+            bool directoryExist = Directory.Exists(path);
+            var abs = Path.Combine(path, fileName);
+            if (directoryExist)
+            {
+                foreach (var name in Directory.EnumerateFiles(path))
+                {
+                    if (name == abs)
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
 #pragma warning disable CS0618 // Type or member is obsolete
-
         private bool ValidatePropertyName(JsonToken token, object value, string propertyName)
         {
             return value != null && token == JsonToken.PropertyName && ((string)value).ToLower() == propertyName;
         }
 
-        public ProgramConfig LoadLocalProgram(string programName)
+        public ProgramConfig LoadProgram(string path, string fileName)
         {
-            if (!this._programNames.Contains(programName))
+            if (!this.VerifyFilePath(path, fileName))
             {
-                throw new ArgumentException("The requested program doesn't exist");
+                throw new ArgumentException("The requested program could not be found");
             }
 
-            var jsonConfig = this.ReadJsonConfig(this._programConfigsPath, programName);
+            var jsonConfig = this.ReadJsonConfig(path, fileName);
             if (jsonConfig == null)
             {
                 throw new IOException("The program could not be read");

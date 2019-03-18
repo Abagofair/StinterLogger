@@ -1,8 +1,10 @@
-﻿using StinterLogger.RaceLogging.General.Models;
+﻿using RaceLogging.RaceLogging.General.SimEventArgs;
+using StinterLogger.RaceLogging.General.Models;
 using StinterLogger.RaceLogging.General.Program.Config;
 using StinterLogger.RaceLogging.General.Program.Data;
 using StinterLogger.RaceLogging.General.SimEventArgs;
 using System;
+using System.IO;
 using System.Timers;
 
 namespace StinterLogger.RaceLogging.General.Program
@@ -35,11 +37,17 @@ namespace StinterLogger.RaceLogging.General.Program
             this._programLoader = programLoader;
         }
 
-        public void Load(string programName)
+        public event EventHandler<ProgramEndEventArgs> ProgramEnd;
+        private void OnProgramEnd(ProgramEndEventArgs e)
+        {
+            this.ProgramEnd?.Invoke(this, e);
+        }
+
+        public void Load(string path, string fileName)
         {
             try
             {
-                this._currentProgramConfig = this._programLoader.LoadLocalProgram(programName);
+                this._currentProgramConfig = this._programLoader.LoadProgram(path, fileName);
             }
             catch (ProgramLoaderException)
             {
@@ -64,6 +72,9 @@ namespace StinterLogger.RaceLogging.General.Program
                 this._tireDataRecieved = false;
                 this._pitDeltaTimer = new Timing.Timer();
                 this._programData = new ProgramData();
+                this._programData.Driver = this._simLogger.ActiveDriverInfo;
+                this._programData.Track = this._simLogger.TrackInfo;
+                this._programData.ProgramConfig = this._currentProgramConfig;
                 this._currentData = new LapTelemetry();
                 this._endConditionCurrentCount = 0;
             }
@@ -131,8 +142,10 @@ namespace StinterLogger.RaceLogging.General.Program
 
             this._endConditionCurrentCount = 0;
 
-            //save data
-
+            this.OnProgramEnd(new ProgramEndEventArgs
+            {
+                ProgramData = this._programData
+            });
         }
 
         private bool IsProgramComplete()
@@ -144,6 +157,7 @@ namespace StinterLogger.RaceLogging.General.Program
         {
             this._currentData.CompletedLap = eventArgs.Lap;
             this._programData.LapData.Add(this._currentData);
+            this._currentData.CompletedLap.LapNumber = this._programData.LapData.Count;
 
             if (this._currentProgramConfig.EndCondition.Condition == Condition.Laps)
             {

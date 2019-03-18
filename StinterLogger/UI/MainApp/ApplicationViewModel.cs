@@ -22,12 +22,12 @@ namespace StinterLogger.UI.MainApp
         public ApplicationViewModel()
         {
             // Add available pages
-            PageViewModels.Add(new StartViewModel());
+            //PageViewModels.Add(new StartViewModel());
             PageViewModels.Add(new FuelCalculatorViewModel());
             PageViewModels.Add(new DebugViewModel());
 
             // Set starting page
-            CurrentPageViewModel = PageViewModels[0];
+            CurrentPageViewModel = PageViewModels[1];
         }
 
         #region Properties / Commands
