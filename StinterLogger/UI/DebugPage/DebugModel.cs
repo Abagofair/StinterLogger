@@ -1,10 +1,6 @@
-﻿using StinterLogger.RaceLogging.Iracing.Debug;
+﻿using StinterLogger.RaceLogging.General.Debug;
 using StinterLogger.UI.Helpers;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace StinterLogger.UI.DebugPage
 {
