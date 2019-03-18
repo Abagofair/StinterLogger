@@ -57,7 +57,7 @@ namespace StinterLogger.UI.MainApp
             mw.Closing += this.WindowClosing;
             mw.Show();
 
-            this._programConfigurator = new ProgramLoader(this._appSettings.GetValue("ProgramConfigs"), null);
+            this._programConfigurator = new ProgramLoader(this.DebugLogger);
 
             var pm = new ProgramManager(this._simLogger, this._programConfigurator);
             //pm.Load("default");

@@ -18,6 +18,10 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
 
         private int _incidents;
 
+        private Driver _activeDriverInfo;
+
+        private Track _trackInfo;
+
         #region lap tracking
         private bool _isLapComplete;
 
@@ -41,14 +45,14 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
 
             this._isLapComplete = true;
 
-            this.ActiveDriverInfo = new Driver();
+            this._activeDriverInfo = new Driver();
 
-            this.TrackInfo = new Track();
+            this._trackInfo = new Track();
         }
 
-        public Driver ActiveDriverInfo { get; set; }
+        public Driver ActiveDriverInfo { get { return this._activeDriverInfo; } }
 
-        public Track TrackInfo { get; set; }
+        public Track TrackInfo { get { return this._trackInfo; } }
 
         public bool IsLive { get => this._sdkWrapper.IsConnected && this._sdkWrapper.IsRunning; }
 
@@ -350,52 +354,49 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
         {
             if (!this._inActiveSession)
             {
-                this.ActiveDriverInfo = new Driver();
-                this.TrackInfo = new Track();
-
                 //even though you're connected earlier, i define the connection to be active when the first sessionInfo has been recieved
                 //that way there is info about the connected driver i can post
                 var globalId = sessionInfoUpdatedEventArgs.SessionInfo["DriverInfo"]["DriverUserID"].GetValue();
-                this.ActiveDriverInfo.GlobalUserId = int.Parse(globalId ?? "-1");
+                this._activeDriverInfo.GlobalUserId = int.Parse(globalId ?? "-1");
 
                 var localId = sessionInfoUpdatedEventArgs.SessionInfo["DriverInfo"]["DriverCarIdx"].GetValue();
-                this.ActiveDriverInfo.LocalId = int.Parse(localId ?? "-1");
+                this._activeDriverInfo.LocalId = int.Parse(localId ?? "-1");
 
                 var usernameQuery = sessionInfoUpdatedEventArgs.SessionInfo["DriverInfo"]["Drivers"]["CarIdx", this.ActiveDriverInfo.LocalId]["UserName"];
                 string userName = usernameQuery.GetValue();
-                this.ActiveDriverInfo.DriverName = userName;
+                this._activeDriverInfo.DriverName = userName;
 
                 var carName = sessionInfoUpdatedEventArgs.SessionInfo["DriverInfo"]["Drivers"]["CarIdx", this.ActiveDriverInfo.LocalId]["CarScreenName"].GetValue();
-                this.ActiveDriverInfo.CarNameLong = carName;
+                this._activeDriverInfo.CarNameLong = carName;
 
-                this.ActiveDriverInfo.Unit = this._sdkWrapper.GetTelemetryValue<int>("DisplayUnits").Value > 0 ? FuelUnit.Liters : FuelUnit.Gallons;
+                this._activeDriverInfo.Unit = this._sdkWrapper.GetTelemetryValue<int>("DisplayUnits").Value > 0 ? FuelUnit.Liters : FuelUnit.Gallons;
 
                 var trackLengthString = sessionInfoUpdatedEventArgs.SessionInfo["WeekendInfo"]["TrackLength"].GetValue();
                 var str = trackLengthString != null ? trackLengthString.Split(' ')[0] : "-1.0";
                 float length = float.Parse(str, CultureInfo.InvariantCulture);
-                this.TrackInfo.Length = length;
+                this._trackInfo.Length = length;
 
                 var trackName = sessionInfoUpdatedEventArgs.SessionInfo["WeekendInfo"]["TrackName"].GetValue();
-                this.TrackInfo.Name = trackName;
+                this._trackInfo.Name = trackName;
 
                 var trackDisplayName = sessionInfoUpdatedEventArgs.SessionInfo["WeekendInfo"]["TrackDisplayName"].GetValue();
-                this.TrackInfo.DisplayName = trackName;
+                this._trackInfo.DisplayName = trackName;
 
                 var trackCountry = sessionInfoUpdatedEventArgs.SessionInfo["WeekendInfo"]["TrackCountry"].GetValue();
-                this.TrackInfo.Country = trackCountry;
+                this._trackInfo.Country = trackCountry;
 
                 var trackSurfaceTemp = sessionInfoUpdatedEventArgs.SessionInfo["WeekendInfo"]["TrackSurfaceTemp"].GetValue().Split(' ')[0];
-                this.TrackInfo.SurfaceTemp = float.Parse(trackSurfaceTemp, CultureInfo.InvariantCulture);
+                this._trackInfo.SurfaceTemp = float.Parse(trackSurfaceTemp, CultureInfo.InvariantCulture);
 
                 var trackAirTemp = sessionInfoUpdatedEventArgs.SessionInfo["WeekendInfo"]["TrackAirTemp"].GetValue().Split(' ')[0];
-                this.TrackInfo.AirTemp = float.Parse(trackAirTemp, CultureInfo.InvariantCulture);
+                this._trackInfo.AirTemp = float.Parse(trackAirTemp, CultureInfo.InvariantCulture);
 
                 int sector = 1;
                 var sectorStartPct = sessionInfoUpdatedEventArgs.SessionInfo["SplitTimeInfo"]["Sectors"]["SectorNum", sector]["SectorStartPct"].GetValue();
                 while (sectorStartPct != null)
                 {
                     var sectorPct = float.Parse(sectorStartPct, CultureInfo.InvariantCulture);
-                    this.TrackInfo.Sectors.Add(new Sector
+                    this._trackInfo.Sectors.Add(new Sector
                     {
                         Number = sector,
                         PctOfTrack = sectorPct,
@@ -408,8 +409,8 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
                 }
 
                 //the first sector is always zero length
-                //i add the finish as the final sector end
-                this.TrackInfo.Sectors.Add(new Sector
+                //Add the finish as the final sector end
+                this._trackInfo.Sectors.Add(new Sector
                 {
                     Number = sector,
                     PctOfTrack = 1.0f,
@@ -420,7 +421,7 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
 
                 this.OnDriverConnected(new DriverConnectionEventArgs
                 {
-                    ActiveDriverInfo = this.ActiveDriverInfo
+                    ActiveDriverInfo = this._activeDriverInfo
                 });
             }
         }
@@ -429,7 +430,7 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
         {
             this.OnDriverDisconnected(new DriverConnectionEventArgs
             {
-                ActiveDriverInfo = this.ActiveDriverInfo
+                ActiveDriverInfo = this._activeDriverInfo
             });
         }
     }
