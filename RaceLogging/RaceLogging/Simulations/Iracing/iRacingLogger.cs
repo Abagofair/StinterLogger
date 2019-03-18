@@ -16,6 +16,8 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
 
         private bool _inActiveSession;
 
+        private int _incidents;
+
         #region lap tracking
         private bool _isLapComplete;
 
@@ -48,7 +50,7 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
 
         public Track TrackInfo { get; set; }
 
-        public bool IsLive { get; set; }
+        public bool IsLive { get => this._sdkWrapper.IsConnected && this._sdkWrapper.IsRunning; }
 
         public event EventHandler<TelemetryEventArgs> TelemetryRecieved;
         private void OnTelemetryRecieved(TelemetryEventArgs e)
@@ -130,8 +132,6 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
             this._sdkWrapper.TelemetryUpdated += this.OnTelemetryUpdate;
             this._sdkWrapper.SessionInfoUpdated += this.OnSessionUpdate;
             this._sdkWrapper.Disconnected += this.InvokeDriverDisconnect;
-
-            this.IsLive = true;
         }
 
         public void StopListening()
@@ -141,8 +141,6 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
             this._sdkWrapper.Disconnected -= this.InvokeDriverDisconnect;
 
             this._sdkWrapper.Stop();
-
-            this.IsLive = false;
         }
 
         #region iracing event listeners
@@ -258,6 +256,7 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
                 };
                 this._timeEstimation.ResetData();
                 this._isLapComplete = false;
+                this._incidents = telemetryUpdatedEventArgs.TelemetryInfo.PlayerCarDriverIncidentCount.Value;
             }
 
             float currentLapDistM = telemetryUpdatedEventArgs.TelemetryInfo.LapDist.Value;
@@ -266,7 +265,7 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
             //Did we pass the finish line?
             //finish line has been crossed
             if (this._currentLap.LapNumber < telemetryUpdatedEventArgs.TelemetryInfo.Lap.Value
-                && currentLapDistM >= 20.0f)
+                && currentLapDistM >= 40.0f)
             {
                 currentLapTime = this.GetLastLapTime();
                 //if iracing cant provide a lap time, see if we cant figure it out on based on the logged (distance, time) data
@@ -285,13 +284,28 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
                     var sector = this.TrackInfo.Sectors[currentSector];
                     var sectorTimeEstimate = this._timeEstimation.GetClosestTimeToDistance(
                         sector.MetersUntilSectorEnd);
-                    sectorTimeEstimate -= sectorSum;
-                    sectorSum += sectorTimeEstimate;
+
+                    if (sectorTimeEstimate > 0.0f)
+                    {
+                        sectorTimeEstimate -= sectorSum;
+                        sectorSum += sectorTimeEstimate;
+                    }
+
                     this._currentLap.SectorTimes.Add(sectorTimeEstimate);
                 }
 
                 this._currentLap.LapTime = currentLapTime;
-                this._currentLap.Incidents = telemetryUpdatedEventArgs.TelemetryInfo.PlayerCarMyIncidentCount.Value;
+
+                int actualIncCount = telemetryUpdatedEventArgs.TelemetryInfo.PlayerCarDriverIncidentCount.Value;
+                if (actualIncCount > this._incidents)
+                {
+                    this._currentLap.Incidents = actualIncCount - this._incidents;
+                }
+                else
+                {
+                    this._currentLap.Incidents = 0;
+                }
+
                 this._currentLap.RaceLaps = telemetryUpdatedEventArgs.TelemetryInfo.RaceLaps.Value;
                 this._currentLap.PlayerCarPosition = telemetryUpdatedEventArgs.TelemetryInfo.CarIdxPosition.Value[this.ActiveDriverInfo.LocalId];
                 this._currentLap.PlayerCarClassPosition = telemetryUpdatedEventArgs.TelemetryInfo.CarIdxClassPosition.Value[this.ActiveDriverInfo.LocalId];
