@@ -1,0 +1,16 @@
+{	
+  "Name": "Default",	
+  "TelemetryUpdateFrequency": 4.0,
+  "EndCondition": ["laps", 2],
+  "LogPitDelta": true,
+  "LogTireWear": true,
+  "Telemetry": [
+      "FuelInTank",
+      "Speed",
+      "BrakePressurePct",
+      "ThrottlePressurePct",
+      "Rpm",
+      "LapDistancePct",
+      "Gear"
+   ]
+}
