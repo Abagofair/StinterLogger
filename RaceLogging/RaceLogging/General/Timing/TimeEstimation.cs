@@ -100,16 +100,22 @@ namespace StinterLogger.RaceLogging.Timing
                 if (val < distanceFromStart)
                 {
                     prevVal = val;
-                    continue;
                 }
-                else if (val >= (distanceFromStart - 1.0f) && val <= (distanceFromStart + 1.0f))
+                else if (val == distanceFromStart)
                 {
                     distanceToRetrieveTimeFor = val;
+                    break;
                 }
                 else
                 {
                     distanceToRetrieveTimeFor = prevVal;
+                    break;
                 }
+            }
+
+            if (distanceToRetrieveTimeFor == 0.0f)
+            {
+                distanceToRetrieveTimeFor = this._distances[this._distances.Count - 1];
             }
 
             float retVal = 0.0f;
