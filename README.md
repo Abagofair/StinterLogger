@@ -3,6 +3,8 @@ Data gathering library and application for racing games
 
 # RaceLogging
 
+Based on: https://github.com/NickThissen/iRacingSdkWrapper
+
 ## ProgramConfig
 
 *ProgramConfig format:*
