@@ -1,9 +1,22 @@
 # StinterLogger
-Data gathering library and application for racing games
+Application based on RaceLogging for racing games.
+
+## Current functionality
+Fuel calculator with automatic fueling upon pit entry, debug logging.
+
+## In progress
+Starting and creating programs
+Options
 
 # RaceLogging
 
-iRacing logging based on: https://github.com/NickThissen/iRacingSdkWrapper
+Data gathering library for racing games.
+
+Currently supported games:
+
+- [iRacing](https://www.iracing.com/)
+-- iRacing logging based on: https://github.com/NickThissen/iRacingSdkWrapper
+
 
 ## ProgramConfig
 
