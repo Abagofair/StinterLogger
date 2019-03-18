@@ -19,6 +19,8 @@ namespace StinterLogger.RaceLogging.General.Models
 
         public float FuelInTankAtStart { get; set; }
 
+        public float FuelUsed { get => this.FuelInTankAtStart - this.FuelInTankAtFinish; }
+
         public List<float> SectorTimes { get; set; }
 
         public int LapNumber { get; set; }
