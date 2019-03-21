@@ -116,7 +116,7 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
             this.PitRoad?.Invoke(this, e);
         }
 
-        public void SetFuelLevelOnPitStop(int fuelToAdd)
+        public void AddFuelOnPitStop(int fuelToAdd)
         {
             if (fuelToAdd > 0)
             {
