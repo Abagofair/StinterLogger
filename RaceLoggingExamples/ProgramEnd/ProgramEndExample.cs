@@ -1,4 +1,4 @@
-﻿using RaceLogging.RaceLogging.General.SimEventArgs;
+﻿using StinterLogger.RaceLogging.General.SimEventArgs;
 using StinterLogger.RaceLogging;
 using StinterLogger.RaceLogging.General.Program;
 using StinterLogger.RaceLogging.Simulations.Iracing;

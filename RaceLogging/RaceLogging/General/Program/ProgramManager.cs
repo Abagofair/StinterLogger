@@ -1,10 +1,8 @@
-﻿using RaceLogging.RaceLogging.General.SimEventArgs;
+﻿using StinterLogger.RaceLogging.General.SimEventArgs;
 using StinterLogger.RaceLogging.General.Models;
 using StinterLogger.RaceLogging.General.Program.Config;
 using StinterLogger.RaceLogging.General.Program.Data;
-using StinterLogger.RaceLogging.General.SimEventArgs;
 using System;
-using System.IO;
 using System.Timers;
 
 namespace StinterLogger.RaceLogging.General.Program
@@ -19,7 +17,7 @@ namespace StinterLogger.RaceLogging.General.Program
 
         private int _endConditionCurrentCount;
 
-        private RaceLogging.Timing.Timer _pitDeltaTimer;
+        private Timing.Timer _pitDeltaTimer;
 
         private bool _waitingForPitDelta;
 

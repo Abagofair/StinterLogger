@@ -1,7 +1,7 @@
 ﻿using StinterLogger.RaceLogging.General.Program.Data;
 using System;
 
-namespace RaceLogging.RaceLogging.General.SimEventArgs
+namespace StinterLogger.RaceLogging.General.SimEventArgs
 {
     public class ProgramEndEventArgs : EventArgs
     {

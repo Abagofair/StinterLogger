@@ -10,8 +10,6 @@ namespace StinterLogger.RaceLogging.General.Program
 {
     public class ProgramLoader : IProgramLoader
     {
-        private readonly List<string> _programNames;
-
         private readonly DebugManager _debugLogger;
 
         public ProgramLoader()

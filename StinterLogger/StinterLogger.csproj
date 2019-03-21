@@ -206,9 +206,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <SplashScreen Include="Resources\throttletrace_stolen.jpg" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="graph_icon.ico" />
   </ItemGroup>
   <ItemGroup>
