@@ -1,4 +1,4 @@
-﻿using StinterLogger.RaceLogging.General.Models;
+﻿using RaceLogging.General.Entities;
 using System;
 
 namespace StinterLogger.RaceLogging.General.SimEventArgs

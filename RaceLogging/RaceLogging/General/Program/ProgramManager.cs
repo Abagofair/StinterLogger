@@ -1,7 +1,9 @@
 ﻿using StinterLogger.RaceLogging.General.SimEventArgs;
-using StinterLogger.RaceLogging.General.Models;
 using StinterLogger.RaceLogging.General.Program.Config;
-using StinterLogger.RaceLogging.General.Program.Data;
+
+using RaceLogging.General.Entities;
+using RaceLogging.General.Enums;
+
 using System;
 using System.Timers;
 
@@ -23,9 +25,9 @@ namespace StinterLogger.RaceLogging.General.Program
 
         private bool _tireDataRecieved;
 
-        private ProgramData _programData;
+        private SimProgram _programData;
 
-        private LapTelemetry _currentData;
+        private Lap _currentData;
 
         private Timer _timer;
 
@@ -69,11 +71,10 @@ namespace StinterLogger.RaceLogging.General.Program
                 this._simLogger.SetTelemetryUpdateHz(this._currentProgramConfig.TelemetryUpdateFrequency);
                 this._tireDataRecieved = false;
                 this._pitDeltaTimer = new Timing.Timer();
-                this._programData = new ProgramData();
-                this._programData.Driver = this._simLogger.ActiveDriverInfo;
-                this._programData.Track = this._simLogger.TrackInfo;
+                this._programData = new SimProgram();
+                this._programData.Driver = this._simLogger.CurrentDriver;
                 this._programData.ProgramConfig = this._currentProgramConfig;
-                this._currentData = new LapTelemetry();
+                this._currentData = new Lap();
                 this._endConditionCurrentCount = 0;
             }
 
@@ -142,7 +143,7 @@ namespace StinterLogger.RaceLogging.General.Program
 
             this.OnProgramEnd(new ProgramEndEventArgs
             {
-                ProgramData = this._programData
+                SimProgram = this._programData
             });
         }
 
@@ -153,9 +154,9 @@ namespace StinterLogger.RaceLogging.General.Program
 
         private void OnLapCompleted(object sender, LapCompletedEventArgs eventArgs)
         {
-            this._currentData.CompletedLap = eventArgs.Lap;
-            this._programData.LapData.Add(this._currentData);
-            this._currentData.CompletedLap.LapNumber = this._programData.LapData.Count;
+            this._currentData = eventArgs.Lap;
+            this._programData.CompletedLaps.Add(this._currentData);
+            this._currentData.LapNumber = this._programData.CompletedLaps.Count;
 
             if (this._currentProgramConfig.EndCondition.Condition == Condition.Laps)
             {
@@ -168,26 +169,26 @@ namespace StinterLogger.RaceLogging.General.Program
                 ++this._endConditionCurrentCount;
             }
 
-            this._currentData = new LapTelemetry();
+            this._currentData = new Lap();
         }
 
         private void OnTelemetryRecieved(object sender, TelemetryEventArgs eventArgs)
         {
-            this._currentData.Telemetries.Add(eventArgs.Telemetry);
+            this._currentData.Telemetry.Add(eventArgs.Telemetry);
         }
 
         private void OnTireData(object sender, TireEventArgs eventArgs)
         {
-            if (!this._tireDataRecieved)
+            if (!this._tireDataRecieved && this._currentData.Pit != null)
             {
-                this._programData.Tires.Add(eventArgs.TireWear);
+                this._currentData.Pit.Tire = eventArgs.Tires;
                 this._tireDataRecieved = true;
             }
         }
 
         private void OnTrackLocation(object sender, TrackLocationEventArgs eventArgs)
         {
-            if (eventArgs.TrackLocation == Models.TrackLocation.InPitStall)
+            if (eventArgs.TrackLocation == TrackLocation.InPitStall)
             {
                 if (this._currentProgramConfig.EndCondition.Condition == Condition.InPitStall)
                 {
@@ -200,9 +201,9 @@ namespace StinterLogger.RaceLogging.General.Program
                     ++this._endConditionCurrentCount;
                 }
 
-                if (this._programData.PitDeltas.Count > 0)
+                if (this._currentData.Pit != null)
                 {
-                    this._programData.PitDeltas[this._programData.PitDeltas.Count - 1].WasInStall = true;
+                    this._currentData.Pit.WasInStall = true;
                 }
             }
         }
@@ -214,16 +215,16 @@ namespace StinterLogger.RaceLogging.General.Program
                 this._pitDeltaTimer.StartTimer();
                 if (!this._waitingForPitDelta)
                 {
-                    this._programData.PitDeltas.Add(new Pit());
+                    this._currentData.Pit = new Pit();
                     this._waitingForPitDelta = true;
                 }
             }
             else
             {
                 double endTimer = this._pitDeltaTimer.StopTimer();
-                if (this._programData.PitDeltas.Count > 0 && this._waitingForPitDelta && endTimer > 0.0)
+                if (this._currentData.Pit != null && this._waitingForPitDelta && endTimer > 0.0)
                 {
-                    this._programData.PitDeltas[this._programData.PitDeltas.Count - 1].PitDeltaSeconds = endTimer;
+                    this._currentData.Pit.PitDeltaSeconds = endTimer;
                     this._waitingForPitDelta = false;
                 }
 

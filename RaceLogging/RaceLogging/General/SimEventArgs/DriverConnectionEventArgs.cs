@@ -1,10 +1,10 @@
-﻿using StinterLogger.RaceLogging.General.Models;
+﻿using RaceLogging.General.Entities;
 using System;
 
 namespace StinterLogger.RaceLogging.General.SimEventArgs
 {
     public class DriverConnectionEventArgs : EventArgs
     {
-        public Driver ActiveDriverInfo { get; set; }
+        public Driver CurrentDriver { get; set; }
     }
 }

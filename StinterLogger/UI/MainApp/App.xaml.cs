@@ -118,9 +118,9 @@ namespace StinterLogger.UI.MainApp
             var displayString = new StringBuilder();
             displayString.Append("Connected");
             displayString.Append(spacing);
-            displayString.Append("GlobalUserId: " + driverConnectionEventArgs.ActiveDriverInfo.GlobalUserId);
+            displayString.Append("GlobalUserId: " + driverConnectionEventArgs.CurrentDriver.GlobalUserId);
             displayString.Append(spacing);
-            displayString.Append("UserName: " + driverConnectionEventArgs.ActiveDriverInfo.DriverName);
+            displayString.Append("UserName: " + driverConnectionEventArgs.CurrentDriver.DriverName);
             this.MainWindow.Title = displayString.ToString();
 
             this.DebugLogger.CreateEventLog(displayString.ToString());

@@ -1,9 +1,9 @@
-﻿using StinterLogger.RaceLogging.General.Models;
+﻿using RaceLogging.General.Entities;
 using System;
 
 namespace StinterLogger.RaceLogging.General.Fuel
 {
-    public class FuelManagerData : IDataModel
+    public class FuelManagerData : IEntity
     {
         private const float LITERS_TO_GALLONS = 0.264172052f;
 
