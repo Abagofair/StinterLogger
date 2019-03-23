@@ -1,12 +1,12 @@
 ﻿using System;
 using iRacingSdkWrapper;
 using System.Globalization;
-using StinterLogger.RaceLogging.Timing;
-using StinterLogger.RaceLogging.General.SimEventArgs;
+using RaceLogging.Timing;
+using RaceLogging.General.SimEventArgs;
 using RaceLogging.General.Entities;
 using RaceLogging.General.Enums;
 
-namespace StinterLogger.RaceLogging.Simulations.Iracing
+namespace RaceLogging.Simulations.Iracing
 {
     public class iRacingLogger : ISimLogger
     {

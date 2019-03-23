@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace StinterLogger.RaceLogging.Timing
+namespace RaceLogging.Timing
 {
     public class TimeEstimation
     {
@@ -118,8 +117,7 @@ namespace StinterLogger.RaceLogging.Timing
                 distanceToRetrieveTimeFor = this._distances[this._distances.Count - 1];
             }
 
-            float retVal = 0.0f;
-            bool found = this._distanceTime.TryGetValue(distanceToRetrieveTimeFor, out retVal);
+            bool found = this._distanceTime.TryGetValue(distanceToRetrieveTimeFor, out float retVal);
 
             return found ? retVal : 0.0f;
         }

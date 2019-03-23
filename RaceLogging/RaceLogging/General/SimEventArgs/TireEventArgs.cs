@@ -1,6 +1,6 @@
 ﻿using RaceLogging.General.Entities;
 
-namespace StinterLogger.RaceLogging.General.SimEventArgs
+namespace RaceLogging.General.SimEventArgs
 {
     public class TireEventArgs
     {

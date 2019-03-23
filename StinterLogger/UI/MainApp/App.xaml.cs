@@ -1,15 +1,15 @@
-﻿using StinterLogger.RaceLogging;
+﻿using RaceLogging;
 using System;
 using System.Collections.Generic;
 using System.Windows;
 using StinterLogger.UI.DetailedDebug;
 using StinterLogger.UI.Configuration;
-using StinterLogger.RaceLogging.General.Fuel;
-using StinterLogger.RaceLogging.General;
-using StinterLogger.RaceLogging.General.Program;
-using StinterLogger.RaceLogging.General.Debug;
-using StinterLogger.RaceLogging.Simulations.Iracing;
-using StinterLogger.RaceLogging.General.SimEventArgs;
+using RaceLogging.General.Fuel;
+using RaceLogging.General;
+using RaceLogging.General.Program;
+using RaceLogging.General.Debug;
+using RaceLogging.Simulations.Iracing;
+using RaceLogging.General.SimEventArgs;
 using System.Text;
 
 namespace StinterLogger.UI.MainApp

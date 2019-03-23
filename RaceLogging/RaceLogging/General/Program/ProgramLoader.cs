@@ -1,12 +1,12 @@
 ﻿using Newtonsoft.Json;
 using RaceLogging.General.Entities;
-using StinterLogger.RaceLogging.General.Debug;
-using StinterLogger.RaceLogging.General.Program.Config;
+using RaceLogging.General.Debug;
+using RaceLogging.General.Program.Config;
 using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace StinterLogger.RaceLogging.General.Program
+namespace RaceLogging.General.Program
 {
     public class ProgramLoader : IProgramLoader
     {

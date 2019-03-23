@@ -1,5 +1,5 @@
-﻿using StinterLogger.RaceLogging.General.Debug;
-using StinterLogger.RaceLogging.General.SimEventArgs;
+﻿using RaceLogging.General.Debug;
+using RaceLogging.General.SimEventArgs;
 using StinterLogger.UI.Helpers;
 using StinterLogger.UI.MainApp;
 using System.Collections.Generic;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StinterLogger.RaceLogging.Timing
+namespace RaceLogging.Timing
 {
     public class Timer
     {

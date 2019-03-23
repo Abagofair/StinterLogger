@@ -1,7 +1,7 @@
-﻿using StinterLogger.RaceLogging.General.Debug;
+﻿using RaceLogging.General.Debug;
 using System;
 
-namespace StinterLogger.RaceLogging.General.SimEventArgs
+namespace RaceLogging.General.SimEventArgs
 {
     public class DebugEventArgs : EventArgs
     {

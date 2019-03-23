@@ -1,7 +1,7 @@
 ﻿using RaceLogging.General.Entities;
 using System;
 
-namespace StinterLogger.RaceLogging.General.Fuel
+namespace RaceLogging.General.Fuel
 {
     public class FuelManagerData : IEntity
     {

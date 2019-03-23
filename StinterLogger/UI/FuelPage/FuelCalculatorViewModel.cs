@@ -1,6 +1,6 @@
-﻿using StinterLogger.RaceLogging.General;
-using StinterLogger.RaceLogging.General.Fuel;
-using StinterLogger.RaceLogging.General.SimEventArgs;
+﻿using RaceLogging.General;
+using RaceLogging.General.Fuel;
+using RaceLogging.General.SimEventArgs;
 using StinterLogger.UI.Helpers;
 using StinterLogger.UI.MainApp;
 using System.Windows;

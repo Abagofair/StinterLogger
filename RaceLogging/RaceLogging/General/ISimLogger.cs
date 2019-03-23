@@ -1,8 +1,8 @@
 ﻿using RaceLogging.General.Entities;
-using StinterLogger.RaceLogging.General.SimEventArgs;
+using RaceLogging.General.SimEventArgs;
 using System;
 
-namespace StinterLogger.RaceLogging
+namespace RaceLogging
 {
     public interface ISimLogger
     {

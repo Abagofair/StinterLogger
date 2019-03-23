@@ -1,7 +1,7 @@
 ﻿using RaceLogging.General.Entities;
 using System;
 
-namespace StinterLogger.RaceLogging.General
+namespace RaceLogging.General
 {
     public interface IManager<T> where T : EventArgs
     {

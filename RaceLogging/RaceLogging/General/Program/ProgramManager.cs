@@ -1,5 +1,5 @@
-﻿using StinterLogger.RaceLogging.General.SimEventArgs;
-using StinterLogger.RaceLogging.General.Program.Config;
+﻿using RaceLogging.General.SimEventArgs;
+using RaceLogging.General.Program.Config;
 
 using RaceLogging.General.Entities;
 using RaceLogging.General.Enums;
@@ -7,13 +7,13 @@ using RaceLogging.General.Enums;
 using System;
 using System.Timers;
 
-namespace StinterLogger.RaceLogging.General.Program
+namespace RaceLogging.General.Program
 {
     public class ProgramManager
     {
-        private ISimLogger _simLogger;
+        private readonly ISimLogger _simLogger;
 
-        private IProgramLoader _programLoader;
+        private readonly IProgramLoader _programLoader;
 
         private ProgramConfig _currentProgramConfig;
 
@@ -71,9 +71,11 @@ namespace StinterLogger.RaceLogging.General.Program
                 this._simLogger.SetTelemetryUpdateHz(this._currentProgramConfig.TelemetryUpdateFrequency);
                 this._tireDataRecieved = false;
                 this._pitDeltaTimer = new Timing.Timer();
-                this._programData = new SimProgram();
-                this._programData.Driver = this._simLogger.CurrentDriver;
-                this._programData.ProgramConfig = this._currentProgramConfig;
+                this._programData = new SimProgram
+                {
+                    Driver = this._simLogger.CurrentDriver,
+                    ProgramConfig = this._currentProgramConfig
+                };
                 this._currentData = new Lap();
                 this._endConditionCurrentCount = 0;
             }

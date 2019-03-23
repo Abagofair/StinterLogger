@@ -1,7 +1,7 @@
-﻿using StinterLogger.RaceLogging.General.SimEventArgs;
-using StinterLogger.RaceLogging;
-using StinterLogger.RaceLogging.General.Program;
-using StinterLogger.RaceLogging.Simulations.Iracing;
+﻿using RaceLogging.General.SimEventArgs;
+using RaceLogging;
+using RaceLogging.General.Program;
+using RaceLogging.Simulations.Iracing;
 using System;
 using System.IO;
 
@@ -29,20 +29,20 @@ namespace RaceLoggingExamples.ProgramEnd
         static void OnProgramEnd(object sender, ProgramEndEventArgs e)
         {
             Console.WriteLine("The program has finished..");
-            Console.WriteLine("Program: " + e.ProgramData.ProgramConfig.Name);
-            Console.WriteLine("Driver: " + e.ProgramData.Driver.DriverName);
-            Console.WriteLine("Car: " + e.ProgramData.Driver.CarNameLong);
-            Console.WriteLine("Track: " + e.ProgramData.Track.DisplayName);
+            Console.WriteLine("Program: " + e.SimProgram.ProgramConfig.Name);
+            Console.WriteLine("Driver: " + e.SimProgram.Driver.DriverName);
+            Console.WriteLine("Car: " + e.SimProgram.CompletedLaps[0].Car.Name);
+            Console.WriteLine("Track: " + e.SimProgram.CompletedLaps[0].Track.Name);
 
-            foreach (var laps in e.ProgramData.LapData)
+            foreach (var laps in e.SimProgram.CompletedLaps)
             {
                 Console.WriteLine("-----------------");
-                Console.WriteLine("Fuel used: " + laps.CompletedLap.FuelUsed);
-                Console.WriteLine("Incidents: " + laps.CompletedLap.Incidents);
-                Console.WriteLine("LapTime: " + TimeSpan.FromSeconds(laps.CompletedLap.LapTime).ToString());
-                Console.WriteLine("Lap number: " + laps.CompletedLap.LapNumber);
+                Console.WriteLine("Fuel used: " + laps.FuelUsed);
+                Console.WriteLine("Incidents: " + laps.Incidents);
+                Console.WriteLine("LapTime: " + TimeSpan.FromSeconds(laps.Time.LapTime).ToString());
+                Console.WriteLine("Lap number: " + laps.LapNumber);
                 int sectorCount = 1;
-                foreach (var sector in laps.CompletedLap.SectorTimes)
+                foreach (var sector in laps.Time.SectorTimes)
                 {
                     Console.WriteLine("\tSector " + sectorCount + ": " + TimeSpan.FromSeconds(sector).ToString());
                     ++sectorCount;

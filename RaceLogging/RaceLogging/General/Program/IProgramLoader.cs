@@ -1,6 +1,6 @@
-﻿using StinterLogger.RaceLogging.General.Program.Config;
+﻿using RaceLogging.General.Program.Config;
 
-namespace StinterLogger.RaceLogging.General.Program
+namespace RaceLogging.General.Program
 {
     public interface IProgramLoader
     {

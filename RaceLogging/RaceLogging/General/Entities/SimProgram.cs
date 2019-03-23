@@ -1,4 +1,4 @@
-﻿using StinterLogger.RaceLogging.General.Program.Config;
+﻿using RaceLogging.General.Program.Config;
 using System.Collections.Generic;
 
 namespace RaceLogging.General.Entities
