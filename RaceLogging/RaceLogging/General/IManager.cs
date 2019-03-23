@@ -1,15 +1,15 @@
-﻿using StinterLogger.RaceLogging.General.Models;
+﻿using RaceLogging.General.Entities;
 using System;
 
 namespace StinterLogger.RaceLogging.General
 {
     public interface IManager<T> where T : EventArgs
     {
-        event EventHandler<T> OnDataModelChange;
+        event EventHandler<T> OnEntityChange;
 
         void Enable();
         void Disable();
 
-        IDataModel DataModel { get; set; }
+        IEntity Entity { get; set; }
     }
 }

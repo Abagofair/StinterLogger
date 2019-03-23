@@ -1,5 +1,5 @@
-﻿using StinterLogger.RaceLogging.General.Debug;
-using StinterLogger.RaceLogging.General.Models;
+﻿using RaceLogging.General.Entities;
+using StinterLogger.RaceLogging.General.Debug;
 using StinterLogger.RaceLogging.General.SimEventArgs;
 using System;
 
@@ -33,20 +33,20 @@ namespace StinterLogger.RaceLogging.General.Fuel
         }
 
         #region events
-        public event EventHandler<FuelDataEventArgs> OnDataModelChange;
+        public event EventHandler<FuelDataEventArgs> OnEntityChange;
         #endregion
 
         #region event invocations
         private void OnFuelModelChange(FuelDataEventArgs fuelDataEventArgs)
         {
-            this.OnDataModelChange?.Invoke(this, fuelDataEventArgs);
+            this.OnEntityChange?.Invoke(this, fuelDataEventArgs);
         }
         #endregion
 
         #region properties
         private FuelManagerData FuelData { get; set; }
 
-        public IDataModel DataModel
+        public IEntity Entity
         {
             get => this.FuelData;
             set => throw new NotImplementedException();
@@ -72,10 +72,7 @@ namespace StinterLogger.RaceLogging.General.Fuel
 
         public void ResetFuelData()
         {
-            this.FuelData = new FuelManagerData
-            {
-                Unit = this._simLogger.ActiveDriverInfo.Unit
-            };
+            this.FuelData = new FuelManagerData();
         }
 
         public void SetGraceValue(float value)
@@ -102,17 +99,17 @@ namespace StinterLogger.RaceLogging.General.Fuel
         {
             var telemetryFromLastLap = lapCompletedEventArgs.Lap;
 
-            this.FuelData.TotalRaceTime += telemetryFromLastLap.LapTime;
-            this.FuelData.TotalFuelUsed += (lapCompletedEventArgs.Lap.FuelInTankAtStart - lapCompletedEventArgs.Lap.FuelInTankAtFinish);
+            this.FuelData.TotalRaceTime += telemetryFromLastLap.Time.LapTime;
+            this.FuelData.TotalFuelUsed += lapCompletedEventArgs.Lap.FuelUsed;
             this.FuelData.LapsCompleted += 1;
 
             this.FuelData.FuelUsagePerLap = this.FuelData.TotalFuelUsed / this.FuelData.LapsCompleted;
 
-            this.FuelData.RemainingRacetime = (float)telemetryFromLastLap.RemainingSessionTime;
+            this.FuelData.RemainingRacetime = telemetryFromLastLap.RemainingSessionTime;
 
             this.FuelData.FuelInTank = lapCompletedEventArgs.Lap.FuelInTankAtStart;
 
-            var remainingLaps = this.RemainingLaps((float)telemetryFromLastLap.RemainingSessionTime, this.FuelData.TotalRaceTime, this.FuelData.LapsCompleted);
+            var remainingLaps = this.RemainingLaps(telemetryFromLastLap.RemainingSessionTime, this.FuelData.TotalRaceTime, this.FuelData.LapsCompleted);
 
             this.FuelData.LapsRemaining = (int)remainingLaps;
 

@@ -20,7 +20,7 @@ namespace StinterLogger.UI.FuelPage
         {
             this.Name = "Fuel Calculator";
             this._fuelCalculator = ((App)Application.Current).FuelManager;
-            this._fuelCalculator.OnDataModelChange += this.OnFuelModelChange;
+            this._fuelCalculator.OnEntityChange += this.OnFuelModelChange;
         }
 
         public string Name { get; set; }
@@ -63,7 +63,7 @@ namespace StinterLogger.UI.FuelPage
             if (enable == "Enable")
             {
                 this._fuelCalculator.Enable();
-                this._fuelModel = new FuelModel((FuelManagerData)this._fuelCalculator.DataModel);
+                this._fuelModel = new FuelModel((FuelManagerData)this._fuelCalculator.Entity);
             }
             else if (enable == "Disable")
             {

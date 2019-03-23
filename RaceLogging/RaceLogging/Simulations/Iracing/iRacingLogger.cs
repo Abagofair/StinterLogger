@@ -2,15 +2,15 @@
 using iRacingSdkWrapper;
 using System.Globalization;
 using StinterLogger.RaceLogging.Timing;
-using StinterLogger.RaceLogging.General.Models;
 using StinterLogger.RaceLogging.General.SimEventArgs;
-using StinterLogger.RaceLogging.General.Fuel;
+using RaceLogging.General.Entities;
+using RaceLogging.General.Enums;
 
 namespace StinterLogger.RaceLogging.Simulations.Iracing
 {
     public class iRacingLogger : ISimLogger
     {
-        private float Min_Lap_Complete_Meters { get => (this.TrackInfo.Length * 1000.0f) - 10.0f; }
+        private float Min_Lap_Complete_Meters { get => (this.CurrentTrack.Length * 1000.0f) - 10.0f; }
 
         private readonly SdkWrapper _sdkWrapper;
 
@@ -18,9 +18,11 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
 
         private int _incidents;
 
-        private Driver _activeDriverInfo;
+        private Driver _currentDriver;
 
-        private Track _trackInfo;
+        private Track _currentTrack;
+
+        private Car _currentCar;
 
         #region lap tracking
         private bool _isLapComplete;
@@ -45,14 +47,18 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
 
             this._isLapComplete = true;
 
-            this._activeDriverInfo = new Driver();
+            this._currentDriver = new Driver();
 
-            this._trackInfo = new Track();
+            this._currentTrack = new Track();
+
+            this._currentCar = new Car();
         }
 
-        public Driver ActiveDriverInfo { get { return this._activeDriverInfo; } }
+        public Driver CurrentDriver { get => this._currentDriver; }
 
-        public Track TrackInfo { get { return this._trackInfo; } }
+        public Track CurrentTrack { get => this._currentTrack; }
+
+        public Car CurrentCar { get => this._currentCar; }
 
         public bool IsLive { get => this._sdkWrapper.IsConnected && this._sdkWrapper.IsRunning; }
 
@@ -61,20 +67,6 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
         {
             //this._debugLogger.CreateEventLog("Race state changed");
             this.TelemetryRecieved?.Invoke(this, e);
-        }
-
-        public event EventHandler<DriverStateEventArgs> DriverStateChanged;
-        private void OnDriverStateChanged(DriverStateEventArgs e)
-        {
-            //this._debugLogger.CreateEventLog("Race state changed");
-            this.DriverStateChanged?.Invoke(this, e);
-        }
-
-        public event EventHandler RaceStateChanged;
-        private void OnRaceStateChanged(EventArgs e)
-        {
-            //this._debugLogger.CreateEventLog("Race state changed");
-            this.RaceStateChanged?.Invoke(this, null);
         }
 
         public event EventHandler<LapCompletedEventArgs> LapCompleted;
@@ -168,7 +160,7 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
 
         private bool IsDriverOnPitRoad(SdkWrapper.TelemetryUpdatedEventArgs eventArgs)
         {
-            bool carOnPitRoad = eventArgs.TelemetryInfo.CarIdxOnPitRoad.Value[this.ActiveDriverInfo.LocalId];
+            bool carOnPitRoad = eventArgs.TelemetryInfo.CarIdxOnPitRoad.Value[this.CurrentDriver.LocalId];
             bool carOnTrack = eventArgs.TelemetryInfo.IsOnTrack.Value;
             return carOnPitRoad && carOnTrack;
         }
@@ -194,7 +186,7 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
 
         private void InvokeTireWearUpdated(SdkWrapper.TelemetryUpdatedEventArgs telemetryUpdatedEventArgs)
         {
-            var trackSurface = telemetryUpdatedEventArgs.TelemetryInfo.CarIdxTrackSurface.Value[this.ActiveDriverInfo.LocalId];
+            var trackSurface = telemetryUpdatedEventArgs.TelemetryInfo.CarIdxTrackSurface.Value[this.CurrentDriver.LocalId];
             if (trackSurface == TrackSurfaces.InPitStall)
             {
                 var tire = new Tire
@@ -214,14 +206,14 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
                 };
                 this.OnTireWearUpdated(new TireEventArgs
                 {
-                    TireWear = tire
+                    Tires = tire
                 });
             }
         }
 
         private void InvokeTrackLocationChange(SdkWrapper.TelemetryUpdatedEventArgs telemetryUpdatedEventArgs)
         {
-            var trackSurface = telemetryUpdatedEventArgs.TelemetryInfo.CarIdxTrackSurface.Value[this.ActiveDriverInfo.LocalId];
+            var trackSurface = telemetryUpdatedEventArgs.TelemetryInfo.CarIdxTrackSurface.Value[this.CurrentDriver.LocalId];
             TrackLocation trackLocation;
             switch (trackSurface)
             {
@@ -256,7 +248,12 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
                 this._currentLap = new Lap
                 {
                     LapNumber = telemetryUpdatedEventArgs.TelemetryInfo.Lap.Value,
-                    FuelInTankAtStart = telemetryUpdatedEventArgs.TelemetryInfo.FuelLevel.Value
+                    FuelInTankAtStart = telemetryUpdatedEventArgs.TelemetryInfo.FuelLevel.Value,
+                    Car = this._currentCar,
+                    Driver = this._currentDriver,
+                    Track = this._currentTrack,
+                    TrackTemp = telemetryUpdatedEventArgs.TelemetryInfo.TrackTemp.Value,
+                    AirTemp = telemetryUpdatedEventArgs.TelemetryInfo.AirTemp.Value
                 };
                 this._timeEstimation.ResetData();
                 this._isLapComplete = false;
@@ -283,11 +280,11 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
                 }
 
                 var sectorSum = 0.0f;
-                for (int currentSector = 0; currentSector < this.TrackInfo.Sectors.Count; ++currentSector)
+                for (int currentSector = 0; currentSector < this.CurrentTrack.Sectors.Count; ++currentSector)
                 {
-                    var sector = this.TrackInfo.Sectors[currentSector];
+                    var sector = this.CurrentTrack.Sectors[currentSector];
                     var sectorTimeEstimate = this._timeEstimation.GetClosestTimeToDistance(
-                        sector.MetersUntilSectorEnd);
+                        sector.MetersUntilSectorStarts);
 
                     if (sectorTimeEstimate > 0.0f)
                     {
@@ -295,10 +292,10 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
                         sectorSum += sectorTimeEstimate;
                     }
 
-                    this._currentLap.SectorTimes.Add(sectorTimeEstimate);
+                    this._currentLap.Time.SectorTimes.Add(sectorTimeEstimate);
                 }
 
-                this._currentLap.LapTime = currentLapTime;
+                this._currentLap.Time.LapTime = currentLapTime;
 
                 int actualIncCount = telemetryUpdatedEventArgs.TelemetryInfo.PlayerCarDriverIncidentCount.Value;
                 if (actualIncCount > this._incidents)
@@ -310,12 +307,13 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
                     this._currentLap.Incidents = 0;
                 }
 
-                this._currentLap.RaceLaps = telemetryUpdatedEventArgs.TelemetryInfo.RaceLaps.Value;
-                this._currentLap.PlayerCarPosition = telemetryUpdatedEventArgs.TelemetryInfo.CarIdxPosition.Value[this.ActiveDriverInfo.LocalId];
-                this._currentLap.PlayerCarClassPosition = telemetryUpdatedEventArgs.TelemetryInfo.CarIdxClassPosition.Value[this.ActiveDriverInfo.LocalId];
-                this._currentLap.RemainingSessionTime = telemetryUpdatedEventArgs.TelemetryInfo.SessionTimeRemain.Value;
-                this._currentLap.InPit = this.IsDriverOnPitRoad(telemetryUpdatedEventArgs);
+                if (this.IsDriverOnPitRoad(telemetryUpdatedEventArgs))
+                {
+                    this._currentLap.Pit = new Pit();
+                }
+
                 this._currentLap.FuelInTankAtFinish = telemetryUpdatedEventArgs.TelemetryInfo.FuelLevel.Value;
+                this._currentLap.RemainingSessionTime = (float)telemetryUpdatedEventArgs.TelemetryInfo.SessionTimeRemain.Value;
 
                 this.OnLapCompleted(new LapCompletedEventArgs
                 {
@@ -357,50 +355,42 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
                 //even though you're connected earlier, i define the connection to be active when the first sessionInfo has been recieved
                 //that way there is info about the connected driver i can post
                 var globalId = sessionInfoUpdatedEventArgs.SessionInfo["DriverInfo"]["DriverUserID"].GetValue();
-                this._activeDriverInfo.GlobalUserId = int.Parse(globalId ?? "-1");
+                this._currentDriver.GlobalUserId = int.Parse(globalId ?? "-1");
 
                 var localId = sessionInfoUpdatedEventArgs.SessionInfo["DriverInfo"]["DriverCarIdx"].GetValue();
-                this._activeDriverInfo.LocalId = int.Parse(localId ?? "-1");
+                this._currentDriver.LocalId = int.Parse(localId ?? "-1");
 
-                var usernameQuery = sessionInfoUpdatedEventArgs.SessionInfo["DriverInfo"]["Drivers"]["CarIdx", this.ActiveDriverInfo.LocalId]["UserName"];
+                var usernameQuery = sessionInfoUpdatedEventArgs.SessionInfo["DriverInfo"]["Drivers"]["CarIdx", this.CurrentDriver.LocalId]["UserName"];
                 string userName = usernameQuery.GetValue();
-                this._activeDriverInfo.DriverName = userName;
+                this._currentDriver.DriverName = userName;
 
-                var carName = sessionInfoUpdatedEventArgs.SessionInfo["DriverInfo"]["Drivers"]["CarIdx", this.ActiveDriverInfo.LocalId]["CarScreenName"].GetValue();
-                this._activeDriverInfo.CarNameLong = carName;
-
-                this._activeDriverInfo.Unit = this._sdkWrapper.GetTelemetryValue<int>("DisplayUnits").Value > 0 ? FuelUnit.Liters : FuelUnit.Gallons;
+                var carName = sessionInfoUpdatedEventArgs.SessionInfo["DriverInfo"]["Drivers"]["CarIdx", this.CurrentDriver.LocalId]["CarScreenName"].GetValue();
+                this._currentCar.Name = carName;
 
                 var trackLengthString = sessionInfoUpdatedEventArgs.SessionInfo["WeekendInfo"]["TrackLength"].GetValue();
                 var str = trackLengthString != null ? trackLengthString.Split(' ')[0] : "-1.0";
                 float length = float.Parse(str, CultureInfo.InvariantCulture);
-                this._trackInfo.Length = length;
+                this._currentTrack.Length = length;
 
                 var trackName = sessionInfoUpdatedEventArgs.SessionInfo["WeekendInfo"]["TrackName"].GetValue();
-                this._trackInfo.Name = trackName;
+                this._currentTrack.Name = trackName;
 
                 var trackDisplayName = sessionInfoUpdatedEventArgs.SessionInfo["WeekendInfo"]["TrackDisplayName"].GetValue();
-                this._trackInfo.DisplayName = trackName;
+                this._currentTrack.DisplayName = trackName;
 
                 var trackCountry = sessionInfoUpdatedEventArgs.SessionInfo["WeekendInfo"]["TrackCountry"].GetValue();
-                this._trackInfo.Country = trackCountry;
-
-                var trackSurfaceTemp = sessionInfoUpdatedEventArgs.SessionInfo["WeekendInfo"]["TrackSurfaceTemp"].GetValue().Split(' ')[0];
-                this._trackInfo.SurfaceTemp = float.Parse(trackSurfaceTemp, CultureInfo.InvariantCulture);
-
-                var trackAirTemp = sessionInfoUpdatedEventArgs.SessionInfo["WeekendInfo"]["TrackAirTemp"].GetValue().Split(' ')[0];
-                this._trackInfo.AirTemp = float.Parse(trackAirTemp, CultureInfo.InvariantCulture);
+                this._currentTrack.Country = trackCountry;
 
                 int sector = 1;
                 var sectorStartPct = sessionInfoUpdatedEventArgs.SessionInfo["SplitTimeInfo"]["Sectors"]["SectorNum", sector]["SectorStartPct"].GetValue();
                 while (sectorStartPct != null)
                 {
                     var sectorPct = float.Parse(sectorStartPct, CultureInfo.InvariantCulture);
-                    this._trackInfo.Sectors.Add(new Sector
+                    this._currentTrack.Sectors.Add(new Sector
                     {
                         Number = sector,
                         PctOfTrack = sectorPct,
-                        MetersUntilSectorEnd = sectorPct * (length * 1000.0f)
+                        MetersUntilSectorStarts = sectorPct * (length * 1000.0f)
                     });
 
                     ++sector;
@@ -410,18 +400,18 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
 
                 //the first sector is always zero length
                 //Add the finish as the final sector end
-                this._trackInfo.Sectors.Add(new Sector
+                this._currentTrack.Sectors.Add(new Sector
                 {
                     Number = sector,
                     PctOfTrack = 1.0f,
-                    MetersUntilSectorEnd = (length * 1000.0f)
+                    MetersUntilSectorStarts = (length * 1000.0f)
                 });
 
                 this._inActiveSession = true;
 
                 this.OnDriverConnected(new DriverConnectionEventArgs
                 {
-                    ActiveDriverInfo = this._activeDriverInfo
+                    CurrentDriver = this._currentDriver
                 });
             }
         }
@@ -430,7 +420,7 @@ namespace StinterLogger.RaceLogging.Simulations.Iracing
         {
             this.OnDriverDisconnected(new DriverConnectionEventArgs
             {
-                ActiveDriverInfo = this._activeDriverInfo
+                CurrentDriver = this._currentDriver
             });
         }
     }

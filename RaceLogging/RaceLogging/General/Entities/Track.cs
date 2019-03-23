@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace StinterLogger.RaceLogging.General.Models
+namespace RaceLogging.General.Entities
 {
     public class Track
     {
@@ -22,12 +18,6 @@ namespace StinterLogger.RaceLogging.General.Models
         public int Id { get; set; }
 
         public float Length { get; set; }
-
-        public string WeatherType { get; set; }
-
-        public float SurfaceTemp { get; set; }
-
-        public float AirTemp { get; set; }
 
         public List<Sector> Sectors { get; set; }
     }

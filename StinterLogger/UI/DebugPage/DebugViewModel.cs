@@ -18,7 +18,7 @@ namespace StinterLogger.UI.DebugPage
             this.Name = "Debug log";
             this._debugModels = new List<DebugModel>();
             this._debugLogger = ((App)Application.Current).DebugLogger;
-            this._debugLogger.OnDataModelChange += this.OnDebugOutput;
+            this._debugLogger.OnEntityChange += this.OnDebugOutput;
         }
 
         public string Name { get; set; }

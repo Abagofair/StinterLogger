@@ -1,4 +1,4 @@
-﻿using StinterLogger.RaceLogging.General.Models;
+﻿using RaceLogging.General.Entities;
 using StinterLogger.RaceLogging.General.SimEventArgs;
 using System;
 
@@ -7,10 +7,6 @@ namespace StinterLogger.RaceLogging
     public interface ISimLogger
     {
         event EventHandler<TelemetryEventArgs> TelemetryRecieved;
-
-        event EventHandler<DriverStateEventArgs> DriverStateChanged;
-
-        event EventHandler RaceStateChanged;
 
         event EventHandler<LapCompletedEventArgs> LapCompleted;
 
@@ -32,9 +28,9 @@ namespace StinterLogger.RaceLogging
 
         void AddFuelOnPitStop(int fuelToAdd);
 
-        Driver ActiveDriverInfo { get; }
+        Driver CurrentDriver { get; }
 
-        Track TrackInfo { get; }
+        Track CurrentTrack { get; }
 
         bool IsLive { get; }
     }

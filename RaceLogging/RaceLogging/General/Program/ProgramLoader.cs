@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
+using RaceLogging.General.Entities;
 using StinterLogger.RaceLogging.General.Debug;
-using StinterLogger.RaceLogging.General.Models;
 using StinterLogger.RaceLogging.General.Program.Config;
 using System;
 using System.Collections.Generic;
