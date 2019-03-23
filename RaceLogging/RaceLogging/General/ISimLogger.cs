@@ -30,7 +30,7 @@ namespace StinterLogger.RaceLogging
 
         void StopListening();
 
-        void SetFuelLevelOnPitStop(int fuelToAdd);
+        void AddFuelOnPitStop(int fuelToAdd);
 
         Driver ActiveDriverInfo { get; }
 

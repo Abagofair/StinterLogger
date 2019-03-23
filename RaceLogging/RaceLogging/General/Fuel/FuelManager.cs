@@ -136,11 +136,11 @@ namespace StinterLogger.RaceLogging.General.Fuel
                     float diff = this.FuelData.FuelToFinish - (float)cast;
                     if (diff >= 0.5f)
                     {
-                        this._simLogger.SetFuelLevelOnPitStop((int)(this.FuelData.FuelToFinish + 1));
+                        this._simLogger.AddFuelOnPitStop((int)(this.FuelData.FuelToFinish + 1));
                     }
                     else
                     {
-                        this._simLogger.SetFuelLevelOnPitStop((int)this.FuelData.FuelToFinish);
+                        this._simLogger.AddFuelOnPitStop((int)this.FuelData.FuelToFinish);
                     }
                     this._outLap = true;
                 }
