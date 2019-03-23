@@ -1,7 +1,7 @@
 ﻿using RaceLogging.General.Entities;
 using System;
 
-namespace StinterLogger.RaceLogging.General.SimEventArgs
+namespace RaceLogging.General.SimEventArgs
 {
     public class LapCompletedEventArgs : EventArgs
     {

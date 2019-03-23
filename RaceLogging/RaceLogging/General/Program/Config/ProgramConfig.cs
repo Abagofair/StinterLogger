@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
-namespace StinterLogger.RaceLogging.General.Program.Config
+namespace RaceLogging.General.Program.Config
 {
     public enum Condition
     {

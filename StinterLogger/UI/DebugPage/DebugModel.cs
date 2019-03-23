@@ -1,4 +1,4 @@
-﻿using StinterLogger.RaceLogging.General.Debug;
+﻿using RaceLogging.General.Debug;
 using StinterLogger.UI.Helpers;
 using System;
 

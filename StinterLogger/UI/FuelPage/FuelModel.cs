@@ -1,4 +1,4 @@
-﻿using StinterLogger.RaceLogging.General.Fuel;
+﻿using RaceLogging.General.Fuel;
 using StinterLogger.UI.Helpers;
 
 namespace StinterLogger.UI.FuelPage

@@ -1,7 +1,7 @@
-﻿using StinterLogger.RaceLogging.General.Fuel;
+﻿using RaceLogging.General.Fuel;
 using System;
 
-namespace StinterLogger.RaceLogging.General.SimEventArgs
+namespace RaceLogging.General.SimEventArgs
 {
     public class FuelDataEventArgs : EventArgs
     {

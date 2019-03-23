@@ -1,9 +1,9 @@
 ﻿using RaceLogging.General.Entities;
-using StinterLogger.RaceLogging.General.Debug;
-using StinterLogger.RaceLogging.General.SimEventArgs;
+using RaceLogging.General.Debug;
+using RaceLogging.General.SimEventArgs;
 using System;
 
-namespace StinterLogger.RaceLogging.General.Fuel
+namespace RaceLogging.General.Fuel
 {
     public class FuelManager : IManager<FuelDataEventArgs>
     {
