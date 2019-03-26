@@ -337,7 +337,8 @@ namespace RaceLogging.Simulations.Iracing
                 BrakePressurePct = telemetryUpdatedEventArgs.TelemetryInfo.Brake.Value,
                 ThrottlePressurePct = telemetryUpdatedEventArgs.TelemetryInfo.Throttle.Value,
                 Rpm = telemetryUpdatedEventArgs.TelemetryInfo.RPM.Value,
-                Gear = telemetryUpdatedEventArgs.TelemetryInfo.Gear.Value
+                Gear = telemetryUpdatedEventArgs.TelemetryInfo.Gear.Value,
+                LapDistancePct = telemetryUpdatedEventArgs.TelemetryInfo.LapDistPct.Value
             };
 
             var telemetryEventArgs = new TelemetryEventArgs

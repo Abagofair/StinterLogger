@@ -178,7 +178,15 @@ namespace RaceLogging.General.Program
 
         private void OnTelemetryRecieved(object sender, TelemetryEventArgs eventArgs)
         {
-            this._currentData.Telemetry.Add(eventArgs.Telemetry);
+            Telemetry tm = new Telemetry();
+            foreach (var telemetryProp in eventArgs.Telemetry.GetType().GetProperties())
+            {
+                if (this._currentProgramConfig.Telemetry.Contains(telemetryProp.Name.ToLower()))
+                {
+                    tm.GetType().GetProperty(telemetryProp.Name).SetValue(tm, telemetryProp.GetValue(eventArgs.Telemetry));
+                }
+            }
+            this._currentData.Telemetry.Add(tm);
         }
 
         private void OnTireData(object sender, TireEventArgs eventArgs)
