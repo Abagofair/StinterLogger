@@ -10,14 +10,9 @@ namespace RaceLogging.General.Program
 {
     public class ProgramWriter : IProgramWriter
     {
-        public Task<byte[]> WriteProgramToCompressedByteArrayAsync(SimProgram program, CompressionLevel compressionLevel)
+        public Task<byte[]> WriteProgramToByteArrayAsync(SimProgram program, CompressionLevel compressionLevel)
         {
-            return Task.Factory.StartNew(() => this.WriteProgramToCompressedByteArray(program, compressionLevel));
-        }
-
-        public Task<byte[]> WriteProgramToByteArrayAsync(SimProgram program)
-        {
-            return Task.Factory.StartNew(() => this.WriteProgramToByteArray(program));
+            return Task.Factory.StartNew(() => this.WriteProgramToByteArray(program, compressionLevel));
         }
 
         public Task<string> WriteProgramToStringAsync(SimProgram program)
@@ -25,7 +20,7 @@ namespace RaceLogging.General.Program
             return Task.Factory.StartNew(() => this.WriteProgramToString(program));
         }
 
-        public byte[] WriteProgramToCompressedByteArray(SimProgram simProgram, CompressionLevel compressionLevel)
+        public byte[] WriteProgramToByteArray(SimProgram simProgram, CompressionLevel compressionLevel)
         {
             var jsonBytes = this.WriteProgramToByteArray(simProgram);
             MemoryStream output = new MemoryStream();
@@ -36,7 +31,7 @@ namespace RaceLogging.General.Program
             return output.ToArray();
         }
 
-        public byte[] WriteProgramToByteArray(SimProgram simProgram)
+        private byte[] WriteProgramToByteArray(SimProgram simProgram)
         {
             var json = this.WriteProgramToString(simProgram);
             return Encoding.Unicode.GetBytes(json);

@@ -9,16 +9,12 @@ namespace RaceLogging.General.Program
 {
     public interface IProgramWriter
     {
-        Task<byte[]> WriteProgramToByteArrayAsync(SimProgram program);
-
-        Task<byte[]> WriteProgramToCompressedByteArrayAsync(SimProgram program, CompressionLevel compressionLevel);
+        Task<byte[]> WriteProgramToByteArrayAsync(SimProgram program, CompressionLevel compressionLevel);
 
         Task<string> WriteProgramToStringAsync(SimProgram program);
 
         string WriteProgramToString(SimProgram program);
 
-        byte[] WriteProgramToByteArray(SimProgram simProgram);
-
-        byte[] WriteProgramToCompressedByteArray(SimProgram simProgram, CompressionLevel compressionLevel);
+        byte[] WriteProgramToByteArray(SimProgram simProgram, CompressionLevel compressionLevel);
     }
 }
