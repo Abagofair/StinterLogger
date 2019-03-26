@@ -54,19 +54,16 @@ namespace RaceLogging.General.Program
             writer.WritePropertyName("TelemetryUpdateFrequency");
             writer.WriteValue(program.ProgramConfig.TelemetryUpdateFrequency);
 
-            writer.WritePropertyName("TelemetryUpdateFrequency");
-            writer.WriteValue(program.ProgramConfig.TelemetryUpdateFrequency);
-
             writer.WritePropertyName("EndCondition");
             writer.WriteStartArray();
             writer.WriteValue(program.ProgramConfig.EndCondition.Condition.ToString());
             writer.WriteValue(program.ProgramConfig.EndCondition.Count);
             writer.WriteEndArray();
 
-            writer.WritePropertyName("TelemetryUpdateFrequency");
+            writer.WritePropertyName("LogPitDelta");
             writer.WriteValue(program.ProgramConfig.LogPitDelta);
 
-            writer.WritePropertyName("TelemetryUpdateFrequency");
+            writer.WritePropertyName("LogTireWear");
             writer.WriteValue(program.ProgramConfig.LogTireWear);
 
             writer.WritePropertyName("Telemetry");

@@ -32,9 +32,9 @@ namespace RaceLoggingExamples
             IProgramWriter writer = new ProgramWriter();
             Console.WriteLine("Writing program to disk..");
 
-            var bytes = writer.WriteProgramToCompressedByteArray(e.SimProgram, System.IO.Compression.CompressionLevel.Optimal);
+            var bytes = writer.WriteProgramToByteArray(e.SimProgram, System.IO.Compression.CompressionLevel.Optimal);
 
-            File.WriteAllBytes(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\test.prodat", bytes);
+            File.WriteAllBytes(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\test.prodata", bytes);
 
             var str = writer.WriteProgramToString(e.SimProgram);
 
