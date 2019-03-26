@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RaceLogging.General.Entities;
 
-namespace RaceLogging.RaceLogging.General.Program
+namespace RaceLogging.General.Program
 {
     public class ProgramWriter : IProgramWriter
     {
-        public Task<byte[]> WriteProgramToCompressedByteArrayAsync(SimProgram program)
+        public Task<byte[]> WriteProgramToCompressedByteArrayAsync(SimProgram program, CompressionLevel compressionLevel)
         {
-            return Task.Factory.StartNew(() => this.WriteProgramToCompressedByteArray(program));
+            return Task.Factory.StartNew(() => this.WriteProgramToCompressedByteArray(program, compressionLevel));
         }
 
         public Task<byte[]> WriteProgramToByteArrayAsync(SimProgram program)
@@ -25,11 +25,11 @@ namespace RaceLogging.RaceLogging.General.Program
             return Task.Factory.StartNew(() => this.WriteProgramToString(program));
         }
 
-        public byte[] WriteProgramToCompressedByteArray(SimProgram simProgram)
+        public byte[] WriteProgramToCompressedByteArray(SimProgram simProgram, CompressionLevel compressionLevel)
         {
             var jsonBytes = this.WriteProgramToByteArray(simProgram);
             MemoryStream output = new MemoryStream();
-            using (DeflateStream dstream = new DeflateStream(output, CompressionLevel.Fastest))
+            using (DeflateStream dstream = new DeflateStream(output, compressionLevel))
             {
                 dstream.Write(jsonBytes, 0, jsonBytes.Length);
             }
@@ -108,6 +108,7 @@ namespace RaceLogging.RaceLogging.General.Program
             if (program.CompletedLaps.Count > 0)
             {
                 writer.WritePropertyName("Track");
+                //track object
                 writer.WriteStartObject();
                 var track = program.CompletedLaps[0].Track;
                 writer.WritePropertyName("Name");
@@ -118,32 +119,37 @@ namespace RaceLogging.RaceLogging.General.Program
                 writer.WriteValue(track.Length);
                 writer.WritePropertyName("Sectors");
 
-                writer.WriteStartObject();
+                writer.WriteStartArray();
                 foreach (var sector in track.Sectors)
                 {
+                    writer.WriteStartObject();
                     writer.WritePropertyName("Number");
                     writer.WriteValue(sector.Number);
                     writer.WritePropertyName("MetersUntilSectorStarts");
                     writer.WriteValue(sector.MetersUntilSectorStarts);
                     writer.WritePropertyName("PctOfTrack");
                     writer.WriteValue(sector.PctOfTrack);
+                    writer.WriteEndObject();
                 }
+                writer.WriteEndArray();
+                //end of track object
                 writer.WriteEndObject();
 
                 var car = program.CompletedLaps[0].Car;
                 writer.WritePropertyName("Car");
                 writer.WriteValue(car.Name);
 
-                writer.WriteEndObject();
-
                 writer.WritePropertyName("CompletedLaps");
                 writer.WriteStartArray();
                 foreach (var lap in program.CompletedLaps)
                 {
+                    //lap object
+                    writer.WriteStartObject();
                     writer.WritePropertyName("LapNumber");
                     writer.WriteValue(lap.LapNumber);
 
                     writer.WritePropertyName("Time");
+                    //time object
                     writer.WriteStartObject();
                     writer.WritePropertyName("Lap");
                     writer.WriteValue(lap.Time.LapTime);
@@ -154,6 +160,7 @@ namespace RaceLogging.RaceLogging.General.Program
                         writer.WriteValue(sector);
                     }
                     writer.WriteEndArray();
+                    //end of time object
                     writer.WriteEndObject();
 
                     writer.WritePropertyName("FuelAtStart");
@@ -171,16 +178,18 @@ namespace RaceLogging.RaceLogging.General.Program
                     writer.WritePropertyName("TrackTemp");
                     writer.WriteValue(lap.TrackTemp);
 
-                    if (program.ProgramConfig.LogPitDelta)
+                    if (program.ProgramConfig.LogPitDelta && lap.Pit != null)
                     {
                         writer.WritePropertyName("PitDelta");
                         writer.WriteValue(lap.Pit.PitDeltaSeconds);
                         writer.WritePropertyName("WasInStall");
                         writer.WriteValue(lap.Pit.WasInStall);
                     }
-                    if (program.ProgramConfig.LogTireWear)
+
+                    if (program.ProgramConfig.LogTireWear && lap.Pit != null && lap.Pit.Tire != null)
                     {
                         writer.WritePropertyName("Tires");
+                        //tire object
                         writer.WriteStartObject();
                         writer.WritePropertyName("LFwearL");
                         writer.WriteValue(lap.Pit.Tire.LFwearL);
@@ -209,13 +218,16 @@ namespace RaceLogging.RaceLogging.General.Program
                         writer.WriteValue(lap.Pit.Tire.RRwearM);
                         writer.WritePropertyName("RRwearR");
                         writer.WriteValue(lap.Pit.Tire.RRwearR);
+                        //end of tire object
                         writer.WriteEndObject();
                     }
 
                     writer.WritePropertyName("Telemetry");
-                    writer.WriteStartObject();
+                    writer.WriteStartArray();
                     foreach (var telemetry in lap.Telemetry)
                     {
+                        //telemetry object
+                        writer.WriteStartObject();
                         if (telemetry.ThrottlePressurePct > 0)
                         {
                             writer.WritePropertyName("ThrottlePressurePct");
@@ -251,16 +263,21 @@ namespace RaceLogging.RaceLogging.General.Program
                             writer.WritePropertyName("Speed");
                             writer.WriteValue(telemetry.Speed);
                         }
+                        //end of telemetry object
+                        writer.WriteEnd();
                     }
+                    writer.WriteEndArray();
+                    //end of lap object
                     writer.WriteEndObject();
                 }
+                writer.WriteEndArray();
             }
 
             writer.WriteEndObject();
             //data written
 
             writer.WriteEndObject();
-
+            writer.Close();
             return sw.ToString();
         }
     }

@@ -156,7 +156,9 @@ namespace RaceLogging.General.Program
 
         private void OnLapCompleted(object sender, LapCompletedEventArgs eventArgs)
         {
+            var telemetry = this._currentData.Telemetry;
             this._currentData = eventArgs.Lap;
+            this._currentData.Telemetry = telemetry;
             this._programData.CompletedLaps.Add(this._currentData);
             this._currentData.LapNumber = this._programData.CompletedLaps.Count;
 
