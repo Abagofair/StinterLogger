@@ -157,7 +157,13 @@ namespace RaceLogging.General.Program
         private void OnLapCompleted(object sender, LapCompletedEventArgs eventArgs)
         {
             var telemetry = this._currentData.Telemetry;
+            Pit pit = null;
+            if (this._currentData.Pit != null)
+            {
+                pit = this._currentData.Pit;
+            }
             this._currentData = eventArgs.Lap;
+            this._currentData.Pit = pit;
             this._currentData.Telemetry = telemetry;
             this._programData.CompletedLaps.Add(this._currentData);
             this._currentData.LapNumber = this._programData.CompletedLaps.Count;
@@ -174,18 +180,14 @@ namespace RaceLogging.General.Program
             }
 
             this._currentData = new Lap();
+            if (this._waitingForPitDelta)
+            {
+                this._currentData.Pit = new Pit();
+            }
         }
 
         private void OnTelemetryRecieved(object sender, TelemetryEventArgs eventArgs)
         {
-            /*Telemetry tm = new Telemetry();
-            foreach (var telemetryProp in eventArgs.Telemetry.GetType().GetProperties())
-            {
-                if (this._currentProgramConfig.Telemetry.Contains(telemetryProp.Name.ToLower()))
-                {
-                    tm.GetType().GetProperty(telemetryProp.Name).SetValue(tm, telemetryProp.GetValue(eventArgs.Telemetry));
-                }
-            }*/
             this._currentData.Telemetry.Add(eventArgs.Telemetry);
         }
 
