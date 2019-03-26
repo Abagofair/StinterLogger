@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using RaceLogging.General.Entities;
+using System.Collections.Generic;
 
 namespace RaceLogging.General.Program.Config
 {
@@ -32,5 +33,25 @@ namespace RaceLogging.General.Program.Config
         public EndCondition EndCondition { get; }
 
         public List<string> Telemetry { get; set; }
+
+        public static List<Dictionary<string, object>> GetTelemetryValuesIfInConfig(List<string> telemetryConfig, List<Telemetry> telemetries)
+        {
+            var dict = new Dictionary<string, object>();
+            var telemetryList = new List<Dictionary<string, object>>();
+            foreach (var telemetry in telemetries)
+            {
+                Telemetry tm = new Telemetry();
+                foreach (var telemetryProp in telemetry.GetType().GetProperties())
+                {
+                    if (telemetryConfig.Contains(telemetryProp.Name.ToLower()))
+                    {
+                        dict.Add(telemetryProp.Name, telemetryProp.GetValue(telemetry));
+                    }
+                }
+                telemetryList.Add(dict);
+                dict = new Dictionary<string, object>();
+            }
+            return telemetryList;
+        }
     }
 }

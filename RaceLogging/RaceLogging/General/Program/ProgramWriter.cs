@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RaceLogging.General.Entities;
+using RaceLogging.General.Program.Config;
 
 namespace RaceLogging.General.Program
 {
@@ -216,44 +217,14 @@ namespace RaceLogging.General.Program
 
                     writer.WritePropertyName("Telemetry");
                     writer.WriteStartArray();
-                    foreach (var telemetry in lap.Telemetry)
+                    foreach (var value in ProgramConfig.GetTelemetryValuesIfInConfig(program.ProgramConfig.Telemetry, lap.Telemetry))
                     {
                         //telemetry object
                         writer.WriteStartObject();
-                        if (telemetry.ThrottlePressurePct > 0)
+                        foreach (var telemetry in value)
                         {
-                            writer.WritePropertyName("ThrottlePressurePct");
-                            writer.WriteValue(telemetry.ThrottlePressurePct);
-                        }
-                        if (telemetry.BrakePressurePct > 0)
-                        {
-                            writer.WritePropertyName("BrakePressurePct");
-                            writer.WriteValue(telemetry.BrakePressurePct);
-                        }
-                        if (telemetry.FuelInTank > 0)
-                        {
-                            writer.WritePropertyName("FuelInTank");
-                            writer.WriteValue(telemetry.FuelInTank);
-                        }
-                        if (telemetry.Gear > 0)
-                        {
-                            writer.WritePropertyName("Gear");
-                            writer.WriteValue(telemetry.Gear);
-                        }
-                        if (telemetry.LapDistancePct > 0)
-                        {
-                            writer.WritePropertyName("LapDistancePct");
-                            writer.WriteValue(telemetry.LapDistancePct);
-                        }
-                        if (telemetry.Rpm > 0)
-                        {
-                            writer.WritePropertyName("Rpm");
-                            writer.WriteValue(telemetry.Rpm);
-                        }
-                        if (telemetry.Speed > 0)
-                        {
-                            writer.WritePropertyName("Speed");
-                            writer.WriteValue(telemetry.Speed);
+                            writer.WritePropertyName(telemetry.Key);
+                            writer.WriteValue(telemetry.Value);
                         }
                         //end of telemetry object
                         writer.WriteEnd();
