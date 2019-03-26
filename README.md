@@ -83,3 +83,11 @@ Values between 4-20 Hz seems to cause no noticable issues.
    ]
 }
 ```
+
+*Example output:*
+```
+https://pastebin.com/1n1W3jjd
+```
+
+https://pastebin.com/1n1W3jjd
+```
