@@ -78,6 +78,39 @@ namespace RaceLogging.General.Program
             writer.WriteEndObject();
             //config written
 
+            //write debrief
+            writer.WritePropertyName("ProgramDebrief");
+            writer.WriteStartObject();
+
+            writer.WritePropertyName("AvgLapTime");
+            writer.WriteValue(program.ProgramDebrief.AvgLapTime);
+
+            writer.WritePropertyName("AvgSectorTimes");
+            writer.WriteStartArray();
+            foreach (var sector in program.ProgramDebrief.AvgSectorTimes)
+            {
+                writer.WriteValue(sector);
+            }
+            writer.WriteEndArray();
+
+            writer.WritePropertyName("AvgLFWearPrLap");
+            writer.WriteValue(program.ProgramDebrief.AvgLFWearPrLap);
+            writer.WritePropertyName("AvgRFWearPrLap");
+            writer.WriteValue(program.ProgramDebrief.AvgRFWearPrLap);
+            writer.WritePropertyName("AvgLRWearPrLap");
+            writer.WriteValue(program.ProgramDebrief.AvgLRWearPrLap);
+            writer.WritePropertyName("AvgRRWearPrLap");
+            writer.WriteValue(program.ProgramDebrief.AvgRRWearPrLap);
+
+            writer.WritePropertyName("AvgFuelUsagePrLap");
+            writer.WriteValue(program.ProgramDebrief.AvgFuelUsagePrLap);
+
+            writer.WritePropertyName("MaxPitDeltaWithStall");
+            writer.WriteValue(program.ProgramDebrief.MaxPitDeltaWithStall);
+
+            writer.WriteEndObject();
+            //debrief written
+
             //data
             writer.WritePropertyName("ProgramData");
 

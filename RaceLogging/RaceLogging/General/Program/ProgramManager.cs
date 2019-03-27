@@ -6,6 +6,7 @@ using RaceLogging.General.Enums;
 
 using System;
 using System.Timers;
+using RaceLogging.RaceLogging.General.Entities;
 
 namespace RaceLogging.General.Program
 {
@@ -143,6 +144,8 @@ namespace RaceLogging.General.Program
 
             this._endConditionCurrentCount = 0;
 
+            this._programData.ProgramDebrief = this.CreateProgramDebrief(this._programData);
+
             this.OnProgramEnd(new ProgramEndEventArgs
             {
                 SimProgram = this._programData
@@ -249,6 +252,54 @@ namespace RaceLogging.General.Program
         private void OnConditionMinutesMet(object sender, ElapsedEventArgs eventArgs)
         {
             this.Stop();
+        }
+
+        private ProgramDebrief CreateProgramDebrief(SimProgram program)
+        {
+            var debrief = new ProgramDebrief(program.CompletedLaps[0].Time.SectorTimes.Count);
+
+            int tireWearCount = 0;
+
+            foreach (var laps in program.CompletedLaps)
+            {
+                debrief.AvgLapTime += laps.Time.LapTime;
+                debrief.AvgFuelUsagePrLap += laps.FuelUsed;
+                
+                for (int i = 0; i < debrief.AvgSectorTimes.Length; ++i)
+                {
+                    debrief.AvgSectorTimes[i] += laps.Time.SectorTimes[i];
+                }
+
+                if (laps.Pit != null && laps.Pit.Tire != null)
+                {
+                    var tires = laps.Pit.Tire;
+                    debrief.AvgLFWearPrLap += ((tires.LFwearL + tires.LFwearM + tires.LFwearR) / 3);
+                    debrief.AvgLRWearPrLap += ((tires.LRwearL + tires.LRwearM + tires.LRwearR) / 3);
+                    debrief.AvgRFWearPrLap += ((tires.RFwearL + tires.RFwearM + tires.RFwearR) / 3);
+                    debrief.AvgRRWearPrLap += ((tires.RRwearL + tires.RRwearM + tires.RRwearR) / 3);
+
+                    ++tireWearCount;
+
+                    if (laps.Pit.WasInStall && debrief.MaxPitDeltaWithStall < laps.Pit.PitDeltaSeconds)
+                    {
+                        debrief.MaxPitDeltaWithStall = laps.Pit.PitDeltaSeconds;
+                    }
+                }
+            }
+
+            debrief.AvgLapTime /= program.CompletedLaps.Count;
+            debrief.AvgFuelUsagePrLap /= program.CompletedLaps.Count;
+            for (int i = 0; i < debrief.AvgSectorTimes.Length; ++i)
+            {
+                debrief.AvgSectorTimes[i] /= program.CompletedLaps.Count;
+            }
+
+            debrief.AvgLFWearPrLap /= tireWearCount;
+            debrief.AvgLRWearPrLap /= tireWearCount;
+            debrief.AvgRFWearPrLap /= tireWearCount;
+            debrief.AvgRRWearPrLap /= tireWearCount;
+
+            return debrief;
         }
     }
 }

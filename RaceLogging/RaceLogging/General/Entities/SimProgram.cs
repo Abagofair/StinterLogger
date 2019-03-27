@@ -1,4 +1,5 @@
 ﻿using RaceLogging.General.Program.Config;
+using RaceLogging.RaceLogging.General.Entities;
 using System.Collections.Generic;
 
 namespace RaceLogging.General.Entities
@@ -15,6 +16,8 @@ namespace RaceLogging.General.Entities
         public ProgramConfig ProgramConfig { get; set; }
 
         public List<Lap> CompletedLaps { get; set; } 
+
+        public ProgramDebrief ProgramDebrief { get; set; }
 
         public Driver Driver { get; set; }
     }
