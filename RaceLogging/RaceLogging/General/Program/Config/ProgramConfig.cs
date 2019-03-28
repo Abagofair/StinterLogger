@@ -3,14 +3,19 @@ using System.Collections.Generic;
 
 namespace RaceLogging.General.Program.Config
 {
-    public enum EndConditionValue
+    public enum EndConditionValues
     {
-        InPitStall, Minutes, Laps, FreeRoam
+        InPitStall, Minutes, Laps, FreeRoam, Checkered
+    }
+
+    public enum StartConditionValues
+    {
+        PitExit, AfterOutLap, GreenFlag
     }
 
     public class EndCondition
     {
-        public EndConditionValue Condition { get; set; }
+        public EndConditionValues Condition { get; set; }
         public int Count { get; set; }
     }
 
@@ -28,6 +33,7 @@ namespace RaceLogging.General.Program.Config
             "telemetryupdatefrequency",
             "logpitdelta",
             "logtirewear",
+            "startcondition",
             "endcondition",
             "telemetry"
         };
@@ -39,6 +45,8 @@ namespace RaceLogging.General.Program.Config
         public bool LogPitDelta { get; set; }
 
         public bool LogTireWear { get; set; }
+
+        public StartConditionValues StartCondition { get; set; }
 
         public EndCondition EndCondition { get; }
 

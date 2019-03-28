@@ -56,6 +56,9 @@ namespace RaceLogging.General.Program
             writer.WritePropertyName("TelemetryUpdateFrequency");
             writer.WriteValue(program.ProgramConfig.TelemetryUpdateFrequency);
 
+            writer.WritePropertyName("StartCondition");
+            writer.WriteValue(program.ProgramConfig.StartCondition.ToString());
+
             writer.WritePropertyName("EndCondition");
             writer.WriteStartArray();
             writer.WriteValue(program.ProgramConfig.EndCondition.Condition.ToString());

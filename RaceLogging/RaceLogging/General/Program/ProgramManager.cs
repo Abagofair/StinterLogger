@@ -82,7 +82,7 @@ namespace RaceLogging.General.Program
                 this._endConditionCurrentCount = 0;
             }
 
-            if (this._currentProgramConfig.EndCondition.Condition == EndConditionValue.Minutes)
+            if (this._currentProgramConfig.EndCondition.Condition == EndConditionValues.Minutes)
             {
                 var timeInMs = this._currentProgramConfig.EndCondition.Count * 60000;
                 if (timeInMs > int.MaxValue || timeInMs < 0)
@@ -137,7 +137,7 @@ namespace RaceLogging.General.Program
 
             this._simLogger.LapCompleted -= this.OnLapCompleted;
 
-            if (this._currentProgramConfig.EndCondition.Condition == EndConditionValue.Minutes)
+            if (this._currentProgramConfig.EndCondition.Condition == EndConditionValues.Minutes)
             {
                 this._timer.Elapsed -= this.OnConditionMinutesMet;
                 this._timer.Stop();
@@ -172,7 +172,7 @@ namespace RaceLogging.General.Program
             this._programData.CompletedLaps.Add(this._currentData);
             this._currentData.LapNumber = this._programData.CompletedLaps.Count;
 
-            if (this._currentProgramConfig.EndCondition.Condition == EndConditionValue.Laps)
+            if (this._currentProgramConfig.EndCondition.Condition == EndConditionValues.Laps)
             {
                 if (this.IsProgramComplete())
                 {
@@ -208,7 +208,7 @@ namespace RaceLogging.General.Program
         {
             if (eventArgs.TrackLocation == TrackLocation.InPitStall)
             {
-                if (this._currentProgramConfig.EndCondition.Condition == EndConditionValue.InPitStall)
+                if (this._currentProgramConfig.EndCondition.Condition == EndConditionValues.InPitStall)
                 {
                     if (this.IsProgramComplete())
                     {
