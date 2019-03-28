@@ -23,9 +23,9 @@ Currently supported games:
 
 ## ProgramConfig
 
-Every property is required and needs to have a value.
-The telemetry property can be an empty array.
-There is not a syntax case requirement. 
+* Every property is required and needs to have a value.
+* The telemetry property can be an empty array.
+* There is not a syntax case requirement. 
 
 *ProgramConfig format:*
 ```
