@@ -23,11 +23,16 @@ Currently supported games:
 
 ## ProgramConfig
 
+Every property is required and needs to have a value.
+The telemetry property can be an empty array.
+There is not a syntax case requirement. 
+
 *ProgramConfig format:*
 ```
   {	
     "Name": {type: String},	
     "TelemetryUpdateFrequency": {type: Float},
+    "StartCondition": {type: String},
     "EndCondition": [{type: string}, {type: Integer}],
     "LogPitDelta": {type: Boolean},
     "LogTireWear": {type: Boolean},
@@ -41,12 +46,18 @@ Currently supported games:
 estimation..) because of the data increase, but comes at a performance and memory cost. 
 Values between 4-20 Hz seems to cause no noticable issues.
 
-"EndCondition": End the program and data logging when this condition is met.
-  There are currently 4 end conditions:  
+"StartCondition": Activates the program and emits ProgramActivation event when this condition is met.
+  "PitExit": When you exit the pit lane or if you start the program on track.
+  "AfterOutLap": When the first lap has been completed, the program activates.
+  "GreenFlag": When the green flag is met in a race session, the program activates.
+  "None": The program will immediatly activate.
+
+"EndCondition": End the program, stop data logging and emit ProgramEnd event when this condition is met.
   "FreeRoam". Does not require a count. Logs until you explicitly stop it.  
   "Minutes". Requires a count. The time to run the program in minutes. e.g. 60 minutes.
   "Laps". Requires a count. The amount of laps to run. e.g. 10 laps.
   "InPitStall". Requires a count. The amount of times the pit stall is entered. e.g. 3 times.
+  "Checkered". When the checkered flag is met in a race session, the program will stop.
 
 "LogPitDelta": Whether to try and log a pit delta. Requires you to go through the pit lane at least once.
 
@@ -69,6 +80,7 @@ Values between 4-20 Hz seems to cause no noticable issues.
 {	
   "Name": "Example",	
   "TelemetryUpdateFrequency": 4.0,
+  "StartCondition": "AfterOutLap",
   "EndCondition": ["laps", 5],
   "LogPitDelta": true,
   "LogTireWear": true,
