@@ -50,9 +50,10 @@ namespace RaceLogging.General.Program
             {
                 this._currentProgramConfig = this._programLoader.LoadProgram(path, fileName);
             }
-            catch (ProgramLoaderException)
+            catch (ProgramLoaderException e)
             {
                 this._currentProgramConfig = null;
+                throw new ProgramLoaderException("Error while loading the program: " + e.Message);
             }
         }
 

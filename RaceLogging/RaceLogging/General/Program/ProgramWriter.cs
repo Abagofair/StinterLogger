@@ -2,6 +2,7 @@
 using System.IO;
 using System.IO.Compression;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using RaceLogging.General.Entities;
@@ -13,12 +14,12 @@ namespace RaceLogging.General.Program
     {
         public Task<byte[]> WriteProgramToByteArrayAsync(SimProgram program, CompressionLevel compressionLevel)
         {
-            return Task.Factory.StartNew(() => this.WriteProgramToByteArray(program, compressionLevel));
+            return Task.Factory.StartNew(() => this.WriteProgramToByteArray(program, compressionLevel), CancellationToken.None);
         }
 
         public Task<string> WriteProgramToStringAsync(SimProgram program)
         {
-            return Task.Factory.StartNew(() => this.WriteProgramToString(program));
+            return Task.Factory.StartNew(() => this.WriteProgramToString(program), CancellationToken.None);
         }
 
         public byte[] WriteProgramToByteArray(SimProgram simProgram, CompressionLevel compressionLevel)
