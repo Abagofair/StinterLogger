@@ -167,20 +167,20 @@ namespace RaceLogging.General.Program
 
                                 if (pitstall)
                                 {
-                                    programConfig.EndCondition.Condition = Condition.InPitStall;
+                                    programConfig.EndCondition.Condition = EndConditionValue.InPitStall;
                                 }
                                 else if (laps)
                                 {
-                                    programConfig.EndCondition.Condition = Condition.Laps;
+                                    programConfig.EndCondition.Condition = EndConditionValue.Laps;
                                 }
                                 else if (minutes)
                                 {
-                                    programConfig.EndCondition.Condition = Condition.Minutes;
+                                    programConfig.EndCondition.Condition = EndConditionValue.Minutes;
                                 }
                             }
                             else if (freeroam)
                             {
-                                programConfig.EndCondition.Condition = Condition.FreeRoam;
+                                programConfig.EndCondition.Condition = EndConditionValue.FreeRoam;
                             }
                             else
                             {

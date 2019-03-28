@@ -3,14 +3,14 @@ using System.Collections.Generic;
 
 namespace RaceLogging.General.Program.Config
 {
-    public enum Condition
+    public enum EndConditionValue
     {
         InPitStall, Minutes, Laps, FreeRoam
     }
 
     public class EndCondition
     {
-        public Condition Condition { get; set; }
+        public EndConditionValue Condition { get; set; }
         public int Count { get; set; }
     }
 
