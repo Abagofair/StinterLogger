@@ -5,6 +5,7 @@ using RaceLogging.General.Program.Config;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using RaceLogging.RaceLogging.General.Program;
 
 namespace RaceLogging.General.Program
 {
@@ -95,48 +96,72 @@ namespace RaceLogging.General.Program
             }
 
             JsonTextReader reader = new JsonTextReader(new StringReader(jsonConfig));
-
             var programConfig = new ProgramConfig();
             try
             {
+                //int validJson = 0;
                 while (reader.Read())
                 {
                     if (ValidatePropertyName(reader.TokenType, reader.Value, "name"))
                     {
                         reader.Read();
-                        programConfig.Name =
-                            reader.Value != null && reader.TokenType == JsonToken.String
-                            ? (string)reader.Value : "";
+                        if (reader.Value == null || !(reader.Value is string))
+                        {
+                            throw new ProgramLoaderException("The Name value is missing or is not a string");
+                        }
+                        else
+                        {
+                            programConfig.Name = ((string)reader.Value).ToLower();
+                        }
                         continue;
                     }
                     else if (ValidatePropertyName(reader.TokenType, reader.Value, "telemetryupdatefrequency"))
                     {
                         reader.Read();
-                        programConfig.TelemetryUpdateFrequency =
-                            reader.Value != null && reader.TokenType == JsonToken.Float
-                            ? (double)reader.Value : 4.0f;
+                        if (reader.Value == null || !(reader.Value is double))
+                        {
+                            throw new ProgramLoaderException("The TelemetryUpdateFrequency value is missing or is not a double");
+                        }
+                        else
+                        {
+                            programConfig.TelemetryUpdateFrequency = ((double)reader.Value);
+                        }
                         continue;
                     }
                     else if (ValidatePropertyName(reader.TokenType, reader.Value, "endcondition"))
                     {
+                        string invalidCondition = "The endcondition value is missing or is invalid";
+
                         reader.Read();
                         if (reader.TokenType == JsonToken.StartArray)
                         {
                             reader.Read();
-                            var condition =
-                                reader.Value != null && reader.TokenType == JsonToken.String
-                            ? ((string)reader.Value).ToLower() : "freeroam";
+                            string condition;
+                            if (reader.Value == null || !(reader.Value is string))
+                            {
+                                throw new ProgramLoaderException(invalidCondition);
+                            }
+                            else
+                            {
+                                condition = ((string)reader.Value).ToLower();
+                            }
 
                             bool pitstall = condition == "inpitstall";
                             bool laps = condition == "laps";
                             bool minutes = condition == "minutes";
+                            bool freeroam = condition == "freeroam";
 
                             if (pitstall || laps || minutes)
                             {
                                 reader.Read();
-                                var count =
-                                    reader.Value != null && reader.TokenType == JsonToken.Integer
-                                ? ((long)reader.Value) : 1;
+                                if (reader.Value == null || !(reader.Value is long))
+                                {
+                                    throw new ProgramLoaderException("Endcondition is missing an integer count");
+                                }
+                                else
+                                {
+                                    programConfig.EndCondition.Count = (Convert.ToInt32(reader.Value));
+                                }
 
                                 if (pitstall)
                                 {
@@ -150,52 +175,73 @@ namespace RaceLogging.General.Program
                                 {
                                     programConfig.EndCondition.Condition = Condition.Minutes;
                                 }
-                                programConfig.EndCondition.Count = (int)count;
+                            }
+                            else if (freeroam)
+                            {
+                                programConfig.EndCondition.Condition = Condition.FreeRoam;
                             }
                             else
                             {
-                                programConfig.EndCondition.Condition = Condition.FreeRoam;
+                                throw new ProgramLoaderException(condition + " is not a valid endcondition");
                             }
                         }
                         else
                         {
-                            programConfig.EndCondition.Condition = Condition.FreeRoam;
+                            throw new ProgramLoaderException(invalidCondition);
                         }
                         continue;
                     }
                     else if (ValidatePropertyName(reader.TokenType, reader.Value, "logpitdelta"))
                     {
                         reader.Read();
-                        programConfig.LogPitDelta =
-                            reader.Value != null && reader.TokenType == JsonToken.Boolean
-                            ? (bool)reader.Value : false;
+                        if (reader.Value == null || !(reader.Value is bool))
+                        {
+                            throw new ProgramLoaderException("The LogPitDelta value is missing or is not a boolean");
+                        }
+                        else
+                        {
+                            programConfig.LogPitDelta = ((bool)reader.Value);
+                        }
                         continue;
                     }
                     else if (ValidatePropertyName(reader.TokenType, reader.Value, "logtirewear"))
                     {
                         reader.Read();
-                        programConfig.LogTireWear =
-                            reader.Value != null && reader.TokenType == JsonToken.Boolean
-                            ? (bool)reader.Value : false;
+                        if (reader.Value == null || !(reader.Value is bool))
+                        {
+                            throw new ProgramLoaderException("The LogTireWear value is missing or is not a boolean");
+                        }
+                        else
+                        {
+                            programConfig.LogTireWear = ((bool)reader.Value);
+                        }
                         continue;
                     }
                     else if (ValidatePropertyName(reader.TokenType, reader.Value, "telemetry"))
                     {
                         reader.Read();
+
                         if (reader.TokenType == JsonToken.StartArray)
                         {
                             while (reader.Read() && reader.TokenType != JsonToken.EndArray)
                             {
-                                var telemetry =
-                                   reader.Value != null && reader.TokenType == JsonToken.String
-                                   ? ((string)reader.Value).ToLower() : "";
-
-                                programConfig.Telemetry.Add(telemetry);
+                                if (reader.Value == null || !(reader.Value is string))
+                                {
+                                    throw new ProgramLoaderException("The LogTireWear value is missing or is not a boolean");
+                                }
+                                else
+                                {
+                                    programConfig.Telemetry.Add(((string)reader.Value).ToLower());
+                                }
                             }
 
                             programConfig.Telemetry = VerifyData<Telemetry>(programConfig.Telemetry);
 
                             continue;
+                        }
+                        else
+                        {
+                            throw new ProgramLoaderException("The expected value of the telemetry property is an array");
                         }
                     }
                 }
