@@ -50,7 +50,7 @@ Values between 4-20 Hz seems to cause no noticable issues.
   "PitExit": When you exit the pit lane or if you start the program on track.
   "AfterOutLap": When the first lap has been completed, the program activates.
   "GreenFlag": When the green flag is met in a race session, the program activates.
-  "None": The program will immediatly activate.
+  "None": The program will immediately activate.
 
 "EndCondition": End the program, stop data logging and emit ProgramEnd event when this condition is met.
   "FreeRoam". Does not require a count. Logs until you explicitly stop it.  
