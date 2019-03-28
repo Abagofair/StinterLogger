@@ -130,6 +130,39 @@ namespace RaceLogging.General.Program
                         }
                         continue;
                     }
+                    else if (ValidatePropertyName(reader.TokenType, reader.Value, "startcondition"))
+                    {
+                        reader.Read();
+                        if (reader.Value == null || !(reader.Value is string))
+                        {
+                            throw new ProgramLoaderException("The startcondition value is missing or is invalid");
+                        }
+                        else
+                        {
+                            var startCondition = ((string)reader.Value).ToLower();
+                            if (startCondition == StartConditionValues.AfterOutLap.ToString().ToLower())
+                            {
+                                programConfig.StartCondition = StartConditionValues.AfterOutLap;
+                            }
+                            else if (startCondition == StartConditionValues.GreenFlag.ToString().ToLower())
+                            {
+                                programConfig.StartCondition = StartConditionValues.GreenFlag;
+                            }
+                            else if (startCondition == StartConditionValues.PitExit.ToString().ToLower())
+                            {
+                                programConfig.StartCondition = StartConditionValues.PitExit;
+                            }
+                            else if (startCondition == StartConditionValues.None.ToString().ToLower())
+                            {
+                                programConfig.StartCondition = StartConditionValues.None;
+                            }
+                            else
+                            {
+                                throw new ProgramLoaderException(startCondition + " is not a valid startcondition");
+                            }
+                            requiredValues.Remove("startcondition");
+                        }
+                    }
                     else if (ValidatePropertyName(reader.TokenType, reader.Value, "endcondition"))
                     {
                         string invalidCondition = "The endcondition value is missing or is invalid";
@@ -148,10 +181,10 @@ namespace RaceLogging.General.Program
                                 condition = ((string)reader.Value).ToLower();
                             }
 
-                            bool pitstall = condition == "inpitstall";
-                            bool laps = condition == "laps";
-                            bool minutes = condition == "minutes";
-                            bool freeroam = condition == "freeroam";
+                            bool pitstall = condition == EndConditionValues.InPitStall.ToString().ToLower();
+                            bool laps = condition == EndConditionValues.Laps.ToString().ToLower();
+                            bool minutes = condition == EndConditionValues.Minutes.ToString().ToLower();
+                            bool freeroam = condition == EndConditionValues.FreeRoam.ToString().ToLower();
 
                             if (pitstall || laps || minutes)
                             {
@@ -167,20 +200,20 @@ namespace RaceLogging.General.Program
 
                                 if (pitstall)
                                 {
-                                    programConfig.EndCondition.Condition = EndConditionValue.InPitStall;
+                                    programConfig.EndCondition.Condition = EndConditionValues.InPitStall;
                                 }
                                 else if (laps)
                                 {
-                                    programConfig.EndCondition.Condition = EndConditionValue.Laps;
+                                    programConfig.EndCondition.Condition = EndConditionValues.Laps;
                                 }
                                 else if (minutes)
                                 {
-                                    programConfig.EndCondition.Condition = EndConditionValue.Minutes;
+                                    programConfig.EndCondition.Condition = EndConditionValues.Minutes;
                                 }
                             }
                             else if (freeroam)
                             {
-                                programConfig.EndCondition.Condition = EndConditionValue.FreeRoam;
+                                programConfig.EndCondition.Condition = EndConditionValues.FreeRoam;
                             }
                             else
                             {

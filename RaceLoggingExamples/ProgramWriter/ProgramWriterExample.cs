@@ -17,6 +17,7 @@ namespace RaceLoggingExamples
 
             ProgramManager programManager = new ProgramManager(iracing, loader);
             programManager.ProgramEnd += OnProgramEnd;
+            programManager.ProgramActivated += OnProgramActivation;
             programManager.Load(Directory.GetCurrentDirectory(), "default.json");
 
             iracing.StartListening();
@@ -42,6 +43,11 @@ namespace RaceLoggingExamples
 
             Console.WriteLine("Finished writing program to disk..");
             Console.ReadLine();
+        }
+
+        static void OnProgramActivation(object sender, EventArgs eventArgs)
+        {
+            Console.WriteLine("Program is now active..");
         }
     }
 }
