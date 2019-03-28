@@ -152,6 +152,10 @@ namespace RaceLogging.General.Program
                             {
                                 programConfig.StartCondition = StartConditionValues.PitExit;
                             }
+                            else if (startCondition == StartConditionValues.None.ToString().ToLower())
+                            {
+                                programConfig.StartCondition = StartConditionValues.None;
+                            }
                             else
                             {
                                 throw new ProgramLoaderException(startCondition + " is not a valid startcondition");

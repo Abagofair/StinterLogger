@@ -20,6 +20,8 @@ namespace RaceLogging
 
         event EventHandler<PitRoadEventArgs> PitRoad;
 
+        event EventHandler<RaceStateEventArgs> RaceState;
+
         void SetTelemetryUpdateHz(double hz);
 
         void StartListening();

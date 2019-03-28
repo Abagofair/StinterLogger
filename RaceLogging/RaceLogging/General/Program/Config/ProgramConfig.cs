@@ -10,7 +10,7 @@ namespace RaceLogging.General.Program.Config
 
     public enum StartConditionValues
     {
-        PitExit, AfterOutLap, GreenFlag
+        PitExit, AfterOutLap, GreenFlag, None
     }
 
     public class EndCondition

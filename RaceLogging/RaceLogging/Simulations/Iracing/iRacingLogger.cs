@@ -108,6 +108,12 @@ namespace RaceLogging.Simulations.Iracing
             this.PitRoad?.Invoke(this, e);
         }
 
+        public event EventHandler<RaceStateEventArgs> RaceState;
+        private void OnRaceStateChange(RaceStateEventArgs e)
+        {
+            this.RaceState?.Invoke(this, e);
+        }
+
         public void AddFuelOnPitStop(int fuelToAdd)
         {
             if (fuelToAdd > 0)
@@ -145,10 +151,11 @@ namespace RaceLogging.Simulations.Iracing
             if (this._inActiveSession)
             {
                 this.InvokeTelemetryRecieved(telemetryUpdatedEventArgs);
-                this.InvokeLapCompleted(telemetryUpdatedEventArgs);
                 this.InvokePitRoad(telemetryUpdatedEventArgs);
                 this.InvokeTrackLocationChange(telemetryUpdatedEventArgs);
                 this.InvokeTireWearUpdated(telemetryUpdatedEventArgs);
+                this.InvokeRaceStateChange(telemetryUpdatedEventArgs);
+                this.InvokeLapCompleted(telemetryUpdatedEventArgs);
             }
         }
 
@@ -175,9 +182,27 @@ namespace RaceLogging.Simulations.Iracing
             return this._sdkWrapper.GetTelemetryValue<float>("LapLastLapTime").Value;
         }
 
-        private void InvokePitRoad(SdkWrapper.TelemetryUpdatedEventArgs eventArgs)
+        private void InvokeRaceStateChange(SdkWrapper.TelemetryUpdatedEventArgs telemetryUpdatedEventArgs)
         {
-            var isOnPitRoad = this.IsDriverOnPitRoad(eventArgs);
+            if (telemetryUpdatedEventArgs.TelemetryInfo.SessionState.Value == SessionStates.Racing)
+            {
+                this.OnRaceStateChange(new RaceStateEventArgs
+                {
+                    RaceState = RaceLogging.General.Enums.RaceState.GreenFlag
+                });
+            }
+            else if (telemetryUpdatedEventArgs.TelemetryInfo.SessionState.Value == SessionStates.Checkered)
+            {
+                this.OnRaceStateChange(new RaceStateEventArgs
+                {
+                    RaceState = RaceLogging.General.Enums.RaceState.Checkered
+                });
+            }
+        }
+
+        private void InvokePitRoad(SdkWrapper.TelemetryUpdatedEventArgs telemetryUpdatedEventArgs)
+        {
+            var isOnPitRoad = this.IsDriverOnPitRoad(telemetryUpdatedEventArgs);
             this.OnPitRoad(new PitRoadEventArgs
             {
                 IsOnPitRoad = isOnPitRoad
