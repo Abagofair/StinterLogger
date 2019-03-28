@@ -5,7 +5,7 @@ using RaceLogging.General.Program.Config;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using RaceLogging.RaceLogging.General.Program;
+using RaceLogging.General.Program;
 
 namespace RaceLogging.General.Program
 {
@@ -99,7 +99,7 @@ namespace RaceLogging.General.Program
             var programConfig = new ProgramConfig();
             try
             {
-                //int validJson = 0;
+                var requiredValues = new List<string>(ProgramConfig.RequiredConfigValues);
                 while (reader.Read())
                 {
                     if (ValidatePropertyName(reader.TokenType, reader.Value, "name"))
@@ -112,6 +112,7 @@ namespace RaceLogging.General.Program
                         else
                         {
                             programConfig.Name = ((string)reader.Value).ToLower();
+                            requiredValues.Remove("name");
                         }
                         continue;
                     }
@@ -125,6 +126,7 @@ namespace RaceLogging.General.Program
                         else
                         {
                             programConfig.TelemetryUpdateFrequency = ((double)reader.Value);
+                            requiredValues.Remove("telemetryupdatefrequency");
                         }
                         continue;
                     }
@@ -189,6 +191,8 @@ namespace RaceLogging.General.Program
                         {
                             throw new ProgramLoaderException(invalidCondition);
                         }
+
+                        requiredValues.Remove("endcondition");
                         continue;
                     }
                     else if (ValidatePropertyName(reader.TokenType, reader.Value, "logpitdelta"))
@@ -201,6 +205,7 @@ namespace RaceLogging.General.Program
                         else
                         {
                             programConfig.LogPitDelta = ((bool)reader.Value);
+                            requiredValues.Remove("logpitdelta");
                         }
                         continue;
                     }
@@ -214,6 +219,7 @@ namespace RaceLogging.General.Program
                         else
                         {
                             programConfig.LogTireWear = ((bool)reader.Value);
+                            requiredValues.Remove("logtirewear");
                         }
                         continue;
                     }
@@ -236,7 +242,7 @@ namespace RaceLogging.General.Program
                             }
 
                             programConfig.Telemetry = VerifyData<Telemetry>(programConfig.Telemetry);
-
+                            requiredValues.Remove("telemetry");
                             continue;
                         }
                         else
@@ -244,6 +250,17 @@ namespace RaceLogging.General.Program
                             throw new ProgramLoaderException("The expected value of the telemetry property is an array");
                         }
                     }
+                }
+
+                if (requiredValues.Count != 0)
+                {
+                    //build message with missing values
+                    string error = "These config values are missing: ";
+                    foreach (var value in requiredValues)
+                    {
+                        error += value + ", ";
+                    }
+                    throw new ProgramLoaderException(error);
                 }
             }
             catch (JsonException e)

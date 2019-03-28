@@ -22,6 +22,16 @@ namespace RaceLogging.General.Program.Config
             this.EndCondition = new EndCondition();
         }
 
+        public static List<string> RequiredConfigValues => new List<string>
+        {
+            "name",
+            "telemetryupdatefrequency",
+            "logpitdelta",
+            "logtirewear",
+            "endcondition",
+            "telemetry"
+        };
+
         public string Name { get; set; }
 
         public double TelemetryUpdateFrequency { get; set; }
