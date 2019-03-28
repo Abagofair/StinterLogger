@@ -43,7 +43,7 @@ Currently supported games:
 "Name": Name of the program to be run, e.g. 'RaceProgram' or 'FreeRoam'
 
 "TelemetryUpdateFrequency": Updates per second. A higher value helps with precision (sector time estimation, lap time 
-estimation..) because of the data increase, but comes at a performance and memory cost. 
+estimation..) because of the increased amount of data, but comes at a performance and memory cost. 
 Values between 4-20 Hz seems to cause no noticable issues.
 
 "StartCondition": Activates the program and emits ProgramActivation event when this condition is met.
