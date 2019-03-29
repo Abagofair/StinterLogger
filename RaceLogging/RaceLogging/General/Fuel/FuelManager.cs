@@ -5,10 +5,14 @@ using System;
 
 namespace RaceLogging.General.Fuel
 {
-    public class FuelManager : IManager<FuelDataEventArgs>
+    public class FuelManager
     {
         #region private constants
         private const float MAX_FUEL = 999.0f;
+
+        private const int LAPS_RUNNING_AVG = 5;
+
+        private const float LAP_TIME_MAX_DEVIATION = 10.0f;
         #endregion
 
         #region fields
@@ -16,48 +20,43 @@ namespace RaceLogging.General.Fuel
 
         private readonly DebugManager _debugLogger;
 
-        private bool _outLap;
+        private int _lapCount;
+
+        private float _totalFuelUsed;
+
+        private float _fuelToAdd;
+
+        private float _timeRemainingOfSession;
+
+        private float _totalTimeRaced;
+
+        private bool _active;
+
+        private GraceOption _graceOption;
         #endregion
 
-        public FuelManager(ISimLogger simLogger, DebugManager debugManager, int graceLaps)
+        public FuelManager(ISimLogger simLogger, DebugManager debugManager)
         {
             this._simLogger = simLogger;
 
             this._debugLogger = debugManager;
 
-            this.FuelData = null;
-
             this._simLogger.PitRoad += this.OnPitRoad;
-
-            this._outLap = false;
         }
 
-        #region events
-        public event EventHandler<FuelDataEventArgs> OnEntityChange;
-        #endregion
-
-        #region event invocations
-        private void OnFuelModelChange(FuelDataEventArgs fuelDataEventArgs)
+        private void ResetData()
         {
-            this.OnEntityChange?.Invoke(this, fuelDataEventArgs);
+            this._totalFuelUsed = 0.0f;
+            this._lapCount = 0;
+            this._fuelToAdd = 0.0f;
+            this._totalTimeRaced = 0.0f;
+            this._fuelToAdd = 0.0f;
         }
-        #endregion
-
-        #region properties
-        private FuelManagerData FuelData { get; set; }
-
-        public IEntity Entity
-        {
-            get => this.FuelData;
-            set => throw new NotImplementedException();
-        }
-        #endregion
 
         #region public methods
         public void Enable()
         {
             //listen for green flag
-            ResetFuelData();
             this.StartFuelManager();
             this._debugLogger.CreateEventLog("Started the fuel manager");
         }
@@ -67,153 +66,108 @@ namespace RaceLogging.General.Fuel
             //restart model
             this.StopFuelManager();
             this._debugLogger.CreateEventLog("Stopped the fuel manager");
-            this.FuelData = null;
         }
 
-        public void ResetFuelData()
+        public void SetGrace(GraceOption graceOption)
         {
-            this.FuelData = new FuelManagerData();
-        }
-
-        public void SetGraceValue(float value)
-        {
-            this.FuelData.GraceOption.Value = value;
+            this._graceOption = graceOption;
         }
         #endregion
 
         #region private methods
         private void StartFuelManager()
         {
-            this.ResetFuelData();
-            this._simLogger.LapCompleted += this.OnLapCompleted;
+            this.ResetData();
+            this._simLogger.RaceState += this.OnRaceStateChange;
         }
 
         private void StopFuelManager()
         {
+            this.ResetData();
+            this._active = false;
             this._simLogger.LapCompleted -= this.OnLapCompleted;
         }
         #endregion
 
         #region listeners
+        private void OnRaceStateChange(object sender, RaceStateEventArgs eventArgs)
+        {
+            if (eventArgs.RaceState == RaceLogging.General.Enums.RaceState.GreenFlag && !this._active)
+            {
+                this._simLogger.LapCompleted += this.OnLapCompleted;
+                this._active = true;
+            }
+            else if (eventArgs.RaceState == RaceLogging.General.Enums.RaceState.Checkered && this._active)
+            {
+                this._simLogger.LapCompleted -= this.OnLapCompleted;
+                this._active = false;
+            }
+        }
+
         private void OnLapCompleted(object sender, LapCompletedEventArgs lapCompletedEventArgs)
         {
-            var telemetryFromLastLap = lapCompletedEventArgs.Lap;
+            var lapData = lapCompletedEventArgs.Lap;
 
-            this.FuelData.TotalRaceTime += telemetryFromLastLap.Time.LapTime;
-            this.FuelData.TotalFuelUsed += lapCompletedEventArgs.Lap.FuelUsed;
-            this.FuelData.LapsCompleted += 1;
-
-            this.FuelData.FuelUsagePerLap = this.FuelData.TotalFuelUsed / this.FuelData.LapsCompleted;
-
-            this.FuelData.RemainingRacetime = telemetryFromLastLap.RemainingSessionTime;
-
-            this.FuelData.FuelInTank = lapCompletedEventArgs.Lap.FuelInTankAtStart;
-
-            var remainingLaps = this.RemainingLaps(telemetryFromLastLap.RemainingSessionTime, this.FuelData.TotalRaceTime, this.FuelData.LapsCompleted);
-
-            this.FuelData.LapsRemaining = (int)remainingLaps;
-
-            this.FuelData.FuelToFinish = this.CalculateFuelNeededToFinish(this.FuelData);
-
-            this._outLap = false;
-
-            this.OnFuelModelChange(new FuelDataEventArgs
+            if (this._lapCount >= LAPS_RUNNING_AVG)
             {
-                FuelData = this.FuelData
-            });
+                this._totalFuelUsed = 0.0f;
+                this._lapCount = 0;
+                this._fuelToAdd = 0.0f;
+                this._totalTimeRaced = 0.0f;
+            }
+
+            ++this._lapCount;
+
+            if (lapData.FuelUsed > 0.0f)
+            {
+                this._totalFuelUsed += lapData.FuelUsed;
+            }
+
+            if (lapData.RemainingSessionTime > 0.0f)
+            {
+                this._timeRemainingOfSession = lapData.RemainingSessionTime;
+            }
+
+            var time = lapData.Time.LapTime;
+            if (time > 0 && time < (LAP_TIME_MAX_DEVIATION + time))
+            {
+                this._totalTimeRaced += time;
+            }
+
+            //calculate fuel needed to finish
+            float avgLapTime = this._totalTimeRaced / this._lapCount;
+            float lapsRemaining = this._timeRemainingOfSession / avgLapTime;
+            float avgFuelPrLap = this._totalFuelUsed / this._lapCount;
+            float totalFuelNeededToFinish = lapsRemaining * avgFuelPrLap;
+            float fuelNeededToFinish = Math.Abs(totalFuelNeededToFinish - lapData.FuelInTankAtFinish);
+
+            if (this._graceOption != null)
+            {
+                if (this._graceOption.Mode == GraceMode.Lap)
+                {
+                    fuelNeededToFinish += this._graceOption.Value * avgFuelPrLap;
+                }
+            }
+
+            this._fuelToAdd = fuelNeededToFinish;
         }
 
         private void OnPitRoad(object sender, PitRoadEventArgs eventArgs)
         {
-            if (eventArgs.IsOnPitRoad && this.FuelData != null && !this._outLap)
+            if (eventArgs.IsOnPitRoad)
             {
                 try
                 {
-                    int cast = (int)this.FuelData.FuelToFinish;
-                    float diff = this.FuelData.FuelToFinish - (float)cast;
-                    if (diff >= 0.5f)
+                    if (this._fuelToAdd > 0 && this._fuelToAdd < MAX_FUEL)
                     {
-                        this._simLogger.AddFuelOnPitStop((int)(this.FuelData.FuelToFinish + 1));
+                        this._simLogger.AddFuelOnPitStop(Convert.ToInt32(this._fuelToAdd));
                     }
-                    else
-                    {
-                        this._simLogger.AddFuelOnPitStop((int)this.FuelData.FuelToFinish);
-                    }
-                    this._outLap = true;
                 }
                 catch (NotImplementedException e)
                 {
                     this._debugLogger.CreateExceptionLog("SetFuelLevelOnPitStop is not implemented", e);
                 }
             }
-        }
-        #endregion
-
-        #region fuel calculation
-        private float GraceFuel(float exactFuelNeeded, float graceValue, GraceMode graceMode, float FuelPerLap)
-        {
-            float extraFuel = 0.0f;
-            if (graceMode == GraceMode.Lap)
-            {
-                extraFuel = graceValue * FuelPerLap;
-            }
-            else if (graceMode == GraceMode.Percent)
-            {
-                extraFuel = exactFuelNeeded * (graceValue / 100.0f);
-            }
-
-            return extraFuel;
-        }
-
-        private float LapsReachableOnCurrentTank(float fuelUsedPerLap, float fuelInTank)
-        {
-            return fuelUsedPerLap * fuelInTank;
-        }
-
-        private float LapsRemainingAfterTankUsed(float lapsRemainingInTank, float remainingLaps)
-        {
-            var amountOfLapsToFuel = remainingLaps - lapsRemainingInTank;
-            return amountOfLapsToFuel >= 0.0f ? amountOfLapsToFuel : 0.0f;
-        }
-
-        private float FuelToAdd(float amountOfLapsToFuel, float fuelUsedPerLap)
-        {
-            return amountOfLapsToFuel * fuelUsedPerLap;
-        }
-
-        private float CalculateFuelNeededToFinish(FuelManagerData fuelData)
-        {
-            var lapsReachable = this.LapsReachableOnCurrentTank(fuelData.FuelUsagePerLap, fuelData.FuelInTank);
-
-            this._debugLogger.CreateDataLog("Laps reachable on current tank amount: " + lapsReachable);
-
-            var lapsRemainingAfterTank = this.LapsRemainingAfterTankUsed(lapsReachable, fuelData.LapsRemaining);
-
-            this._debugLogger.CreateDataLog("Laps remaining after tank is used up: " + lapsRemainingAfterTank);
-
-            var fuelToAdd = this.FuelToAdd(lapsRemainingAfterTank, fuelData.FuelUsagePerLap);
-
-            this._debugLogger.CreateDataLog("Exact fuel amount to finish: " + fuelToAdd);
-            //add grace fuel
-            var graceFuel = this.GraceFuel(fuelToAdd, fuelData.GraceOption.Value, fuelData.GraceOption.Mode, fuelData.FuelUsagePerLap);
-
-            this._debugLogger.CreateDataLog("Specified amount of grace fuel to add: " + graceFuel);
-            this._debugLogger.CreateDataLog("Total amount of fuel to add: " + (fuelToAdd + graceFuel));
-
-            return fuelToAdd + graceFuel;
-        }
-
-        private float RemainingLaps(float remainingRaceTime, float timeRaced, float lapsCompleted)
-        {
-            float averageLapTime = timeRaced / lapsCompleted;
-
-            this._debugLogger.CreateDataLog("Average lap time: " + averageLapTime);
-
-            float remainingLaps = remainingRaceTime / averageLapTime;
-
-            this._debugLogger.CreateDataLog("Remaining laps: " + remainingLaps);
-
-            return remainingLaps;
         }
         #endregion
     }
