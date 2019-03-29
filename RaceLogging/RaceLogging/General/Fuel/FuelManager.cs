@@ -32,6 +32,8 @@ namespace RaceLogging.General.Fuel
 
         private bool _active;
 
+        private bool _hasPitted;
+
         private GraceOption _graceOption;
         #endregion
 
@@ -42,6 +44,10 @@ namespace RaceLogging.General.Fuel
             this._debugLogger = debugManager;
 
             this._simLogger.PitRoad += this.OnPitRoad;
+
+            this._graceOption = null;
+
+            this._hasPitted = false;
         }
 
         private void ResetData()
@@ -160,15 +166,20 @@ namespace RaceLogging.General.Fuel
             {
                 try
                 {
-                    if (this._fuelToAdd > 0 && this._fuelToAdd < MAX_FUEL)
+                    if (this._fuelToAdd > 0 && this._fuelToAdd < MAX_FUEL && !this._hasPitted)
                     {
                         this._simLogger.AddFuelOnPitStop(Convert.ToInt32(this._fuelToAdd));
+                        this._hasPitted = true;
                     }
                 }
                 catch (NotImplementedException e)
                 {
                     this._debugLogger.CreateExceptionLog("SetFuelLevelOnPitStop is not implemented", e);
                 }
+            }
+            else
+            {
+                this._hasPitted = false;
             }
         }
         #endregion
