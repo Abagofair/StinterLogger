@@ -2,6 +2,6 @@
 {
     public enum GraceMode
     {
-        Percent, Lap
+        Lap
     }
 }
