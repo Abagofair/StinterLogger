@@ -23,7 +23,6 @@ namespace RaceLoggingExamples.ProgramEnd
             Console.WriteLine("waiting for an iracing connection..");
             while (!iracing.IsLive) { }
             Console.WriteLine("starting program..");
-            programManager.StartProgram();
         }
 
         static void OnProgramEnd(object sender, ProgramEndEventArgs e)

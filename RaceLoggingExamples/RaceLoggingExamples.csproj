@@ -1,9 +1,12 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <StartupObject>RaceLoggingExamples.ProgramWriterExample</StartupObject>
+    <StartupObject>RaceLoggingExamples.SimpleConsoleApplication.App</StartupObject>
+    <ApplicationIcon />
+    <AssemblyName>RaceLoggingExamples</AssemblyName>
+    <RootNamespace>RaceLoggingExamples</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
