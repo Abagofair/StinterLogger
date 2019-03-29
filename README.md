@@ -1,16 +1,3 @@
-# StinterLogger
-Old application based on RaceLogging for racing games.
-
--- [v0.1.0.0](https://github.com/Abagofair/StinterLogger/releases/tag/0.1.0.0)
-
-## Current functionality
-Fuel calculator with automatic fueling upon pit entry, debug logging.
-
-## In progress
-Starting and creating programs
-
-Options
-
 # RaceLogging
 
 -- [Simple Console Application that showcases the library](https://github.com/Abagofair/StinterLogger/releases/tag/v1.0)
@@ -99,3 +86,16 @@ Values between 4-20 Hz seems to cause no noticable issues.
 ```
 
 [Example output - pastebin](https://pastebin.com/1n1W3jjd)
+
+# StinterLogger
+Old application based on RaceLogging for racing games.
+
+-- [v0.1.0.0](https://github.com/Abagofair/StinterLogger/releases/tag/0.1.0.0)
+
+## Current functionality
+Fuel calculator with automatic fueling upon pit entry, debug logging.
+
+## In progress
+Starting and creating programs
+
+Options
