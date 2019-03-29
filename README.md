@@ -1,5 +1,5 @@
 # StinterLogger
-Application based on RaceLogging for racing games.
+Old application based on RaceLogging for racing games.
 
 -- [v0.1.0.0](https://github.com/Abagofair/StinterLogger/releases/tag/0.1.0.0)
 
@@ -12,6 +12,8 @@ Starting and creating programs
 Options
 
 # RaceLogging
+
+-- [Simple Console Application that showcases the library](https://github.com/Abagofair/StinterLogger/releases/tag/v1.0)
 
 Data gathering library for racing games.
 
