@@ -1,6 +1,6 @@
 # RaceLogging
 
-[Simple Console Application that showcases the library](https://github.com/Abagofair/StinterLogger/releases/tag/v1.0)
+[Simple Console Application that showcases the library](https://github.com/Abagofair/StinterLogger/releases/tag/v1.1)
 
 Data gathering library for racing games.
 
