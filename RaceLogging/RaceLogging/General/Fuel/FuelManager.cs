@@ -11,8 +11,6 @@ namespace RaceLogging.General.Fuel
         private const float MAX_FUEL = 999.0f;
 
         private const int LAPS_RUNNING_AVG = 5;
-
-        private const float LAP_TIME_MAX_DEVIATION = 10.0f;
         #endregion
 
         #region fields
@@ -45,7 +43,11 @@ namespace RaceLogging.General.Fuel
 
             this._simLogger.PitRoad += this.OnPitRoad;
 
-            this._graceOption = null;
+            this._graceOption = new GraceOption
+            {
+                Mode = GraceMode.Lap,
+                Value = 1.5f
+            };
 
             this._hasPitted = false;
         }
@@ -102,11 +104,13 @@ namespace RaceLogging.General.Fuel
             if (eventArgs.RaceState == RaceLogging.General.Enums.RaceState.GreenFlag && !this._active)
             {
                 this._simLogger.LapCompleted += this.OnLapCompleted;
+                this._simLogger.PitRoad += this.OnPitRoad;
                 this._active = true;
             }
             else if (eventArgs.RaceState == RaceLogging.General.Enums.RaceState.Checkered && this._active)
             {
                 this._simLogger.LapCompleted -= this.OnLapCompleted;
+                this._simLogger.PitRoad -= this.OnPitRoad;
                 this._simLogger.RaceState -= this.OnRaceStateChange;
                 this._active = false;
             }
@@ -136,10 +140,9 @@ namespace RaceLogging.General.Fuel
                 this._timeRemainingOfSession = lapData.RemainingSessionTime;
             }
 
-            var time = lapData.Time.LapTime;
-            if (time > 0 && time < (LAP_TIME_MAX_DEVIATION + time))
+            if (lapData.Time.LapTime > 0)
             {
-                this._totalTimeRaced += time;
+                this._totalTimeRaced += lapData.Time.LapTime;
             }
 
             //calculate fuel needed to finish
