@@ -28,8 +28,6 @@ namespace RaceLogging.General.Fuel
 
         private float _timeRemainingOfSession;
 
-        private float _lapsRemaining;
-
         private float _totalTimeRaced;
 
         private bool _active;
@@ -45,17 +43,6 @@ namespace RaceLogging.General.Fuel
 
             this._simLogger.PitRoad += this.OnPitRoad;
         }
-
-        #region events
-        public event EventHandler<FuelDataEventArgs> OnEntityChange;
-        #endregion
-
-        #region event invocations
-        private void OnFuelModelChange(FuelDataEventArgs fuelDataEventArgs)
-        {
-            this.OnEntityChange?.Invoke(this, fuelDataEventArgs);
-        }
-        #endregion
 
         private void ResetData()
         {
