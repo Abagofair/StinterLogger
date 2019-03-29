@@ -7,7 +7,6 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace RaceLoggingExamples.SimpleConsoleApplication
 {
@@ -30,16 +29,12 @@ namespace RaceLoggingExamples.SimpleConsoleApplication
         public static int[] ErrorMessagePosition { get; } = { 0, 5 };
         public static string ErrorMessage { get; set; }
 
-        private static ISimLogger _simLogger = new iRacingLogger(4.0f);
-        public static ISimLogger SimLogger { get => _simLogger; }
+        public static ISimLogger SimLogger { get; } = new iRacingLogger(4.0f);
 
-        private static FuelManager _fuelManager = new FuelManager(_simLogger, new RaceLogging.General.Debug.DebugManager(), 1);
-        public static FuelManager FuelManager { get => _fuelManager; }
+        public static FuelManager FuelManager { get; } = new FuelManager(SimLogger, new RaceLogging.General.Debug.DebugManager());
 
         private static IProgramLoader _programLoader = new ProgramLoader();
-
-        private static ProgramManager _programManager = new ProgramManager(_simLogger, _programLoader);
-        public static ProgramManager ProgramManager { get => _programManager; }
+        public static ProgramManager ProgramManager { get; } = new ProgramManager(SimLogger, _programLoader);
 
         public static string AppPath { get => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location); }
 
@@ -51,14 +46,14 @@ namespace RaceLoggingExamples.SimpleConsoleApplication
             FuelMessage = "Fuel manager not enabled";
             ErrorMessage = "No errors";
 
-            _programManager.ProgramEnd += OnProgramEnd;
-            _programManager.ProgramActivated += OnProgramActivation;
+            ProgramManager.ProgramEnd += OnProgramEnd;
+            ProgramManager.ProgramActivated += OnProgramActivation;
 
             var stateManager = new StateManager();
 
             IState currentState = stateManager.GetState(States.Main, true);
 
-            _simLogger.StartListening();
+            SimLogger.StartListening();
             //You have to be connected to iracing and in a session before the loaded program will start
             while (!_exit)
             {
@@ -70,7 +65,7 @@ namespace RaceLoggingExamples.SimpleConsoleApplication
 
         public static void Kill()
         {
-            _simLogger.StopListening();
+            SimLogger.StopListening();
             _exit = true;
         }
 

@@ -5,8 +5,10 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <StartupObject>RaceLoggingExamples.SimpleConsoleApplication.App</StartupObject>
     <ApplicationIcon />
-    <AssemblyName>RaceLoggingExamples</AssemblyName>
+    <AssemblyName>RaceLoggingApp</AssemblyName>
     <RootNamespace>RaceLoggingExamples</RootNamespace>
+    <Version>1.1.0</Version>
+    <PackageReleaseNotes>using latest version of racelogging</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
@@ -15,7 +17,7 @@
 
   <ItemGroup>
     <Reference Include="RaceLogging">
-      <HintPath>..\RaceLogging\bin\Debug\netstandard2.0\RaceLogging.dll</HintPath>
+      <HintPath>..\RaceLogging\bin\Release\netstandard2.0\RaceLogging.dll</HintPath>
     </Reference>
   </ItemGroup>
 
