@@ -44,6 +44,8 @@ namespace RaceLogging.General.Program
             this._programLoader = programLoader;
         }
 
+        public bool IsProgramActive { get => _isProgramActive; }
+
         public event EventHandler<ProgramEndEventArgs> ProgramEnd;
         private void OnProgramEnd(ProgramEndEventArgs e)
         {
@@ -61,6 +63,14 @@ namespace RaceLogging.General.Program
             try
             {
                 this._currentProgramConfig = this._programLoader.LoadProgram(path, fileName);
+                if (!this._simLogger.IsLive)
+                {
+                    this._simLogger.DriverConnected += this.OnConnected;
+                }
+                else
+                {
+                    this.Start();
+                }
             }
             catch (ProgramLoaderException e)
             {
@@ -69,7 +79,7 @@ namespace RaceLogging.General.Program
             }
         }
 
-        public void StartProgram()
+        public void Start()
         {
             if (this._currentProgramConfig == null)
             {
@@ -90,6 +100,12 @@ namespace RaceLogging.General.Program
                 //wait on delayed start condition
                 this.ApplyListeners();
             }
+        }
+
+        private void OnConnected(object sender, EventArgs eventArgs)
+        {
+            this.Start();
+            this._simLogger.DriverConnected -= this.OnConnected;
         }
 
         private void Initialize()
@@ -226,7 +242,7 @@ namespace RaceLogging.General.Program
             if (!this._isProgramActive && this._currentProgramConfig.StartCondition == StartConditionValues.GreenFlag && eventArgs.RaceState == RaceLogging.General.Enums.RaceState.GreenFlag)
             {
                 this._delayedStartActivated = true;
-                this.StartProgram();
+                this.Start();
                 return;
             }
             else if (this._isProgramActive && this._currentProgramConfig.EndCondition.Condition == EndConditionValues.Checkered && eventArgs.RaceState == RaceLogging.General.Enums.RaceState.Checkered)
@@ -272,7 +288,7 @@ namespace RaceLogging.General.Program
             else if (!this._isProgramActive && this._currentProgramConfig.StartCondition == StartConditionValues.AfterOutLap)
             {
                 this._delayedStartActivated = true;
-                this.StartProgram();
+                this.Start();
                 return;
             }
         }
@@ -347,7 +363,7 @@ namespace RaceLogging.General.Program
             else if (!this._isProgramActive && this._currentProgramConfig.StartCondition == StartConditionValues.PitExit && !eventArgs.IsOnPitRoad)
             {
                 this._delayedStartActivated = true;
-                this.StartProgram();
+                this.Start();
                 return;
             }
         }
@@ -359,6 +375,11 @@ namespace RaceLogging.General.Program
 
         private ProgramDebrief CreateProgramDebrief(SimProgram program)
         {
+            if (program.CompletedLaps.Count <= 0)
+            {
+                return new ProgramDebrief(0);
+            }
+
             var debrief = new ProgramDebrief(program.CompletedLaps[0].Time.SectorTimes.Count);
 
             int tireWearCount = 0;

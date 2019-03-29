@@ -36,7 +36,8 @@ namespace RaceLogging.Simulations.Iracing
         {
             this._sdkWrapper = new SdkWrapper
             {
-                TelemetryUpdateFrequency = telemetryUpdateHz
+                TelemetryUpdateFrequency = telemetryUpdateHz,
+                EventRaiseType = SdkWrapper.EventRaiseTypes.BackgroundThread
             };
 
             this._inActiveSession = false;
