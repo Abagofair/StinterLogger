@@ -85,6 +85,7 @@ namespace RaceLogging.General.Fuel
         {
             this.ResetData();
             this._active = false;
+            this._simLogger.RaceState -= this.OnRaceStateChange;
             this._simLogger.LapCompleted -= this.OnLapCompleted;
         }
         #endregion
@@ -100,6 +101,7 @@ namespace RaceLogging.General.Fuel
             else if (eventArgs.RaceState == RaceLogging.General.Enums.RaceState.Checkered && this._active)
             {
                 this._simLogger.LapCompleted -= this.OnLapCompleted;
+                this._simLogger.RaceState -= this.OnRaceStateChange;
                 this._active = false;
             }
         }
