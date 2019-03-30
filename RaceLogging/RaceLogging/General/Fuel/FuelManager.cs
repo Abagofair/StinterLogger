@@ -46,7 +46,7 @@ namespace RaceLogging.General.Fuel
             this._graceOption = new GraceOption
             {
                 Mode = GraceMode.Lap,
-                Value = 1.5f
+                Value = 2.0f
             };
 
             this._hasPitted = false;
@@ -122,10 +122,7 @@ namespace RaceLogging.General.Fuel
 
             if (this._lapCount >= LAPS_RUNNING_AVG)
             {
-                this._totalFuelUsed = 0.0f;
-                this._lapCount = 0;
-                this._fuelToAdd = 0.0f;
-                this._totalTimeRaced = 0.0f;
+                this.ResetData();
             }
 
             ++this._lapCount;
