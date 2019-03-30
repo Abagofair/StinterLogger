@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <Reference Include="RaceLogging">
-      <HintPath>..\RaceLogging\bin\Release\netstandard2.0\RaceLogging.dll</HintPath>
+      <HintPath>..\RaceLogging\bin\Debug\netstandard2.0\RaceLogging.dll</HintPath>
     </Reference>
   </ItemGroup>
 

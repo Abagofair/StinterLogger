@@ -11,8 +11,6 @@ namespace RaceLogging.General.Fuel
         private const float MAX_FUEL = 999.0f;
 
         private const int LAPS_RUNNING_AVG = 5;
-
-        private const float LAP_TIME_MAX_DEVIATION = 10.0f;
         #endregion
 
         #region fields
@@ -32,6 +30,8 @@ namespace RaceLogging.General.Fuel
 
         private bool _active;
 
+        private bool _hasPitted;
+
         private GraceOption _graceOption;
         #endregion
 
@@ -42,6 +42,14 @@ namespace RaceLogging.General.Fuel
             this._debugLogger = debugManager;
 
             this._simLogger.PitRoad += this.OnPitRoad;
+
+            this._graceOption = new GraceOption
+            {
+                Mode = GraceMode.Lap,
+                Value = 2.0f
+            };
+
+            this._hasPitted = false;
         }
 
         private void ResetData()
@@ -85,6 +93,7 @@ namespace RaceLogging.General.Fuel
         {
             this.ResetData();
             this._active = false;
+            this._simLogger.RaceState -= this.OnRaceStateChange;
             this._simLogger.LapCompleted -= this.OnLapCompleted;
         }
         #endregion
@@ -95,11 +104,14 @@ namespace RaceLogging.General.Fuel
             if (eventArgs.RaceState == RaceLogging.General.Enums.RaceState.GreenFlag && !this._active)
             {
                 this._simLogger.LapCompleted += this.OnLapCompleted;
+                this._simLogger.PitRoad += this.OnPitRoad;
                 this._active = true;
             }
             else if (eventArgs.RaceState == RaceLogging.General.Enums.RaceState.Checkered && this._active)
             {
                 this._simLogger.LapCompleted -= this.OnLapCompleted;
+                this._simLogger.PitRoad -= this.OnPitRoad;
+                this._simLogger.RaceState -= this.OnRaceStateChange;
                 this._active = false;
             }
         }
@@ -110,10 +122,7 @@ namespace RaceLogging.General.Fuel
 
             if (this._lapCount >= LAPS_RUNNING_AVG)
             {
-                this._totalFuelUsed = 0.0f;
-                this._lapCount = 0;
-                this._fuelToAdd = 0.0f;
-                this._totalTimeRaced = 0.0f;
+                this.ResetData();
             }
 
             ++this._lapCount;
@@ -128,10 +137,9 @@ namespace RaceLogging.General.Fuel
                 this._timeRemainingOfSession = lapData.RemainingSessionTime;
             }
 
-            var time = lapData.Time.LapTime;
-            if (time > 0 && time < (LAP_TIME_MAX_DEVIATION + time))
+            if (lapData.Time.LapTime > 0)
             {
-                this._totalTimeRaced += time;
+                this._totalTimeRaced += lapData.Time.LapTime;
             }
 
             //calculate fuel needed to finish
@@ -158,15 +166,20 @@ namespace RaceLogging.General.Fuel
             {
                 try
                 {
-                    if (this._fuelToAdd > 0 && this._fuelToAdd < MAX_FUEL)
+                    if (this._fuelToAdd > 0 && this._fuelToAdd < MAX_FUEL && !this._hasPitted)
                     {
                         this._simLogger.AddFuelOnPitStop(Convert.ToInt32(this._fuelToAdd));
+                        this._hasPitted = true;
                     }
                 }
                 catch (NotImplementedException e)
                 {
                     this._debugLogger.CreateExceptionLog("SetFuelLevelOnPitStop is not implemented", e);
                 }
+            }
+            else
+            {
+                this._hasPitted = false;
             }
         }
         #endregion
